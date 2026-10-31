@@ -1,0 +1,65 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Mon Dressing</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500..700&amp;family=Instrument+Sans:wght@400..600&amp;display=swap">
+<style>
+html, body { margin: 0; height: 100%; }
+body { background: var(--linen); color: var(--forest-deep); font-family: var(--font-text); overflow: hidden; }
+.cover { position: relative; width: 960px; height: 288px; overflow: hidden; }
+.art { position: absolute; top: 0; left: 480px; width: 480px; height: 288px; overflow: hidden; }
+.art svg { display: block; width: 480px; height: 288px; }
+.sage { fill: var(--sage); }
+.plum { fill: var(--pale-plum); }
+.sun { fill: var(--mustard); }
+.forest { fill: var(--forest); }
+.cream { fill: var(--cream); }
+.ring { fill: var(--cream); stroke: var(--moss-deep); stroke-width: 1; }
+.words { position: absolute; left: 40px; bottom: 32px; max-width: 440px; }
+.name { margin: 0; font-family: var(--font-display); font-size: 88px; line-height: 0.95; font-weight: 600; letter-spacing: -0.03em; color: var(--forest-deep); }
+.tag { margin: 8px 0 0 3px; font-size: 14px; line-height: 20px; color: var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="cover">
+<div class="art" aria-hidden="true">
+<svg viewBox="0 0 480 288" width="480" height="288">
+<!--
+  blocks      sage slab 176 wide with the tab bar's rounded bump (radius-tabbar ends, bump r 40), bleeding off the bottom · pale-plum 120×176 (cold halo) · mustard 128×160 bled off the top and right (sun) · forest disc of size-cta scaled ×1.14 (the one primary action) — about a third of 960×288
+  arrangement one tall sage slab with satellites, the forest disc floating low right like the confirm button
+  pattern     discs, from "boutons ronds, pastille, bosse arrondie": a 4×4 grid of cream discs (r 6) at a space-24 pitch cut into the mustard block, plus the active pastille (cream, 1 pt moss-deep ring) on the bump
+  scales      gutters space-16; pitch space-24; slab and plum corners radius-tabbar (32); discs radius-full
+-->
+<rect class="sage" x="24" y="100" width="176" height="220" rx="32"></rect>
+<circle class="sage" cx="112" cy="104" r="44"></circle>
+<circle class="ring" cx="112" cy="100" r="24"></circle>
+<rect class="plum" x="216" y="128" width="120" height="184" rx="32"></rect>
+<rect class="sun" x="352" y="-32" width="160" height="168" rx="32"></rect>
+<circle class="cream" cx="376" cy="24" r="6"></circle>
+<circle class="cream" cx="400" cy="24" r="6"></circle>
+<circle class="cream" cx="424" cy="24" r="6"></circle>
+<circle class="cream" cx="448" cy="24" r="6"></circle>
+<circle class="cream" cx="376" cy="48" r="6"></circle>
+<circle class="cream" cx="400" cy="48" r="6"></circle>
+<circle class="cream" cx="424" cy="48" r="6"></circle>
+<circle class="cream" cx="448" cy="48" r="6"></circle>
+<circle class="cream" cx="376" cy="72" r="6"></circle>
+<circle class="cream" cx="400" cy="72" r="6"></circle>
+<circle class="cream" cx="424" cy="72" r="6"></circle>
+<circle class="cream" cx="448" cy="72" r="6"></circle>
+<circle class="cream" cx="376" cy="96" r="6"></circle>
+<circle class="cream" cx="400" cy="96" r="6"></circle>
+<circle class="cream" cx="424" cy="96" r="6"></circle>
+<circle class="cream" cx="448" cy="96" r="6"></circle>
+<circle class="forest" cx="412" cy="216" r="32"></circle>
+</svg>
+</div>
+<div class="words">
+<h1 class="name">Mon Dressing</h1>
+<p class="tag">Cocon du matin : la tenue du jour, avant d’affronter le dehors.</p>
+</div>
+</div>
+</body>
+</html>

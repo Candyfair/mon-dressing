@@ -1,0 +1,39 @@
+<!-- @dsCard group="Aujourd’hui" height=200 subtitle="Pluie, bureau à vélo" -->
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>WeatherHeader</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;family=Instrument+Sans:wght@400..700&amp;display=swap">
+<style>
+.frame { position: relative; width: 375px; height: 190px; overflow: hidden; background: var(--linen); }
+.frame .md-header { position: absolute; top: 16px; left: 16px; }
+</style>
+</head>
+<body>
+<div class="frame md-weather-pluie">
+<div class="md-halo-top" aria-hidden="true"><div class="md-blob md-blob-a"></div><div class="md-blob md-blob-b"></div></div>
+<header class="md-header">
+<div class="md-header-top">
+<h1 class="md-date">Lun. 27 oct.</h1>
+<button class="md-chip md-glass">
+<span>Bureau</span>
+<span class="md-chip-divider" aria-hidden="true"></span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="à vélo"><circle cx="5.5" cy="16" r="3.5"></circle><circle cx="18.5" cy="16" r="3.5"></circle><path d="M5.5 16 L9.5 8.5 H15.5 L18.5 16 M9.5 8.5 L12 16 L15.5 8.5 M12 16 H5.5 M9.5 8.5 V6 M8 6 H11 M15.5 8.5 L14.8 5.5 H17"></path></svg>
+</button>
+<button class="md-icon-btn md-glass" aria-label="Réglages">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"></path><circle cx="15" cy="7" r="2"></circle><circle cx="9" cy="17" r="2"></circle></svg>
+</button>
+</div>
+<div class="md-weather">
+<p class="md-temp"><span class="md-temp-now">9°</span><span class="md-temp-range">→ 14°</span></p>
+<div class="md-wlines">
+<p class="md-wline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 14.5a4 4 0 0 1-.7-7.9 5.5 5.5 0 0 1 10.6.9 3.5 3.5 0 0 1 .1 7H7z"></path><path d="M8.5 17.5l-1 2.5M12.5 17.5l-1 2.5M16.5 17.5l-1 2.5"></path></svg><span>Pluie 70 % vers 18 h</span></p>
+<p class="md-wline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 18 0z"></path><path d="M12 12v6a2 2 0 0 1-4 0"></path></svg><span>Parapluie conseillé vers 12 h 30</span></p>
+</div>
+</div>
+<div class="md-rule" aria-hidden="true"></div>
+</header>
+</div>
+</body>
+</html>

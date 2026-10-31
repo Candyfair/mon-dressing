@@ -1,0 +1,29 @@
+<!-- @dsCard group="Fonds" height=410 subtitle="Sombre : pluie, soleil, froid" -->
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>NightBackground</title>
+<style>
+.mini { width: 160px; height: 347px; overflow: hidden; border-radius: 16px; border: 1px solid var(--chip-divider); }
+.mini .md-screen { transform: scale(0.4267); transform-origin: 0 0; }
+.tab-swatch { position: absolute; left: 40px; bottom: 24px; width: 295px; height: 64px; border-radius: 32px; }
+</style>
+</head>
+<body>
+<div class="md-stage">
+<div class="md-col">
+<div class="mini"><div class="md-screen md-screen-night md-night-pluie" aria-hidden="true"><div class="md-twilight-top"></div><div class="md-twilight-low"></div><div class="md-lamp"></div><svg class="md-grain" width="375" height="812"><filter id="g1"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix></filter><rect width="375" height="812" filter="url(#g1)"></rect></svg><div class="tab-swatch" style="background: var(--tabbar-pluie)"></div></div></div>
+<span class="md-caption">Pluie</span>
+</div>
+<div class="md-col">
+<div class="mini"><div class="md-screen md-screen-night md-night-soleil" aria-hidden="true"><div class="md-twilight-top"></div><div class="md-twilight-low"></div><div class="md-lamp"></div><svg class="md-grain" width="375" height="812"><filter id="g2"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix></filter><rect width="375" height="812" filter="url(#g2)"></rect></svg><div class="tab-swatch" style="background: var(--tabbar-soleil)"></div></div></div>
+<span class="md-caption">Soleil</span>
+</div>
+<div class="md-col">
+<div class="mini"><div class="md-screen md-screen-night md-night-froid" aria-hidden="true"><div class="md-twilight-top"></div><div class="md-twilight-low"></div><div class="md-lamp"></div><svg class="md-grain" width="375" height="812"><filter id="g3"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix></filter><rect width="375" height="812" filter="url(#g3)"></rect></svg><div class="tab-swatch" style="background: var(--tabbar-froid)"></div></div></div>
+<span class="md-caption">Froid</span>
+</div>
+</div>
+</body>
+</html>
