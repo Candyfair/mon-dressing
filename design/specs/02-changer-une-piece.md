@@ -28,7 +28,7 @@ SwapCarousel, Sheet, Dots, Button (secondaire), AddLayerButton. Voir `design-sys
 - Une seule pièce compatible : léger rebond qui ramène la pièce en place.
 
 ### Pièces pleine hauteur (AP4)
-- Robes, salopettes, combinaisons sont dans le carrousel des hauts, intercalées selon le même ordre (favoris d’abord, puis adéquation).
+- Robes, salopettes, combinaisons sont dans le carrousel des hauts, intercalées selon le même ordre (rotation, favoris avantagés, puis adéquation — voir `SPEC.md` §7).
 - Quand une robe arrive, le bas s’efface pendant le glissement et disparaît au relâchement. Revenir sur un haut fait réapparaître le bas d’avant (le garder en mémoire).
 - Si la première proposition du matin est une robe, la ligne des bas est vide dès l’ouverture. Chaussures et couches restent indépendantes.
 

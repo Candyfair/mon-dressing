@@ -35,7 +35,7 @@ WeatherBackground (clair), NightBackground (sombre), WeatherHeader, ProgramChip,
 ### Choix de la tenue
 - L’application ne décide rien à la place de l’utilisatrice et ne fait pas de recommandation : elle filtre les pièces disponibles selon les usages que l’utilisatrice leur a donnés (météo, activité, déplacement, occasion).
 - Une pièce sans usage dans un groupe est proposée dans tous les cas de ce groupe.
-- Ordre des propositions dans chaque ligne : favoris d’abord, puis adéquation à la météo et au programme.
+- Ordre des propositions dans chaque ligne : rotation selon la date du dernier port, favoris avantagés (sans priorité absolue), puis adéquation à la météo et au programme. *Écart validé le 31/10/2026 par rapport au handoff (« favoris d’abord, puis adéquation ») : voir `SPEC.md` §7.*
 - Pièces exclues : au sale, à sécher, à repasser. Sur l’étendoir : disponibles si l’étendoir sert de rangement (réglage) et si elles ne sont pas à repasser.
 
 ## Accessibilité

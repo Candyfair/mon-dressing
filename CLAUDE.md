@@ -23,8 +23,8 @@ Rationale for every choice: `SPEC.md` §11.
 3. **No LLM anywhere in the decision path** (§7).
 4. **SQLite is the single source of truth**; no global store duplicating DB data (§11.2).
 5. **UUIDs everywhere, relative photo paths, `wardrobe` entity from day 1** (§11.3).
-6. **`garments.location` / `locationSince` / `wearCount` are written only by `src/domain/lifecycle/`**, always with a `garmentEvents` row in the same transaction (`DATA_MODEL.md` §4).
-7. **Gesture grammar**: swipe = choose/browse only, tap = see large, long press = act (floating menu). Swiping a row never changes other rows (§9.1, §7).
+6. **`garments.location` / `locationSince` / `toIron` / `wearCount` are written only by `src/domain/lifecycle/`**, always with a `garmentEvents` row in the same transaction (`DATA_MODEL.md` §4).
+7. **Gesture grammar**: swipe = choose/browse only (every carousel loops), tap = see large (Laundry: tap selects), long press = act (radial menu). Swiping a row never changes other rows (§9.1, §7).
 8. **The user's choice wins over the engine**; validated outfits are frozen for the day (§7).
 9. **Cutout runs asynchronously**; cards work with and without cutout (§10).
 10. **All user-facing strings externalised** (i18next) from the first screen.
@@ -68,7 +68,7 @@ Stop and ask **only** if the decision is irreversible or costly to change later,
 | Conventional Commits format, no attribution trailer | `commit-msg` hook (commitlint) — **mechanical** |
 | No commit / push on `main` | `pre-commit` + `pre-push` hooks rejecting `main` — **mechanical** |
 | No secret committed (public repo) | `pre-commit` secret scan (gitleaks) — **mechanical** |
-| Lifecycle columns written only by `src/domain/lifecycle/` | `pre-commit` script grepping staged files outside that folder for writes to `location`, `locationSince`, `wearCount` — **mechanical** |
+| Lifecycle columns written only by `src/domain/lifecycle/` | `pre-commit` script grepping staged files outside that folder for writes to `location`, `locationSince`, `toIron`, `wearCount` — **mechanical** |
 | No hard-coded user-facing strings | ESLint rule (`i18next/no-literal-string` on JSX) — **mechanical** |
 | Types + lint + tests green before commit | `pre-commit`: `tsc --noEmit`, ESLint on staged files, Jest related tests — **mechanical** |
 | Project state at session start | Claude Code `SessionStart` hook printing `git log --oneline -10`, current branch, and the §14.1 open items table — **mechanical** |
@@ -82,7 +82,7 @@ Hooks managed with Husky (Git) and `.claude/settings.json` (Claude Code), set up
   - `src/features/<today|laundry|wardrobe|add|onboarding|settings>/` — screens, feature components, hooks
   - `src/domain/` — pure logic: `engine/`, `lifecycle/`, `weather/`, `catalogue/` (no React, no DB, no clock)
   - `src/db/` — Drizzle schema, migrations, repositories
-  - `src/ui/` — shared components (carousel, bottom sheet, floating menu, tab bar), design tokens
+  - `src/ui/` — shared components (looping carousel, sheet, radial menu, tab bar), design tokens
   - `src/i18n/` — locales
   - `modules/subject-cutout/` — Expo native module
 - Discriminated unions for states; no `any`; exhaustive `switch` with `never` checks on enums.
