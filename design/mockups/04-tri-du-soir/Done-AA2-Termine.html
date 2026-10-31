@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Aujourd’hui — tri terminé</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;family=Instrument+Sans:wght@400..700&amp;display=swap">
+<style>
+body{margin:0}
+button{font:inherit;color:inherit;border:0;background:none;padding:0;margin:0;cursor:pointer;text-align:inherit}
+a{color:#2F4A2B}a:hover{color:#1E3120}
+@keyframes md-ring { 0% { stroke-dashoffset: 106.81; } 12%, 100% { stroke-dashoffset: 0; } }
+@keyframes md-check { 0%, 10% { transform: scale(0); } 16% { transform: scale(1.25); } 20%, 100% { transform: scale(1); } }
+.md-anim .md-ring { animation: md-ring 5s cubic-bezier(.3,.7,.3,1) infinite; }
+.md-anim .md-check { animation: md-check 5s ease-out infinite; }
+@keyframes md-fadeout { 0%, 4% { opacity: 1; } 14%, 100% { opacity: 0; } }
+.md-anim .md-fadeout { animation: md-fadeout 5s ease-out infinite; opacity: 0; }
+@keyframes md-fly { 0%, 6% { transform: none; opacity: 1; } 12% { transform: scale(1.05); opacity: 1; } 40% { transform: translate(var(--tx), var(--ty)) scale(.1); opacity: .9; } 44%, 100% { transform: translate(var(--tx), var(--ty)) scale(.1); opacity: 0; } }
+.md-ghosts > div { animation: md-fly 5s cubic-bezier(.5,0,.2,1) infinite; transform-origin: center; opacity: 0; }
+@keyframes md-badge { 0%, 38% { transform: scale(0); opacity: 0; } 44% { transform: scale(1.3); opacity: 1; } 49%, 90% { transform: scale(1); opacity: 1; } 97%, 100% { transform: scale(1); opacity: 0; } }
+.md-anim .md-badge { animation: md-badge 5s ease-out infinite; transform: scale(0); }
+@keyframes md-msg { 0%, 46% { opacity: 0; transform: translateY(10px); } 56%, 100% { opacity: 1; transform: none; } }
+.md-anim .md-msg { animation: md-msg 5s ease-out infinite; }
+@keyframes md-flip { 0%, 58% { transform: rotateX(0); } 64%, 90% { transform: rotateX(180deg); } 96%, 100% { transform: rotateX(360deg); } }
+.md-anim .md-flip { animation: md-flip 5s cubic-bezier(.4,0,.2,1) infinite; }
+@property --md-n { syntax: "<integer>"; inherits: false; initial-value: 5; }
+@keyframes md-count { 0%, 68% { --md-n: 5; } 74%, 100% { --md-n: 6; } }
+.md-count { counter-reset: n var(--md-n); --md-n: 6; }
+.md-count::after { content: counter(n); }
+.md-anim .md-count { animation: md-count 5s steps(1) infinite; }
+@keyframes md-glow { 0%, 2% { box-shadow: 0 0 0 0 rgba(79,107,69,0); } 8% { box-shadow: 0 0 0 10px rgba(79,107,69,0.25); } 14%, 100% { box-shadow: 0 0 0 16px rgba(79,107,69,0); } }
+.md-anim .md-glow { animation: md-glow 5s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) { .md-anim .md-ghosts, .md-anim .md-fadeout { display: none; } .md-anim .md-msg { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) { .md-anim, .md-anim * { animation: none !important; } .md-confetti { display: none; } }
+</style>
+</head>
+<body>
+<div class="md-anim" style="width: 375px; height: 812px; position: relative; overflow: hidden; box-sizing: border-box; background: #FAF7F0; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; color: #1E3120">
+
+<div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 375px; height: 290px; overflow: hidden; pointer-events: none; -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent 100%); mask-image: linear-gradient(to bottom, #000 45%, transparent 100%); opacity: 1">
+<div style="position: absolute; top: -170px; left: -120px; width: 560px; height: 420px; border-radius: 50%; background: radial-gradient(ellipse, #8FAE9E 0%, rgba(143,174,158,0.6) 35%, rgba(143,174,158,0) 70%); filter: blur(20px)"></div>
+<div style="position: absolute; top: -60px; right: -160px; width: 380px; height: 340px; border-radius: 50%; background: radial-gradient(circle, #A9B9A0 0%, rgba(169,185,160,0) 66%); filter: blur(18px)"></div>
+</div>
+
+<div aria-hidden="true" style="position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: 1">
+<div style="position: absolute; top: 600px; left: -170px; width: 340px; height: 380px; background: radial-gradient(ellipse closest-side, #8FAE9E 0%, rgba(143,174,158,0.5) 50%, rgba(143,174,158,0) 100%); filter: blur(18px)"></div>
+<div style="position: absolute; top: 720px; left: 250px; width: 280px; height: 240px; background: radial-gradient(ellipse closest-side, #A9B9A0 0%, rgba(169,185,160,0.5) 50%, rgba(169,185,160,0) 100%); filter: blur(18px)"></div>
+</div>
+
+<header style="position: absolute; top: 50px; left: 16px; right: 16px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; gap: 8px; height: 44px">
+<h1 style="margin: 0; flex: 1; min-width: 0; font-family: 'Space Grotesk', 'Instrument Sans', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.01em; line-height: 1">Lun. 27 oct.</h1>
+<button aria-label="Réglages" style="width: 44px; height: 44px; flex: none; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: rgba(250,247,240,0.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.75); color: #2F4A2B; box-sizing: border-box">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"></path><circle cx="15" cy="7" r="2"></circle><circle cx="9" cy="17" r="2"></circle></svg>
+</button>
+</div>
+<div style="height: 84px; perspective: 600px">
+<div class="md-flip" style="position: relative; height: 84px; transform-style: preserve-3d">
+<div style="position: absolute; inset: 0; box-sizing: border-box; padding: 0 14px 0 18px; border-radius: 22px; display: flex; align-items: center; gap: 12px; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: rgba(250,247,240,0.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.75)">
+<div style="flex: 1; min-width: 0">
+<h2 style="margin: 0; font-family: 'Space Grotesk', 'Instrument Sans', sans-serif; font-weight: 600; font-size: 21px; letter-spacing: -0.01em; line-height: 1.1">Tenue rangée</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #3F4F3C">1 au sale · 1 à aérer · 3 rangées</p>
+<a href="#" style="display: inline-block; margin-top: 2px; font-size: 13px; font-weight: 600; color: #2F4A2B; text-decoration: underline; text-underline-offset: 2px">Modifier</a>
+</div>
+<div role="img" aria-label="5 pièces triées sur 5" style="position: relative; width: 48px; height: 48px; flex: none">
+<svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="17" fill="none" stroke="rgba(30,49,32,0.14)" stroke-width="4"></circle><circle class="md-ring" cx="24" cy="24" r="17" fill="none" stroke="#2F4A2B" stroke-width="4" stroke-linecap="round" stroke-dasharray="106.81 106.81" transform="rotate(-90 24 24)"></circle></svg>
+<span class="md-check" aria-hidden="true" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #2F4A2B"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+</div>
+</div>
+<div style="position: absolute; inset: 0; box-sizing: border-box; padding: 0 18px; border-radius: 22px; display: flex; align-items: center; gap: 14px; transform: rotateX(180deg); backface-visibility: hidden; -webkit-backface-visibility: hidden; background: rgba(250,247,240,0.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.75)">
+<span aria-hidden="true" style="width: 48px; height: 48px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(79,107,69,0.16); color: #4F6B45"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19C5 11 11 5 20 5c0 9-6 15-14 15"></path><path d="M5 19c3-4 6-6.5 10-8.5"></path></svg></span>
+<div style="flex: 1; min-width: 0">
+<p style="margin: 0; font-family: 'Space Grotesk', 'Instrument Sans', sans-serif; font-weight: 600; font-size: 21px; letter-spacing: -0.01em; line-height: 1.1">1 lavage évité</p>
+<p style="margin: 4px 0 0; font-size: 13px; color: #3F4F3C"><span class="md-count" style="font-weight: 700; font-variant-numeric: tabular-nums"></span> depuis le début du mois</p>
+</div>
+</div>
+</div>
+</div>
+</header>
+
+<section aria-label="Tenue du jour, rangée" style="position: absolute; inset: 0; pointer-events: none">
+<div class="md-fadeout" aria-hidden="true" style="position: absolute; left: 16px; top: 194px; width: 343px; height: 490px">
+<span aria-hidden="true" style="position: absolute; left: 46px; top: 149px; width: 84px; height: 12px; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(30,49,32,0.30) 0%, rgba(30,49,32,0) 70%); opacity: 1"></span>
+<span aria-hidden="true" style="position: absolute; left: 46px; top: 298px; width: 84px; height: 12px; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(30,49,32,0.30) 0%, rgba(30,49,32,0) 70%); opacity: 1"></span>
+<span aria-hidden="true" style="position: absolute; left: 197.5px; top: 171px; width: 101px; height: 12px; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(30,49,32,0.30) 0%, rgba(30,49,32,0) 70%); opacity: 1"></span>
+<span aria-hidden="true" style="position: absolute; left: 190px; top: 357.5px; width: 116px; height: 12px; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(30,49,32,0.30) 0%, rgba(30,49,32,0) 70%); opacity: 1"></span>
+<span aria-hidden="true" style="position: absolute; left: 204px; top: 450px; width: 88px; height: 12px; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(30,49,32,0.30) 0%, rgba(30,49,32,0) 70%); opacity: 1"></span>
+<span role="img" aria-label="Aérer" class="md-glow" style="position: absolute; left: 136px; top: 29px; width: 28px; height: 28px; border-radius: 14px; background: rgba(79,107,69,0.16); color: #4F6B45; display: flex; align-items: center; justify-content: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9h10.5a2.5 2.5 0 1 0-2.5-2.5M3 14h14.5a2.5 2.5 0 1 1-2.5 2.5"></path></svg></span>
+<span role="img" aria-label="Ranger" style="position: absolute; left: 136px; top: 168px; width: 28px; height: 28px; border-radius: 14px; background: rgba(79,107,69,0.16); color: #4F6B45; display: flex; align-items: center; justify-content: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="3" width="15" height="17" rx="1.5"></rect><path d="M12 3v17M9.8 10.5v2.5M14.2 10.5v2.5M7 20v1.5M17 20v1.5"></path></svg></span>
+<span role="img" aria-label="Au sale" style="position: absolute; left: 306px; top: 8px; width: 28px; height: 28px; border-radius: 14px; background: rgba(176,129,90,0.20); color: #8A5D3B; display: flex; align-items: center; justify-content: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="3" width="15" height="18" rx="2.5"></rect><circle cx="12" cy="13" r="4.2"></circle><path d="M7.5 6.5h2.5"></path></svg></span>
+<span role="img" aria-label="Ranger" style="position: absolute; left: 302px; top: 192px; width: 28px; height: 28px; border-radius: 14px; background: rgba(79,107,69,0.16); color: #4F6B45; display: flex; align-items: center; justify-content: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="3" width="15" height="17" rx="1.5"></rect><path d="M12 3v17M9.8 10.5v2.5M14.2 10.5v2.5M7 20v1.5M17 20v1.5"></path></svg></span>
+<span role="img" aria-label="Ranger" style="position: absolute; left: 292px; top: 374px; width: 28px; height: 28px; border-radius: 14px; background: rgba(79,107,69,0.16); color: #4F6B45; display: flex; align-items: center; justify-content: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="3" width="15" height="17" rx="1.5"></rect><path d="M12 3v17M9.8 10.5v2.5M14.2 10.5v2.5M7 20v1.5M17 20v1.5"></path></svg></span>
+</div>
+<div class="md-ghosts" aria-hidden="true">
+<div style="position: absolute; left: 29.0px; top: 217.0px; width: 150px; height: 150px; --tx: 183px; --ty: 464px; animation-delay: 0.12s"><svg aria-hidden="true" width="150" height="150" viewBox="0 0 100 100" style="display: block; filter: none"><path d="M36 12 Q50 20 64 12 L80 18 L92 66 L81 69 L74 40 L75 88 L25 88 L26 40 L19 69 L8 66 L20 18 Z" fill="#ECE3D0" stroke="#C9BA98" stroke-width="1.1" stroke-linejoin="round"></path><path d="M36 12 Q50 24 64 12" fill="none" stroke="#C9BA98" stroke-width="2"></path><path d="M26 81 H74 M10 61 L20 63 M90 61 L80 63" stroke="#C9BA98" stroke-width="1.1"></path></svg></div>
+<div style="position: absolute; left: 29.0px; top: 356.0px; width: 150px; height: 150px; --tx: 183px; --ty: 325px; animation-delay: 0.24s"><svg aria-hidden="true" width="150" height="150" viewBox="0 0 100 100" style="display: block; filter: none"><path d="M38 6 L50 16 L62 6 L74 10 L86 22 L93 64 L83 66 L77 38 L78 95 L22 95 L23 38 L17 66 L7 64 L14 22 L26 10 Z" fill="#8A8352"></path><path d="M38 6 L50 16 L45 42 L33 17 Z M62 6 L50 16 L55 42 L67 17 Z" fill="#76703F"></path><path d="M23 54 H77" stroke="#6B653C" stroke-width="4"></path><path d="M50 42 V95" stroke="#6B653C" stroke-width="1"></path><circle cx="45" cy="66" r="1.6" fill="#5B5632"></circle><circle cx="45" cy="78" r="1.6" fill="#5B5632"></circle></svg></div>
+<div style="position: absolute; left: 167.0px; top: 192.5px; width: 194px; height: 194px; --tx: -176px; --ty: 466px; animation-delay: 0.00s"><svg aria-hidden="true" width="194" height="194" viewBox="0 0 100 100" style="display: block; filter: none"><path d="M38 10 L50 18 L62 10 L78 16 L90 60 L80 63 L74 38 L74 92 L26 92 L26 38 L20 63 L10 60 L22 16 Z" fill="#FCFBF7" stroke="#CFCBBE" stroke-width="0.9" stroke-linejoin="round"></path><path d="M38 10 L50 18 L43 27 Z M62 10 L50 18 L57 27 Z" fill="#EDEAE1" stroke="#CFCBBE" stroke-width="0.8" stroke-linejoin="round"></path><path d="M50 18 V92 M30 36 H40 V45 H30 Z" fill="none" stroke="#CFCBBE" stroke-width="0.7"></path><circle cx="52.5" cy="34" r="1" fill="#BDB8A8"></circle><circle cx="52.5" cy="50" r="1" fill="#BDB8A8"></circle><circle cx="52.5" cy="66" r="1" fill="#BDB8A8"></circle><circle cx="52.5" cy="82" r="1" fill="#BDB8A8"></circle></svg></div>
+<div style="position: absolute; left: 167.0px; top: 371.5px; width: 194px; height: 194px; --tx: 23px; --ty: 288px; animation-delay: 0.36s"><svg aria-hidden="true" width="194" height="194" viewBox="0 0 100 100" style="display: block; filter: none"><path d="M27 5 L73 5 L77 96 L56 96 L50 34 L44 96 L23 96 Z" fill="#2E3B57"></path><path d="M27 12 H73 M50 12 V30 M33 12 Q36 22 46 22 M67 12 Q64 22 54 22" fill="none" stroke="#4A5878" stroke-width="0.8"></path></svg></div>
+<div style="position: absolute; left: 206.0px; top: 542.0px; width: 116px; height: 116px; --tx: 23px; --ty: 156px; animation-delay: 0.48s"><svg aria-hidden="true" width="116" height="116" viewBox="0 0 100 100" style="display: block; filter: none"><path d="M42 22 L58 22 L59 56 Q60 60 66 62 L80 66 Q86 68 86 75 L86 80 L42 80 Z" fill="#874C24"></path><rect x="42" y="80" width="44" height="5" rx="1.5" fill="#5E3518"></rect><path d="M14 30 L32 30 L33 64 Q34 68 40 70 L54 74 Q60 76 60 83 L60 88 L14 88 Z" fill="#9C5B2E"></path><rect x="14" y="88" width="46" height="5" rx="1.5" fill="#5E3518"></rect></svg></div>
+</div>
+<div class="md-msg" role="status" style="position: absolute; left: 24px; right: 24px; top: 300px; display: flex; flex-direction: column; align-items: center; text-align: center">
+<h2 style="margin: 0; font-family: 'Space Grotesk', 'Instrument Sans', sans-serif; font-weight: 600; font-size: 30px; letter-spacing: -0.02em; line-height: 1.1">Tout est rangé</h2>
+<p style="margin: 12px 0 0; display: flex; align-items: center; gap: 7px; font-size: 15px; color: #3F4F3C"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M7 14.5a4 4 0 0 1-.7-7.9 5.5 5.5 0 0 1 10.6.9 3.5 3.5 0 0 1 .1 7H7z"></path><path d="M8.5 17.5l-1 2.5M12.5 17.5l-1 2.5M16.5 17.5l-1 2.5"></path></svg><span>Demain : 11° → 16°, pluie l’après-midi</span></p>
+<div role="img" aria-label="Personnage météo : grenouille en tenue de pluie" style="margin-top: 26px; width: 116px; height: 116px; box-sizing: border-box; border-radius: 20px; border: 1.5px dashed rgba(47,74,43,0.45); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 12px; line-height: 1.3; color: #3F4F3C"><span style="font-weight: 600">Grenouille</span><span>tenue « pluie »</span></div>
+</div>
+</section>
+
+
+
+<nav aria-label="Navigation principale" style="position: absolute; left: 40px; bottom: 24px; width: 295px; height: 88px">
+<svg aria-hidden="true" width="295" height="88" viewBox="0 0 295 88" style="position: absolute; left: 0; top: 8px; filter: blur(10px); opacity: 0.6"><path d="M32 24 H91.5 C111.5 24 109.5 0 147.5 0 C185.5 0 183.5 24 203.5 24 H263 A32 32 0 0 1 263 88 H32 A32 32 0 0 1 32 24 Z" fill="rgba(30,49,32,0.18)"></path></svg>
+<div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 295px; height: 88px; background: rgba(169,185,160,0.82); backdrop-filter: blur(20px) saturate(1.2); -webkit-backdrop-filter: blur(20px) saturate(1.2); clip-path: path('M32 24 H91.5 C111.5 24 109.5 0 147.5 0 C185.5 0 183.5 24 203.5 24 H263 A32 32 0 0 1 263 88 H32 A32 32 0 0 1 32 24 Z')"></div>
+<svg aria-hidden="true" width="295" height="88" viewBox="0 0 295 88" style="position: absolute; left: 0; top: 0"><path d="M32 24.5 H91.5 C111.5 24.5 109.5 0.5 147.5 0.5 C185.5 0.5 183.5 24.5 203.5 24.5 H263 A31.5 31.5 0 0 1 263 87.5 H32 A31.5 31.5 0 0 1 32 24.5 Z" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1"></path></svg>
+<a href="#" style="position: absolute; left: 20px; top: 30px; width: 56px; height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: #1E3120; text-decoration: none; font-size: 11px; font-weight: 500">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="3" width="15" height="18" rx="2.5"></rect><circle cx="12" cy="13" r="4.2"></circle><path d="M7.5 6.5h2.5"></path></svg>
+<span>Linge</span>
+</a>
+<a href="#" aria-current="page" style="position: absolute; left: 95.5px; top: 6px; width: 104px; height: 78px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 3px; color: #1E3120; text-decoration: none; font-family: 'Space Grotesk', 'Instrument Sans', sans-serif; font-size: 13px; font-weight: 600">
+<span style="width: 48px; height: 48px; border-radius: 24px; box-sizing: border-box; border: 1px solid #4F6B45; background: #F4EFE3; display: flex; align-items: center; justify-content: center">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 6.5a2 2 0 1 1 2.6 1.9c-.4.1-.6.5-.6.9V10"></path><path d="M12 10 3.6 15.9a1.2 1.2 0 0 0 .7 2.1h15.4a1.2 1.2 0 0 0 .7-2.1L12 10z"></path></svg>
+</span>
+<span>Aujourd’hui</span>
+</a>
+<a href="#" style="position: absolute; left: 219px; top: 30px; width: 56px; height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: #1E3120; text-decoration: none; font-size: 11px; font-weight: 500">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="3" width="15" height="17" rx="1.5"></rect><path d="M12 3v17M9.8 10.5v2.5M14.2 10.5v2.5M7 20v1.5M17 20v1.5"></path></svg>
+<span>Dressing</span>
+</a>
+<span class="md-badge" style="position: absolute; left: 66px; top: 22px; min-width: 22px; height: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 11px; background: #2F4A2B; color: #F4EFE3; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; animation-delay: 0s">+1</span>
+<span class="md-badge" style="position: absolute; left: 265px; top: 22px; min-width: 22px; height: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 11px; background: #2F4A2B; color: #F4EFE3; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; animation-delay: 0.2s">+4</span>
+</nav>
+</div>
+</body>
+</html>
