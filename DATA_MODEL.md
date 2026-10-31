@@ -18,17 +18,24 @@
 
 ```ts
 type Slot = 'top' | 'bottom' | 'onePiece' | 'midLayer' | 'outerLayer' | 'shoes';
-type Formality = 'sport' | 'casual' | 'smart' | 'dressy';          // ordered
-type Warmth = 1 | 2 | 3;
-type Location = 'stored' | 'airing' | 'onDryingRack' | 'dirty' | 'drying' | 'toIron';
+type Location = 'stored' | 'airing' | 'onDryingRack' | 'dirty' | 'drying';
 type CutoutStatus = 'pending' | 'done' | 'failed';
-type CommuteMode = 'walking' | 'bike' | 'publicTransport' | 'car';
-type WardrobeKind = 'main' | 'secondary' | 'demo';
-type GarmentEventType = 'locationChanged' | 'worn';
+type Activity = 'office' | 'remote' | 'relax' | 'sport';
+type CommuteMode = 'walking' | 'bike' | 'scooter' | 'publicTransport' | 'car' | 'motorbike';
+type Occasion = 'everyday' | 'evening' | 'festive' | 'ceremony' | 'jobInterview';
+type WeatherUsage = 'hot' | 'mild' | 'cool' | 'cold' | 'rain';
+type Usage =                                    // SPEC §4.3, stored as "<group>.<value>"
+  | `weather.${WeatherUsage}`
+  | `activity.${Activity}`
+  | `commute.${CommuteMode}`
+  | `occasion.${Occasion}`;
+type WardrobeKind = 'main' | 'secondary';
+type GarmentEventType = 'locationChanged' | 'ironingChanged' | 'worn';
+type EventSource = 'eveningSort' | 'laundry' | 'wardrobe' | 'automatic';
 type OutfitStatus = 'validated' | 'probable';
 ```
 
-Available locations (engine-eligible): `stored`, `airing` (from the morning after it was set), `onDryingRack`.
+Engine-eligible (SPEC §8.1): `toIron = false` ∧ location `stored`, `airing` (from the morning after it was set), or `onDryingRack` when `settings.dryingRackCountsAsStorage`.
 
 ## 3. Tables
 
@@ -36,8 +43,8 @@ Available locations (engine-eligible): `stored`, `airing` (from the morning afte
 | Column | Type | Notes |
 |---|---|---|
 | `id` | text PK | UUID |
-| `name` | text | "Principale", "Démo", "Valise Bretagne"… |
-| `kind` | text `WardrobeKind` | `demo` is deleted as a whole when leaving demo mode |
+| `name` | text | "Principale", "Valise Bretagne"… |
+| `kind` | text `WardrobeKind` | Only `main` has a UI in v1 |
 | `cityName` | text | Displayed city |
 | `latitude`, `longitude` | real | For Open-Meteo |
 | `timeZone` | text | IANA, e.g. `Europe/Paris` |
@@ -48,89 +55,72 @@ Available locations (engine-eligible): `stored`, `airing` (from the morning afte
 |---|---|---|
 | `id` | text PK | UUID |
 | `wardrobeId` | text FK → wardrobes, on delete cascade | |
-| `name` | text, nullable | Optional label; UI falls back to subtype label |
-| `slot` | text `Slot` | Derived from subtype at creation, editable |
+| `name` | text, nullable | Optional description used in accessible names ("Pull mérinos écru"); falls back to the type label |
+| `slot` | text `Slot` | Derived from subtype, updated by "Changer de type" |
 | `subtype` | text | Key into the subtype catalogue (§5) |
-| `warmth` | integer `Warmth` | |
-| `formality` | text `Formality` | |
-| `waterproof` | boolean | |
-| `bikeFriendly` | boolean | |
-| `technical` | boolean | Sports linked via `garmentSports` |
 | `statementPiece` | boolean | Default false |
-| `needsIroning` | boolean | |
-| `material` | text, nullable | |
-| `maxWears` | integer ≥ 1 | Default from subtype + material |
-| `wearCount` | integer ≥ 0 | Since last wash |
+| `needsIroning` | boolean | "Se repasse" |
 | `isFavorite` | boolean | |
-| `location` | text `Location` | **Written only by the lifecycle module** (§4) |
-| `locationSince` | integer ms | Used for the airing "next morning" rule and drying timer |
+| `isDemo` | boolean | Demo garment (SPEC §9.7); default false |
+| `wearCount` | integer ≥ 0 | Since last wash. **Lifecycle module only** (§4) |
+| `location` | text `Location` | **Lifecycle module only** (§4) |
+| `locationSince` | integer ms | Airing "next morning" rule and drying timer. **Lifecycle module only** |
+| `toIron` | boolean | "À repasser" flag, independent from location. **Lifecycle module only** |
 | `photoOriginalPath` | text | Relative path |
 | `photoCutoutPath` | text, nullable | Relative path, PNG with alpha |
 | `cutoutStatus` | text `CutoutStatus` | |
-| `useCutout` | boolean | User toggle cutout / original (SPEC §10.3) |
+| `useCutout` | boolean | User toggle "Détourée / Photo d'origine" (SPEC §10.3) |
 | `createdAt`, `updatedAt` | integer ms | |
 
 Indexes: `(wardrobeId, slot)`, `(wardrobeId, location)`.
 
-### `sports`
-| Column | Type | Notes |
-|---|---|---|
-| `id` | text PK | UUID |
-| `name` | text unique | User-created ("Vélo de route", "Rando"…) |
-| `createdAt` | integer ms | |
-
-### `garmentSports`
+### `garmentUsages`
+Usages given by the user (SPEC §4.3). **No row in a group = all cases of that group.**
 | Column | Type | Notes |
 |---|---|---|
 | `garmentId` | text FK → garments, cascade | PK part |
-| `sportId` | text FK → sports, cascade | PK part |
+| `usage` | text `Usage` | PK part |
 
-### `activities`
-User-customisable presets (seeded at first launch).
+### `wearLimits`
+"Ports avant lavage" per type (SPEC §8.2). Seeded from the catalogue's `defaultMaxWears`; "Revenir aux valeurs de départ" rewrites the seed values.
 | Column | Type | Notes |
 |---|---|---|
-| `id` | text PK | UUID |
-| `presetKey` | text, nullable | `office`, `remote`, `weekend`, `holidays`, `proEvent`, `outdoorSport` — null for user-created |
-| `label` | text | Localised at seed time, editable |
-| `formalityMin`, `formalityMax` | text `Formality` | Accepted range |
-| `freshRequired` | boolean | Relative-wear threshold applies (SPEC §7) |
-| `imposedSlot` | text `Slot`, nullable | e.g. `midLayer` for `proEvent` |
-| `imposedFormalityMin` | text `Formality`, nullable | e.g. `dressy` |
-| `requiresTechnical` | boolean | `outdoorSport` |
-| `isOutdoorDay` | boolean | Whole active day is a constraining window (SPEC §6.2) |
-| `sortOrder` | integer | |
+| `subtype` | text PK | Catalogue key |
+| `maxWears` | integer ≥ 1 | |
 
 ### `weeklyProgram`
 One row per weekday.
 | Column | Type | Notes |
 |---|---|---|
 | `weekday` | integer PK | 1 = Monday … 7 = Sunday (ISO) |
-| `activityId` | text FK → activities | |
-| `commuteModes` | text (JSON array of `CommuteMode`) | One or more; may be empty for remote days |
-| `departureTime`, `returnTime` | text `HH:mm`, nullable | Default 08:30 / 18:30 |
-| `lunchOutingEnabled` | boolean | |
-| `lunchStart`, `lunchEnd` | text `HH:mm` | Default 12:00 / 14:00 |
-| `activeDayStart`, `activeDayEnd` | text `HH:mm` | Used when `isOutdoorDay`, default 09:00 / 19:00 |
+| `activity` | text `Activity` | Onboarding offers office / remote / relax |
+
+Commute modes, office times and lunch outing are global (`settings`).
 
 ### `dayOverrides`
-One-off changes for a given date (SPEC §5.3). Same shape as `weeklyProgram` with all columns nullable (null = inherit), plus:
+One-off changes for a given date (SPEC §5.3). Null = inherit.
 | Column | Type | Notes |
 |---|---|---|
 | `date` | text `YYYY-MM-DD` PK | |
-| `sportId` | text FK → sports, nullable | Sport of the day for `outdoorSport` |
+| `activity` | text `Activity`, nullable | |
+| `commuteModes` | text (JSON array of `CommuteMode`), nullable | |
+| `occasion` | text `Occasion`, nullable | Default occasion is `everyday` |
 
 ### `outfits`
 | Column | Type | Notes |
 |---|---|---|
 | `id` | text PK | UUID |
 | `wardrobeId` | text FK → wardrobes, cascade | |
-| `date` | text `YYYY-MM-DD` | Unique per (wardrobeId, date, status = validated) |
-| `status` | text `OutfitStatus` | `probable` = last consulted outfit kept as evening safety net |
-| `activityId` | text FK → activities | Context snapshot |
+| `date` | text `YYYY-MM-DD` | |
+| `status` | text `OutfitStatus` | `probable` = outfit displayed when the app was last closed that day (evening safety net), upserted when Today goes to background |
+| `activity` | text `Activity` | Context snapshot |
 | `commuteModes` | text (JSON array) | Context snapshot |
+| `occasion` | text `Occasion` | Context snapshot |
 | `validatedAt` | integer ms, nullable | |
 | `sortedAt` | integer ms, nullable | Evening sort done |
 | `createdAt` | integer ms | |
+
+Unique per (wardrobeId, date, status).
 
 ### `outfitItems`
 | Column | Type | Notes |
@@ -144,24 +134,32 @@ One-off changes for a given date (SPEC §5.3). Same shape as `weeklyProgram` wit
 |---|---|---|
 | `id` | text PK | UUID |
 | `garmentId` | text FK → garments, cascade | |
-| `type` | text `GarmentEventType` | `worn` on validation, `locationChanged` on every move |
+| `type` | text `GarmentEventType` | `worn` on validation (or when a probable outfit is sorted), `locationChanged` on every move, `ironingChanged` when `toIron` changes |
+| `source` | text `EventSource` | Where the change came from; the washes-avoided counter counts `locationChanged` → `airing` with source `eveningSort` in the current month |
 | `fromLocation`, `toLocation` | text `Location`, nullable | For `locationChanged` |
-| `outfitId` | text FK → outfits, nullable | For `worn` |
+| `toIron` | boolean, nullable | New value, for `ironingChanged` |
+| `outfitId` | text FK → outfits, nullable | For `worn` and evening-sort moves |
 | `occurredAt` | integer ms | |
-Index: `(garmentId, occurredAt)`. **Never updated or deleted** except by cascade.
+Index: `(garmentId, type, occurredAt)` (last `worn` per garment for the rotation, SPEC §7), `(type, occurredAt)`. **Never updated or deleted** except by cascade.
 
 ### `settings` — single row (`id = 'singleton'`)
 | Column | Type | Notes |
 |---|---|---|
 | `activeWardrobeId` | text FK → wardrobes | |
+| `commuteModes` | text (JSON array of `CommuteMode`) | "Trajet du bureau" |
+| `officeDepartureTime`, `officeReturnTime` | text `HH:mm` | Default 08:30 / 18:30 |
+| `lunchOutingEnabled` | boolean | "Je sors le midi"; window 11:00–15:00. Default false |
+| `activeDayStart`, `activeDayEnd` | text `HH:mm` | Relax / sport days, default 09:00 / 19:00 |
+| `outfitReadyTime` | text `HH:mm` | "Tenue prête à", default 07:00 |
+| `eveningSortTime` | text `HH:mm` | Default 20:00 |
 | `airingEnabled` | boolean, nullable | **null = not asked yet** (just-in-time prompt) |
-| `autoPutAway` | boolean, nullable | **null = not asked yet** |
+| `dryingRackCountsAsStorage` | boolean | "L'étendoir sert de rangement", default true |
 | `dryingDelayHours` | integer | Default 24 |
-| `eveningSortTime` | text `HH:mm` | Default `20:00` |
-| `eveningNotification` | boolean | Default false |
+| `morningNotification`, `eveningSortNotification`, `laundryDryNotification` | boolean | Default false (opt-in) |
 | `useGeolocation` | boolean | |
 | `language` | text | `fr` / `en` |
 | `onboardingCompletedAt` | integer ms, nullable | |
+| `demoCleanupOfferedAt` | integer ms, nullable | Set when the "delete demo garments?" prompt has been shown (SPEC §9.7) |
 | `hintsSeen` | text (JSON array) | One-time hints (long press…) |
 
 Weather is **not** stored in SQLite: TanStack Query cache only.
@@ -170,33 +168,29 @@ Weather is **not** stored in SQLite: TanStack Query cache only.
 
 | Invariant | Enforcement |
 |---|---|
-| `garments.location`, `locationSince`, `wearCount` are written **only** by `src/domain/lifecycle/` | Pre-commit check (grep) + code review level 1 |
-| Every location change writes a `garmentEvents` row **in the same transaction** | Lifecycle module API is the only entry point; tested |
-| Entering `drying` resets `wearCount` to 0 | State machine tests |
-| `shoes` never enter `airing`, `dirty`, `drying`, `toIron`, `onDryingRack` | State machine tests |
-| `toIron` only reachable from `drying` with `needsIroning = true` | State machine tests |
+| `garments.location`, `locationSince`, `toIron`, `wearCount` are written **only** by `src/domain/lifecycle/` | Pre-commit check (grep) + code review level 1 |
+| Every location or ironing change writes a `garmentEvents` row **in the same transaction** | Lifecycle module API is the only entry point; tested |
+| Entering `drying` resets `wearCount` to 0 and sets `toIron = needsIroning` | State machine tests |
+| `drying` → `onDryingRack` only (automatic after `dryingDelayHours`, or "Déjà sec ?") | State machine tests |
+| `shoes` never enter `airing`, `dirty`, `drying`, `onDryingRack`, and never get `toIron` | State machine tests |
+| A garment with `toIron = true` is never engine-eligible | Engine tests |
+| Demo garments can be inserted only when the wardrobe has no garment | Demo service test |
 | Photo paths are relative | Unit test on the photo storage helper |
-| At most one `validated` outfit per wardrobe and date | Unique partial index + test |
+| At most one outfit per wardrobe, date and status | Unique index + test |
 
 ## 5. Subtype catalogue (code, not a table)
 
 `src/domain/catalogue/subtypes.ts` — versioned TypeScript constant, one entry per subtype:
 
 ```ts
-interface SubtypeDefaults {
-  key: string;            // 'tshirt', 'shirt', 'jeans', 'dress', 'raincoat', 'ankleBoots'…
+interface Subtype {
+  key: string;             // 'tshirt', 'shirt', 'jeans', 'dress', 'raincoat', 'ankleBoots'…
   slot: Slot;
-  warmth: Warmth;
-  formality: Formality;
-  waterproof: boolean;
-  bikeFriendly: boolean;
-  technical: boolean;
-  needsIroning: boolean;
-  defaultMaxWears: number; // calibrated on the official ADEME list (SPEC §14.1)
+  defaultMaxWears: number; // starting wear limit, from the official ADEME list (SPEC §14.1)
   icon: string;
 }
 ```
-Material adjusts `defaultMaxWears` through a separate small table in the same module (e.g. merino wool raises it). Values are an open item until S3.
+The catalogue carries **no usage, warmth or formality**: the app never infers usages from the type (SPEC §4.2). Starting values are an open item until S3.
 
 ## 6. Migration policy
 
