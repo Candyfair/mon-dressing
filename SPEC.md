@@ -1,17 +1,17 @@
-# Mon Dressing — Specification
+# Frog-à-porter — Specification
 
 > Living document. Sections are numbered (§1, §2…) and referenced from `CLAUDE.md`, commit messages and `DATA_MODEL.md`.
 > When a decision changes, update the section **and** log the old decision in §14.2 "Superseded decisions".
 > Anything listed in §14.1 "Open items" must not be assumed: ask before implementing.
 
-Working title: **Mon Dressing** (final name decided in Tier 2, see §13.5).
+App name: **Frog-à-porter** (see §13.5).
 
 ---
 
 ## §1 Product overview
 
 ### §1.1 Problem
-Choosing an outfit each morning means opening the window, checking the forecast for rain later in the day, then opening several wardrobes and drawers. Mon Dressing replaces that ritual: **in a few seconds** it knows today's weather and today's program, and proposes a default outfit built only from garments that are **actually available right now** (not in the laundry basket, not drying, not waiting to be ironed). Each piece of the outfit can be swapped individually with a swipe.
+Choosing an outfit each morning means opening the window, checking the forecast for rain later in the day, then opening several wardrobes and drawers. Frog-à-porter replaces that ritual: **in a few seconds** it knows today's weather and today's program, and proposes a default outfit built only from garments that are **actually available right now** (not in the laundry basket, not drying, not waiting to be ironed). Each piece of the outfit can be swapped individually with a swipe.
 
 ### §1.2 Principles
 1. **Speed above all.** Time from app open to decision is the success metric (see R1).
@@ -336,7 +336,7 @@ Full-screen camera, always dark ("Posez la pièce à plat, bien éclairée", sta
 - Linge: L'étendoir sert de rangement, Temps de séchage (24 h), Aération, Ports avant lavage (per type, §8.2).
 - Notifications (opt-in): Tenue du matin, Rappel du tri du soir, Linge sec.
 - Dressing de démo (§9.7).
-- À propos: Mon Dressing et moi, Offrez-moi un thé (Tier 2, §13.6), Écrire à la développeuse, Politique de confidentialité, Données météo (Open-Meteo attribution), Version.
+- À propos: Frog-à-porter et moi, Offrez-moi un thé (Tier 2, §13.6), Écrire à la développeuse, Politique de confidentialité, Données météo (Open-Meteo attribution), Version.
 - Language (Tier 2).
 
 **End-to-end verification (§9):** on iPhone 12 mini and Galaxy A06: open on a cold rainy office day → two columns with two layers; change the coat via its sheet; swipe the top; validate; at 20:00 sort via long press; check with VoiceOver that every gesture has an action; enable reduce-motion and redo the flow.
@@ -427,13 +427,17 @@ Visual components/snapshots; animations and gestures (judged on device); the nat
 Tier 1: development build on Candice's devices → Tier 2: TestFlight + Play closed test (≥ 12 testers, 14 consecutive days, started in parallel with polish) → production.
 
 ### §13.3 Identifiers
-Bundle ID / package name are **immutable after publication** and independent from the commercial name: proposed `com.candygetshandy.wardrobe` (confirm in S1, §14.1).
+Bundle ID / package name are **immutable after publication** and independent from the commercial name: `com.candyfairstudio.wardrobe` (iOS and Android).
 
 ### §13.4 Privacy policy
-Hosted as a page on candygetshandy.com (Ghost). Required by both stores even with no data collected.
+Hosted as a page on candyfairstudio.com. Required by both stores even with no data collected.
 
 ### §13.5 Naming
-Dedicated session in Tier 2 (S11), with store availability check. Display name can change at any update.
+- **Name: Frog-à-porter.** Display name can change at any update; the bundle ID does not depend on it (§13.3).
+- **App Store subtitle:** FR "Ta tenue, sans y penser" / EN "Today’s outfit, weather-ready".
+- **Store keywords:** "frog a porter" (no accent), dressing, garde-robe, lessive.
+- **Checks done:** absent from INPI, TMview and both stores.
+- **Rejected:** Rainette (existing trademark), Frog'n'Go (existing FrogGo app), Hopwear (filed in the USA in March 2026).
 
 ### §13.6 Tip jar
 "Offrez-moi un thé": consumable in-app purchases (2 €, 5 €, 10 €), store billing only (no external payment link), **no feature unlocked**. Tier 2; requires store product setup and a privacy-label check.
@@ -454,16 +458,14 @@ Dedicated session in Tier 2 (S11), with store availability check. Display name c
 | Minimum iOS version (cutout API) | S2 |
 | Android ML Kit model delivery / size | S2 |
 | Android system backup coverage for photos | S3 |
-| Bundle ID confirmation | S1 |
 | Glass blur vs semi-opaque on Android (design: blur, semi-opaque fallback on low-end Android) | S6 |
 | Animation durations and curves (swipe, fade, bounce, end of sort) | S6 prototype |
 | Settings placement of office departure / return times (not in the mockups) | S9 |
 | Ironing carousel (not designed) | Before S8 |
 | Demo wardrobe content | S10 |
 | Final weather mascot illustrations, onboarding illustration | Before S12 |
-| "Mon Dressing et moi" text, photo, contact e-mail | Before S12 |
+| "Frog-à-porter et moi" text, photo, contact e-mail | Before S12 |
 | Open-Meteo non-commercial confirmation | Before S12 |
-| Final app name | S11 |
 
 ### §14.2 Superseded decisions
 | Date | Old decision | New decision | Why |
@@ -489,6 +491,8 @@ Dedicated session in Tier 2 (S11), with store availability check. Display name c
 | 2026-10-31 | Onboarding week template in one tap; separate "Demo" wardrobe deleted when leaving | Week day by day + commute step; demo garments marked, installable only on an empty wardrobe, deletion offered when the user starts adding | Design handoff + Candice's arbitration |
 | 2026-10-31 | Piece shadow open (none / contact / drop) | Contact shadow | Design handoff |
 | 2026-10-31 | Relative-wear threshold for "fresh pieces required" (open) | Dropped with activity rules | No longer applicable |
+| 2026-11-02 | Final name decided in a dedicated session in Tier 2 (S11) | **Frog-à-porter**, decided before S11 | Name found early; availability checks done (§13.5) |
+| 2026-11-02 | Proposed bundle ID `com.candygetshandy.wardrobe`, privacy page on candygetshandy.com (Ghost) | `com.candyfairstudio.wardrobe`, privacy page on candyfairstudio.com | App attached to candyfairstudio.com, the studio showcase shared with Christian |
 
 ---
 
@@ -517,6 +521,6 @@ Create the personal Apple Developer account (identity verification can take days
 | Session | Ships | Verification | Risk |
 |---|---|---|---|
 | S10 | Outfit variants, demo data (Candice's photos, rules §9.7); start recruiting the 12 testers; create Play Console account if not done | Recruiter flow < 10 s to value | R5 |
-| S11 | **Naming session**, app icon, English localisation, export/import (priority per Android backup finding) | Round-trip export/import on another device | — |
-| S12 | Privacy page on candygetshandy.com, Open-Meteo confirmation, store listings, tip jar IAP, Maestro flows; **start TestFlight + Play closed test (14 days)** | Maestro green; builds accepted in test tracks | R5, R8 |
+| S11 | App icon, English localisation, export/import (priority per Android backup finding) | Round-trip export/import on another device | — |
+| S12 | Privacy page on candyfairstudio.com, Open-Meteo confirmation, store listings, tip jar IAP, Maestro flows; **start TestFlight + Play closed test (14 days)** | Maestro green; builds accepted in test tracks | R5, R8 |
 | S13 | Fixes from tester feedback, production release | Live on both stores | — |
