@@ -18,7 +18,8 @@ Button, Dots, Option, Sheet. Voir `design-system/components/<Nom>/README.md`.
 - AL4 Trajet : plusieurs choix possibles (À pied, Vélo, Trottinette, Transports en commun, Voiture, Moto).
 - AL5 Prêt : « Il ne manque que vos vêtements », « Commencer l’ajout en rafale », « Essayer avec le dressing de démo », « Plus tard ». Les libellés de démo d’AL1 et AL5 restent différents.
 - En-tête : « Retour », points d’étapes, « Passer ». Bouton principal pleine largeur en `action` (vert forêt / moutarde).
-- Dressing de démo : pièces d’exemple marquées comme telles, supprimables d’un coup dans les réglages sans toucher aux pièces de l’utilisatrice.
+- Dressing de démo : pièces d’exemple marquées comme telles. Elles ne s’installent que si le dressing est vide, et ne cohabitent pas par défaut avec les pièces de l’utilisatrice.
+- Dès que l’utilisatrice commence à photographier ses propres vêtements, l’application propose d’effacer les pièces de démo (`07-ajout-en-rafale.md`, AV1 et AW1). Si elle refuse, elles restent et se suppriment d’un coup dans les réglages, sans toucher à ses propres pièces.
 
 ## Accessibilité
 
@@ -40,7 +41,7 @@ Button, Dots, Option, Sheet. Voir `design-system/components/<Nom>/README.md`.
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Mon Dressing »
+- « Frog-à-porter »
 - « Chaque matin, une tenue prête selon la météo et votre journée. »
 - « Avec les vêtements que vous avez vraiment, et rien à remplir chaque jour. »
 - « Grenouille »
@@ -175,7 +176,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Mon Dressing »
+- « Frog-à-porter »
 - « Chaque matin, une tenue prête selon la météo et votre journée. »
 - « Avec les vêtements que vous avez vraiment, et rien à remplir chaque jour. »
 - « Grenouille »

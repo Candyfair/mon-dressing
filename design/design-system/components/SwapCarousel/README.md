@@ -15,7 +15,7 @@ Comportement :
 
 Pièces pleine hauteur (robes, salopettes, combinaisons) :
 
-- Elles sont dans le carrousel des hauts, intercalées selon le même ordre : favoris d’abord, puis l’adéquation à la météo et au programme.
+- Elles sont dans le carrousel des hauts, intercalées selon le même ordre (rotation, favoris avantagés, puis adéquation — voir `SPEC.md` §7).
 - Quand une robe arrive, le bas s’efface pendant le glissement (`fading-piece` en maquette) et disparaît au relâchement. Revenir sur un haut fait réapparaître le bas d’avant.
 - Si la première proposition du matin est une robe, la ligne des bas est vide dès l’ouverture. Chaussures et couches restent indépendantes.
 

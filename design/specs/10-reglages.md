@@ -14,16 +14,20 @@ SettingsGroup (lignes, interrupteurs, compteurs), Popup, Sheet, Button. Voir `de
 
 ### Groupes (AN1, AN2)
 - Ma semaine : Semaine type, Trajet du bureau, « Je sors le midi » (« La météo entre 11 h et 15 h compte dans la tenue. »), Ville.
-- Horaires : Tenue prête à (7 h 00), Tri du soir à partir de (20 h 00).
+- Horaires : Tenue prête à (7 h 00), Départ pour le bureau (8 h 30), Retour du bureau (18 h 30), Tri du soir à partir de (20 h 00). Les heures de départ et de retour fixent la météo qui compte dans la tenue les jours de bureau (`01-aujourdhui.md`).
 - Linge : « L’étendoir sert de rangement », Temps de séchage (24 h), Aération, Ports avant lavage.
 - Notifications : Tenue du matin, Rappel du tri du soir, Linge sec.
-- Dressing de démo : « Essayer avec le dressing de démo » tant que le dressing est vide ; sinon « Supprimer les pièces de démo » (AN4, popup de confirmation).
-- À propos : Mon Dressing et moi, Offrez-moi un thé, Écrire à la développeuse, Politique de confidentialité, Données météo, Version.
+- Dressing de démo :
+  - « Essayer avec le dressing de démo » seulement quand le dressing est entièrement vide : aucune pièce de l’utilisatrice et aucune pièce de démo. Les données de démo ne s’installent que dans ce cas.
+  - Dès qu’il existe une pièce de l’utilisatrice, cette ligne disparaît, même après la suppression des pièces de démo.
+  - Tant que des pièces de démo existent (installées, puis gardées quand l’utilisatrice a commencé son propre dressing) : « Supprimer les pièces de démo » (AN4, popup de confirmation).
+  - Plus de pièces de démo et au moins une pièce de l’utilisatrice : le groupe « Dressing de démo » disparaît.
+- À propos : Frog-à-porter et moi, Offrez-moi un thé, Écrire à la développeuse, Politique de confidentialité, Données météo, Version.
 
 ### Ports avant lavage (AN3)
 - Compteur par type (T-shirt, Débardeur, Chemise, Robe, Pull, Jean, Pantalon, Manteau), valeurs de départ d’après l’ADEME (à confirmer), « Revenir aux valeurs de départ ».
 
-### Mon Dressing et moi (AN5)
+### Frog-à-porter et moi (AN5)
 - Présentation de la développeuse, origine du projet (texte à rédiger), « Vos données restent sur votre téléphone » (aucun compte, aucune donnée personnelle collectée ; seule la ville est envoyée au service météo), contact, gratuité.
 
 ### Offrez-moi un thé (AN6)
@@ -63,6 +67,10 @@ Textes visibles (dans l’ordre de lecture) :
 - « Horaires »
 - « Tenue prête à »
 - « 7 h 00 »
+- « Départ pour le bureau »
+- « 8 h 30 »
+- « Retour du bureau »
+- « 18 h 30 »
 - « Tri du soir à partir de »
 - « 20 h 00 »
 - « Linge »
@@ -71,9 +79,6 @@ Textes visibles (dans l’ordre de lecture) :
 - « Temps de séchage »
 - « 24 h »
 - « Aération »
-- « Proposer d’aérer plutôt que laver. »
-- « Ports avant lavage »
-- « Repères »
 
 
 Noms accessibles :
@@ -100,7 +105,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Essayer avec le dressing de démo »
 - « Proposé tant que votre dressing est vide. »
 - « À propos »
-- « Mon Dressing et moi »
+- « Frog-à-porter et moi »
 - « Offrez-moi un thé »
 - « Écrire à la développeuse »
 - « Politique de confidentialité »
@@ -171,7 +176,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Supprimer les pièces de démo »
 - « Vos propres pièces sont conservées. »
 - « À propos »
-- « Mon Dressing et moi »
+- « Frog-à-porter et moi »
 - « Offrez-moi un thé »
 - « Écrire à la développeuse »
 - « Politique de confidentialité »
@@ -190,7 +195,7 @@ Noms accessibles :
 - button — Retour à Aujourd’hui
 
 
-### AN5 — Réglages — Mon Dressing et moi (clair)
+### AN5 — Réglages — Frog-à-porter et moi (clair)
 
 - Capture : `screens/10-reglages/Settings-AN5-A-Propos.webp`
 - Maquette : `mockups/10-reglages/Settings-AN5-A-Propos.html`
@@ -198,10 +203,10 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Mon Dressing et moi »
+- « Frog-à-porter et moi »
 - « Photo »
 - « Bonjour, moi c’est Candice »
-- « Développeuse de Mon Dressing »
+- « Développeuse de Frog-à-porter »
 - « L’origine du projet »
 - « Texte à rédiger : pourquoi cette application, pour qui, ce qui vous tient à cœur. »
 - « Vos données restent sur votre téléphone »
@@ -210,7 +215,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Une idée, un souci ? »
 - « Écrivez-moi : je lis tous les messages. »
 - « adresse e-mail à définir »
-- « Mon Dressing est gratuit »
+- « Frog-à-porter est gratuit »
 - « Sans publicité ni abonnement. Si l’application vous rend service, vous pouvez m’offrir un thé. »
 
 
@@ -228,10 +233,10 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Mon Dressing et moi »
+- « Frog-à-porter et moi »
 - « Photo »
 - « Bonjour, moi c’est Candice »
-- « Développeuse de Mon Dressing »
+- « Développeuse de Frog-à-porter »
 - « L’origine du projet »
 - « Texte à rédiger : pourquoi cette application, pour qui, ce qui vous tient à cœur. »
 - « Vos données restent sur votre téléphone »
@@ -240,7 +245,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Une idée, un souci ? »
 - « Écrivez-moi : je lis tous les messages. »
 - « adresse e-mail à définir »
-- « Mon Dressing est gratuit »
+- « Frog-à-porter est gratuit »
 - « Sans publicité ni abonnement. Si l’application vous rend service, vous pouvez m’offrir un thé. »
 - « Offrez-moi un thé »
 - « Un don libre, sans rien débloquer en échange : l’application reste la même pour tout le monde. Merci ! »
@@ -280,6 +285,10 @@ Textes visibles (dans l’ordre de lecture) :
 - « Horaires »
 - « Tenue prête à »
 - « 7 h 00 »
+- « Départ pour le bureau »
+- « 8 h 30 »
+- « Retour du bureau »
+- « 18 h 30 »
 - « Tri du soir à partir de »
 - « 20 h 00 »
 - « Linge »
@@ -288,9 +297,6 @@ Textes visibles (dans l’ordre de lecture) :
 - « Temps de séchage »
 - « 24 h »
 - « Aération »
-- « Proposer d’aérer plutôt que laver. »
-- « Ports avant lavage »
-- « Repères »
 
 
 Noms accessibles :
@@ -317,7 +323,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Essayer avec le dressing de démo »
 - « Proposé tant que votre dressing est vide. »
 - « À propos »
-- « Mon Dressing et moi »
+- « Frog-à-porter et moi »
 - « Offrez-moi un thé »
 - « Écrire à la développeuse »
 - « Politique de confidentialité »
@@ -388,7 +394,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Supprimer les pièces de démo »
 - « Vos propres pièces sont conservées. »
 - « À propos »
-- « Mon Dressing et moi »
+- « Frog-à-porter et moi »
 - « Offrez-moi un thé »
 - « Écrire à la développeuse »
 - « Politique de confidentialité »
@@ -407,7 +413,7 @@ Noms accessibles :
 - button — Retour à Aujourd’hui
 
 
-### AO5 — Réglages sombres — Mon Dressing et moi (sombre)
+### AO5 — Réglages sombres — Frog-à-porter et moi (sombre)
 
 - Capture : `screens/10-reglages/Dark-AO5-A-Propos.webp`
 - Maquette : `mockups/10-reglages/Dark-AO5-A-Propos.html`
@@ -415,10 +421,10 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Mon Dressing et moi »
+- « Frog-à-porter et moi »
 - « Photo »
 - « Bonjour, moi c’est Candice »
-- « Développeuse de Mon Dressing »
+- « Développeuse de Frog-à-porter »
 - « L’origine du projet »
 - « Texte à rédiger : pourquoi cette application, pour qui, ce qui vous tient à cœur. »
 - « Vos données restent sur votre téléphone »
@@ -427,7 +433,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Une idée, un souci ? »
 - « Écrivez-moi : je lis tous les messages. »
 - « adresse e-mail à définir »
-- « Mon Dressing est gratuit »
+- « Frog-à-porter est gratuit »
 - « Sans publicité ni abonnement. Si l’application vous rend service, vous pouvez m’offrir un thé. »
 
 
@@ -445,10 +451,10 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Mon Dressing et moi »
+- « Frog-à-porter et moi »
 - « Photo »
 - « Bonjour, moi c’est Candice »
-- « Développeuse de Mon Dressing »
+- « Développeuse de Frog-à-porter »
 - « L’origine du projet »
 - « Texte à rédiger : pourquoi cette application, pour qui, ce qui vous tient à cœur. »
 - « Vos données restent sur votre téléphone »
@@ -457,7 +463,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Une idée, un souci ? »
 - « Écrivez-moi : je lis tous les messages. »
 - « adresse e-mail à définir »
-- « Mon Dressing est gratuit »
+- « Frog-à-porter est gratuit »
 - « Sans publicité ni abonnement. Si l’application vous rend service, vous pouvez m’offrir un thé. »
 - « Offrez-moi un thé »
 - « Un don libre, sans rien débloquer en échange : l’application reste la même pour tout le monde. Merci ! »

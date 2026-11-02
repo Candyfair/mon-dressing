@@ -1,4 +1,4 @@
-/* Mon Dressing — reference styles for component previews (role tokens switch with the theme) */
+/* Frog-à-porter — reference styles for component previews (role tokens switch with the theme) */
 body { margin: 0; font-family: var(--font-text); color: var(--ink); background: var(--ground); }
 .md-stage { padding: var(--space-16); display: flex; flex-wrap: wrap; gap: var(--space-16); align-items: center; }
 .md-caption { font: 500 11px/14px var(--font-text); color: var(--ink-secondary); text-align: center; }

@@ -13,7 +13,8 @@ SortCard, RadialMenu, StatusIcon, Button, NightBackground. Voir `design-system/c
 ## Règles et comportements
 
 ### Déclenchement
-- Après 20 h (réglage « Tri du soir à partir de »), si une tenue a été validée dans la journée, Aujourd’hui devient le tri.
+- Après l’heure réglée (« Tri du soir à partir de », 20 h par défaut), Aujourd’hui devient le tri pour la tenue validée dans la journée.
+- Si aucune tenue n’a été validée explicitement, le tri reprend celle qui était affichée à la dernière fermeture de l’application ce jour-là. Trier cette tenue la compte comme portée.
 - Carte en haut : « Ranger la tenue du jour », « Appui long sur chaque pièce », progression (« 2 pièces triées sur 5 »).
 
 ### Trier une pièce
@@ -32,6 +33,8 @@ SortCard, RadialMenu, StatusIcon, Button, NightBackground. Voir `design-system/c
 - État final validé (AA2, AB2) : écran vidé, carte « 1 lavage évité », « Tout est rangé », météo de demain, personnage météo, pastilles sur les onglets. Les maquettes HTML d’AA2 et AB2 jouent l’animation en boucle ; la capture montre l’état final.
 - La tenue portée perd ses icônes de tri (sauf favori) ; le nombre de ports est conservé.
 
+- On garde l’animation de fin, le compteur animé et le personnage grenouille.
+
 ### Personnage météo
 - Grenouille kawaii au trait, 116 pt, six tenues : forte chaleur, ensoleillé, nuageux, pluie, froid, neige. La planche AC est une référence : la version finale sera redessinée par une illustratrice.
 
@@ -45,6 +48,8 @@ SortCard, RadialMenu, StatusIcon, Button, NightBackground. Voir `design-system/c
 
 - Valeurs de départ des ports avant lavage (repères ADEME à confirmer).
 - Illustrations finales du personnage météo.
+- Tenue non validée reprise pour le tri : si la tenue affichée à la dernière fermeture était incomplète (état guidé de `03-aujourdhui-guide.md`, validation impossible), le tri la reprend-il, et compte-t-elle comme portée ?
+- Si l’application n’a pas été ouverte de la journée, aucune tenue n’est affichée : pas de tri ce soir-là ?
 
 ## Écrans validés
 
@@ -131,7 +136,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Aujourd’hui »
 - « Dressing »
 - « Aérer plutôt que laver ? »
-- « Un pull ou une veste peut se porter plusieurs fois. Mon Dressing vous proposera de l’aérer, puis le remettra dans vos tenues. »
+- « Un pull ou une veste peut se porter plusieurs fois. Frog-à-porter vous proposera de l’aérer, puis le remettra dans vos tenues. »
 - « Activer l’aération »
 - « Pas maintenant »
 - « Modifiable à tout moment dans les réglages. »
@@ -236,7 +241,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Aujourd’hui »
 - « Dressing »
 - « Aérer plutôt que laver ? »
-- « Un pull ou une veste peut se porter plusieurs fois. Mon Dressing vous proposera de l’aérer, puis le remettra dans vos tenues. »
+- « Un pull ou une veste peut se porter plusieurs fois. Frog-à-porter vous proposera de l’aérer, puis le remettra dans vos tenues. »
 - « Activer l’aération »
 - « Pas maintenant »
 - « Modifiable à tout moment dans les réglages. »

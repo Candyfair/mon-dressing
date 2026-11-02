@@ -22,7 +22,8 @@ WeatherBackground (clair), NightBackground (sombre), WeatherHeader, ProgramChip,
 - Trois ambiances seulement : pluie, soleil, froid. Les autres conditions s’y rattachent (voir `design-system/README.md`).
 - Clair : fond lin et halos de la couleur de la météo. Sombre : nuit, crépuscule teinté, lueur de lampe, grain ; menu teinté selon la météo.
 - Le thème suit le réglage du système.
-- Lignes météo : une prévision utile (« Pluie 70 % vers 18 h ») et un conseil (« Parapluie conseillé vers 12 h 30 »). Si « Je sors le midi » est activé, la météo entre 11 h et 15 h compte dans la tenue.
+- Lignes météo : une prévision utile (« Pluie 70 % vers 18 h ») et un conseil (« Parapluie conseillé vers 12 h 30 »).
+- Météo qui compte dans la tenue : celle des heures de départ et de retour du bureau (réglages « Départ pour le bureau » et « Retour du bureau », par défaut 8 h 30 et 18 h 30), plus 11 h – 15 h si « Je sors le midi » est activé.
 
 ### Tenue
 - Une colonne : haut, bas, chaussures. Deux colonnes dès qu’il y a des couches : couches à gauche (la couche 1 alignée sur le haut), haut / bas / chaussures à droite.
@@ -36,6 +37,7 @@ WeatherBackground (clair), NightBackground (sombre), WeatherHeader, ProgramChip,
 - L’application ne décide rien à la place de l’utilisatrice et ne fait pas de recommandation : elle filtre les pièces disponibles selon les usages que l’utilisatrice leur a donnés (météo, activité, déplacement, occasion).
 - Une pièce sans usage dans un groupe est proposée dans tous les cas de ce groupe.
 - Ordre des propositions dans chaque ligne : rotation selon la date du dernier port, favoris avantagés (sans priorité absolue), puis adéquation à la météo et au programme. *Écart validé le 31/10/2026 par rapport au handoff (« favoris d’abord, puis adéquation ») : voir `SPEC.md` §7.*
+- Une seule pièce forte par tenue : la tenue proposée n’en contient jamais deux. Si l’utilisatrice en choisit une deuxième en glissant, un indicateur discret le signale et rien n’est corrigé (voir `02-changer-une-piece.md`, AT1 et AU1). Une pièce pleine hauteur pièce forte compte pour une.
 - Pièces exclues : au sale, à sécher, à repasser. Sur l’étendoir : disponibles si l’étendoir sert de rangement (réglage) et si elles ne sont pas à repasser.
 
 ## Accessibilité
@@ -49,6 +51,7 @@ WeatherBackground (clair), NightBackground (sombre), WeatherHeader, ProgramChip,
 
 - Fournisseur météo (seule la ville est envoyée) et attribution à afficher dans « Données météo ».
 - Règle exacte d’adéquation météo (seuils de température par usage « Chaud / Doux / Frais / Froid »).
+- Jours sans bureau (Télétravail, Détente) : les heures de départ et de retour ne s’appliquent pas. Quelle plage horaire de météo compte ces jours-là (journée entière, ou 8 h 30 – 18 h 30 par défaut) ?
 
 ## Écrans validés
 
