@@ -99,7 +99,7 @@ Sequencing: R7 → R2 → R3/R4 → R9 → R1 → R5/R8. R7 comes first because 
 | `subtype` ("type") | t-shirt, shirt, jeans, dress, raincoat, ankle boots… | Chosen by the user; determines the slot and the wear limit (§8.2) |
 | `slot` | see §4.1 | Derived from the type |
 | `usages` | see §4.3 | Filtering only |
-| `isFavorite` | boolean | Ranked first (§4.4) |
+| `isFavorite` | boolean | Bonus in the rotation, never absolute priority (§4.4, §7) |
 | `statementPiece` ("Pièce forte") | boolean (default false) | Max one per outfit (§4.5) |
 | `needsIroning` ("Se repasse") | boolean | After washing → also "to iron" (§8) |
 | cutout / original photo | toggle | §10.3 |
@@ -332,7 +332,7 @@ Full-screen camera, always dark ("Posez la pièce à plat, bien éclairée", sta
 
 ### §9.8 Settings — `design/specs/10`
 - Ma semaine: Semaine type, Trajet du bureau, Je sors le midi, Ville.
-- Horaires: Tenue prête à (07:00), **départ et retour du bureau (08:30 / 18:30, §5.2 — not in the mockups yet, §14.1)**, Tri du soir à partir de (20:00).
+- Horaires: Tenue prête à (07:00), Départ pour le bureau (08:30), Retour du bureau (18:30), Tri du soir à partir de (20:00).
 - Linge: L'étendoir sert de rangement, Temps de séchage (24 h), Aération, Ports avant lavage (per type, §8.2).
 - Notifications (opt-in): Tenue du matin, Rappel du tri du soir, Linge sec.
 - Dressing de démo (§9.7).
@@ -460,7 +460,6 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | Android system backup coverage for photos | S3 |
 | Glass blur vs semi-opaque on Android (design: blur, semi-opaque fallback on low-end Android) | S6 |
 | Animation durations and curves (swipe, fade, bounce, end of sort) | S6 prototype |
-| Settings placement of office departure / return times (not in the mockups) | S9 |
 | Ironing carousel (not designed) | Before S8 |
 | Demo wardrobe content | S10 |
 | Final weather mascot illustrations, onboarding illustration | Before S12 |
