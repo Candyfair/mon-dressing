@@ -1,4 +1,4 @@
-# Mon Dressing — Data model
+# Frog-à-porter — Data model
 
 > Persistence: **expo-sqlite + Drizzle ORM**, local only (SPEC §11).
 > Schema source of truth: `src/db/schema.ts`. Migrations generated with `drizzle-kit generate`, bundled and applied at startup (`useMigrations`).

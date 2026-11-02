@@ -1,4 +1,4 @@
-# CLAUDE.md — Mon Dressing
+# CLAUDE.md — Frog-à-porter
 
 ## 1. Project overview
 Mobile app (iOS + Android, Expo) that proposes today's outfit from the weather, the day's program and the garments actually available (not dirty, drying or waiting to be ironed). Personal daily tool for Candice, portfolio piece (mobile dev + UX/UI), published on both stores. Product values: speed, assistant-not-diary, sobriety. Full context: `SPEC.md` §1.
