@@ -1,6 +1,6 @@
-# Mon Dressing
+# Frog-à-porter
 
-Le système de design de l’application mobile Mon Dressing (iOS et Android, téléphone uniquement), en deux thèmes : « Cocon du matin » (clair) et « Cocon du soir » (sombre). Il est tiré des écrans validés du canevas (colonne « Écrans validés ») : Aujourd’hui (J, L), changement d’une pièce (AP, AQ) et état guidé (AR, AS), tri du soir (X, Y, AA, AB), Dressing (S, T2, U, V), Linge (AE, AF), ajout en rafale (AG, AH), fiche vêtement (AJ, AK), premier lancement et onboarding (AL, AM), réglages (AN, AO), et du brief de conception.
+Le système de design de l’application mobile Frog-à-porter (iOS et Android, téléphone uniquement), en deux thèmes : « Cocon du matin » (clair) et « Cocon du soir » (sombre). Il est tiré des écrans validés du canevas (colonne « Écrans validés ») : Aujourd’hui (J, L), changement d’une pièce (AP, AQ) et état guidé (AR, AS), tri du soir (X, Y, AA, AB), Dressing (S, T2, U, V), Linge (AE, AF), ajout en rafale (AG, AH), fiche vêtement (AJ, AK), premier lancement et onboarding (AL, AM), réglages (AN, AO), et du brief de conception.
 
 L’application propose la tenue du jour à partir de la météo, du programme et des vêtements disponibles. On l’utilise le matin, à une main, souvent pressé. Trois valeurs guident chaque choix : la rapidité (décider en quelques secondes), un assistant et pas un journal (aucune corvée quotidienne), la sobriété.
 

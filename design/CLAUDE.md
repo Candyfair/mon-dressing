@@ -1,4 +1,4 @@
-# Mon Dressing — guide pour Claude Code
+# Frog-à-porter — guide pour Claude Code
 
 Application mobile (iOS et Android, téléphone uniquement) qui propose chaque matin la tenue du jour à partir de la météo, du programme et des vêtements disponibles. Développeuse unique : Candice. Ce dossier est la passation design → code : tout ce qui est ici a été validé écran par écran.
 

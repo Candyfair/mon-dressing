@@ -32,6 +32,11 @@ SwapCarousel, Sheet, Dots, Button (secondaire), AddLayerButton. Voir `design-sys
 - Quand une robe arrive, le bas s’efface pendant le glissement et disparaît au relâchement. Revenir sur un haut fait réapparaître le bas d’avant (le garder en mémoire).
 - Si la première proposition du matin est une robe, la ligne des bas est vide dès l’ouverture. Chaussures et couches restent indépendantes.
 
+### Deux pièces fortes (AT1, AU1)
+- La tenue proposée ne contient jamais deux pièces fortes. Si l’utilisatrice en amène une deuxième en glissant, rien n’est corrigé ni bloqué : la tenue reste la sienne.
+- Indicateur discret à la place de la phrase d’aide sous l’en-tête : icône étoile et « 2 pièces fortes dans la tenue », en `ink-secondary`, sans fond ni couleur d’alerte. Il apparaît au relâchement et disparaît dès qu’il n’y a plus qu’une pièce forte.
+- « Je porte cette tenue » reste actif.
+
 ### Mise en œuvre suggérée
 - `react-native-reanimated-carousel` (prop `loop`) ou `Gesture.Pan` (react-native-gesture-handler) + Reanimated 4 ; opacité interpolée sur la position.
 - Durées d’animation à régler sur le prototype.
@@ -41,10 +46,12 @@ SwapCarousel, Sheet, Dots, Button (secondaire), AddLayerButton. Voir `design-sys
 - Chaque ligne expose des actions d’accessibilité « Pièce suivante » / « Pièce précédente » (le glissement n’est pas accessible seul).
 - La feuille de couche : `accessibilityViewIsModal`, nom « Couche 1, choisir parmi les couches compatibles », focus rendu à la couche touchée à la fermeture.
 - Mouvement réduit : changement de pièce par fondu, sans glissement animé.
+- Indicateur de pièces fortes : région annoncée (`accessibilityLiveRegion="polite"` sur Android), relue quand il apparaît.
 
 ## Questions ouvertes
 
 - Durées et courbes des animations (glissement, fondu, rebond).
+- Indicateur de pièces fortes et phrase d’aide de l’état guidé (`03-aujourdhui-guide.md`) occupent la même place sous l’en-tête. Si les deux s’appliquent (tenue incomplète avec deux pièces fortes), laquelle s’affiche ?
 
 ## Écrans validés
 
@@ -308,6 +315,70 @@ Noms accessibles :
 - section — Tenue du jour
 - button — Haut : T-shirt rayé, pièce forte
 - button — Bas : Jean brut
+- button — Chaussures : Baskets blanches
+- button — Ajouter une couche
+- button — Je porte cette tenue
+- nav — Navigation principale
+
+
+### AT1 — Deux pièces fortes — indicateur discret (clair)
+
+- Capture : `screens/02-changer-une-piece/Swap-AT1-Deux-Pieces-Fortes.webp`
+- Maquette : `mockups/02-changer-une-piece/Swap-AT1-Deux-Pieces-Fortes.html`
+
+
+Textes visibles (dans l’ordre de lecture) :
+
+- « Ven. 13 juin »
+- « Télétravail »
+- « 19° »
+- « → 27° »
+- « Ensoleillé toute la journée »
+- « Max. 27° vers 16 h »
+- « 2 pièces fortes dans la tenue »
+- « Linge »
+- « Aujourd’hui »
+- « Dressing »
+
+
+Noms accessibles :
+
+- button — Réglages
+- section — Tenue du jour
+- button — Haut : T-shirt rayé, pièce forte
+- button — Bas : Pantalon large terracotta, pièce forte
+- button — Chaussures : Baskets blanches
+- button — Ajouter une couche
+- button — Je porte cette tenue
+- nav — Navigation principale
+
+
+### AU1 — Sombre — deux pièces fortes (sombre)
+
+- Capture : `screens/02-changer-une-piece/Dark-AU1-Deux-Pieces-Fortes.webp`
+- Maquette : `mockups/02-changer-une-piece/Dark-AU1-Deux-Pieces-Fortes.html`
+
+
+Textes visibles (dans l’ordre de lecture) :
+
+- « Ven. 13 juin »
+- « Télétravail »
+- « 19° »
+- « → 27° »
+- « Ensoleillé toute la journée »
+- « Max. 27° vers 16 h »
+- « 2 pièces fortes dans la tenue »
+- « Linge »
+- « Aujourd’hui »
+- « Dressing »
+
+
+Noms accessibles :
+
+- button — Réglages
+- section — Tenue du jour
+- button — Haut : T-shirt rayé, pièce forte
+- button — Bas : Pantalon large terracotta, pièce forte
 - button — Chaussures : Baskets blanches
 - button — Ajouter une couche
 - button — Je porte cette tenue
