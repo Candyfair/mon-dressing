@@ -1,0 +1,29 @@
+const { defineConfig } = require('eslint/config');
+const expoConfig = require('eslint-config-expo/flat');
+const eslintPluginPrettierRecommended = require('eslint-plugin-prettier/recommended');
+const i18next = require('eslint-plugin-i18next');
+
+module.exports = defineConfig([
+  expoConfig,
+  eslintPluginPrettierRecommended,
+  {
+    plugins: { i18next },
+    rules: {
+      'i18next/no-literal-string': ['error', { mode: 'jsx-text-only' }],
+    },
+  },
+  {
+    files: ['**/*.test.*'],
+    languageOptions: {
+      globals: { describe: 'readonly', it: 'readonly', expect: 'readonly', jest: 'readonly' },
+    },
+  },
+  {
+    // Internal cutout test tool, never shipped, removed after S2.
+    files: ['src/features/cutout-harness/**'],
+    rules: { 'i18next/no-literal-string': 'off' },
+  },
+  {
+    ignores: ['dist/*', 'design/*', 'ios/*', 'android/*', '.expo/*'],
+  },
+]);
