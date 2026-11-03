@@ -35,6 +35,7 @@ SwapCarousel, Sheet, Dots, Button (secondaire), AddLayerButton. Voir `design-sys
 ### Deux pièces fortes (AT1, AU1)
 - La tenue proposée ne contient jamais deux pièces fortes. Si l’utilisatrice en amène une deuxième en glissant, rien n’est corrigé ni bloqué : la tenue reste la sienne.
 - Indicateur discret à la place de la phrase d’aide sous l’en-tête : icône étoile et « 2 pièces fortes dans la tenue », en `ink-secondary`, sans fond ni couleur d’alerte. Il apparaît au relâchement et disparaît dès qu’il n’y a plus qu’une pièce forte.
+- Si la tenue est incomplète (état guidé, `03-aujourdhui-guide.md`), la phrase guidée s’affiche à sa place. L’indicateur revient dès que la tenue est complète.
 - « Je porte cette tenue » reste actif.
 
 ### Mise en œuvre suggérée
@@ -51,7 +52,6 @@ SwapCarousel, Sheet, Dots, Button (secondaire), AddLayerButton. Voir `design-sys
 ## Questions ouvertes
 
 - Durées et courbes des animations (glissement, fondu, rebond).
-- Indicateur de pièces fortes et phrase d’aide de l’état guidé (`03-aujourdhui-guide.md`) occupent la même place sous l’en-tête. Si les deux s’appliquent (tenue incomplète avec deux pièces fortes), laquelle s’affiche ?
 
 ## Écrans validés
 

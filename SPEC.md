@@ -169,7 +169,7 @@ Usages are **tags the user gives a garment**, in four groups. The app never dedu
 |---|---|---|
 | Office | Outbound and return commutes (± 1 h for rain); **11:00–15:00 if "Je sors le midi" is on** | — |
 | Remote | None, unless a commute is added by override; **11:00–15:00 if "Je sors le midi" is on** | — |
-| Relax, sport | Whole active day (default 09:00–19:00) | — |
+| Relax, sport | Whole active day (default 09:00–20:00) | — |
 
 ### §6.3 Weather conditions of the day
 - The **minimum felt temperature during constraining windows** (not the daily average) maps to one category: Hot, Mild, Cool or Cold (thresholds: §14.1).
@@ -257,6 +257,7 @@ releasing on an active status removes it (location → stored, or toIron cleared
 - From a configurable time (default **20:00**), **Today becomes the evening sort** for the day's outfit:
   - the validated outfit, or
   - **safety net:** if no outfit was explicitly validated, the outfit that was displayed when the app was last closed that day ("probable outfit"). Sorting it records it as worn.
+  - **no sort** if that outfit was incomplete (guided state, validation impossible) or if the app was not opened that day: nothing is recorded as worn.
 - Long press on a piece → menu limited to Favori, Aérer, Au sale, Ranger; recommended option highlighted (airing until the wear limit, dirty after; shoes: put away). Releasing on an active status removes it.
 - "Ranger le reste : N pièces" finishes in one tap; "Terminer le tri" when everything is sorted.
 - **End animation** (played once): pieces fly to the Laundry and Wardrobe tabs, then "Tout est rangé", tomorrow's weather and the **weather mascot (frog)**; the card shows the summary then flips to the **"washes avoided" counter** (pieces aired instead of washed during evening sorts this calendar month), animated increment; "+N" badges on the tabs. Reduced motion: final state directly.
@@ -420,7 +421,7 @@ Visual components/snapshots; animations and gestures (judged on device); the nat
 
 ### §13.1 Accounts and budget
 - **Personal** Apple Developer (~99 €/year, create before S1) and Google Play Console (25 $ once, create during Tier 1). Never the employer's accounts.
-- EAS free plan (15 Android + 15 iOS builds/month); local builds on the Mac mini as fallback.
+- EAS free plan (15 Android + 15 iOS builds/month, low-priority queue) is the default for Android builds; local builds on the Mac mini as fallback, in particular if iterating on native Kotlin (S2) burns through the quota.
 - Open-Meteo free; Replicate ≈ 0 € if triggered.
 
 ### §13.2 Stages
@@ -428,6 +429,8 @@ Tier 1: development build on Candice's devices → Tier 2: TestFlight + Play clo
 
 ### §13.3 Identifiers
 Bundle ID / package name are **immutable after publication** and independent from the commercial name: `com.candyfairstudio.wardrobe` (iOS and Android).
+
+Development builds use a separate `.dev` variant (`com.candyfairstudio.wardrobe.dev`), selected in `app.config.ts` from an environment variable. Both can be installed side by side, so development never touches the local data of the daily-use build.
 
 ### §13.4 Privacy policy
 Hosted as a page on candyfairstudio.com. Required by both stores even with no data collected.
@@ -492,6 +495,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-10-31 | Relative-wear threshold for "fresh pieces required" (open) | Dropped with activity rules | No longer applicable |
 | 2026-11-02 | Final name decided in a dedicated session in Tier 2 (S11) | **Frog-à-porter**, decided before S11 | Name found early; availability checks done (§13.5) |
 | 2026-11-02 | Proposed bundle ID `com.candygetshandy.wardrobe`, privacy page on candygetshandy.com (Ghost) | `com.candyfairstudio.wardrobe`, privacy page on candyfairstudio.com | App attached to candyfairstudio.com, the studio showcase shared with Christian |
+| 2026-11-03 | Relax / sport active day defaults to 09:00–19:00 | 09:00–20:00 | Candice's decision |
 
 ---
 
@@ -505,7 +509,7 @@ Create the personal Apple Developer account (identity verification can take days
 ### Tier 1
 | Session | Ships | Verification | Risk |
 |---|---|---|---|
-| S1 | Repo (public), Expo + TS strict, ESLint/Prettier/Jest, **Husky hooks + Claude Code SessionStart hook + gitleaks + lifecycle grep check + i18n lint rule**, bundle ID, `docs/cutout-protocol.md`, **iOS cutout module (minimal)** | A non-conventional commit and a commit on `main` are rejected; cutout of 15 photos on iPhone 12 mini | R7 (iOS) |
+| S1 | Repo (public), Expo + TS strict, ESLint/Prettier/Jest, **Husky hooks + Claude Code SessionStart hook + gitleaks + lifecycle grep check + i18n lint rule**, bundle ID + `.dev` variant, `docs/cutout-protocol.md`, **iOS cutout module (minimal)** | A non-conventional commit and a commit on `main` are rejected; cutout of 15 photos on iPhone 12 mini | R7 (iOS) |
 | S2 | Android cutout module, protocol on both devices, fallback-chain decision, min iOS version | Protocol results recorded | R7 (decision) |
 | S3 | Drizzle schema + migrations, lifecycle state machine + tests, burst add flow with async cutout, subtype catalogue with ADEME values | **10 real garments added, timed (< 30 s each)**; state-machine tests green | R2 |
 | S4 | Engine v0, Open-Meteo windows, reminders, 10 reference scenarios as fixtures | Scenarios rated on the real wardrobe; recorded forecasts tests | R3, R4 |

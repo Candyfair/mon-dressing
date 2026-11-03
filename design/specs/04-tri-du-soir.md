@@ -15,6 +15,7 @@ SortCard, RadialMenu, StatusIcon, Button, NightBackground. Voir `design-system/c
 ### Déclenchement
 - Après l’heure réglée (« Tri du soir à partir de », 20 h par défaut), Aujourd’hui devient le tri pour la tenue validée dans la journée.
 - Si aucune tenue n’a été validée explicitement, le tri reprend celle qui était affichée à la dernière fermeture de l’application ce jour-là. Trier cette tenue la compte comme portée.
+- Pas de tri si cette tenue était incomplète (état guidé de `03-aujourdhui-guide.md`, validation impossible), ni si l’application n’a pas été ouverte de la journée. Rien n’est compté comme porté.
 - Carte en haut : « Ranger la tenue du jour », « Appui long sur chaque pièce », progression (« 2 pièces triées sur 5 »).
 
 ### Trier une pièce
@@ -48,8 +49,6 @@ SortCard, RadialMenu, StatusIcon, Button, NightBackground. Voir `design-system/c
 
 - Valeurs de départ des ports avant lavage (repères ADEME à confirmer).
 - Illustrations finales du personnage météo.
-- Tenue non validée reprise pour le tri : si la tenue affichée à la dernière fermeture était incomplète (état guidé de `03-aujourdhui-guide.md`, validation impossible), le tri la reprend-il, et compte-t-elle comme portée ?
-- Si l’application n’a pas été ouverte de la journée, aucune tenue n’est affichée : pas de tri ce soir-là ?
 
 ## Écrans validés
 
