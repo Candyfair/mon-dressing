@@ -21,9 +21,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      # ESLint and Jest arrive in S1; drop --if-present once both scripts exist.
-      - run: npm run lint --if-present
-      - run: npm run test --if-present
+      - run: npm run lint
+      - run: npm test
 
   secrets:
     name: Secret scan
