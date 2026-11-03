@@ -1,0 +1,14 @@
+if [ "$(git symbolic-ref --short HEAD)" = "main" ]; then
+  echo "Commit rejected: never commit directly to main." >&2
+  exit 1
+fi
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "Commit rejected: gitleaks is required (brew install gitleaks)." >&2
+  exit 1
+fi
+
+gitleaks git --staged --redact --no-banner || exit 1
+node scripts/check-lifecycle-writes.js || exit 1
+npx --no -- lint-staged || exit 1
+npm run --silent typecheck
