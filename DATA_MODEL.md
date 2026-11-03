@@ -149,7 +149,7 @@ Index: `(garmentId, type, occurredAt)` (last `worn` per garment for the rotation
 | `commuteModes` | text (JSON array of `CommuteMode`) | "Trajet du bureau" |
 | `officeDepartureTime`, `officeReturnTime` | text `HH:mm` | Default 08:30 / 18:30 |
 | `lunchOutingEnabled` | boolean | "Je sors le midi"; window 11:00–15:00. Default false |
-| `activeDayStart`, `activeDayEnd` | text `HH:mm` | Relax / sport days, default 09:00 / 19:00 |
+| `activeDayStart`, `activeDayEnd` | text `HH:mm` | Relax / sport days, default 09:00 / 20:00 |
 | `outfitReadyTime` | text `HH:mm` | "Tenue prête à", default 07:00 |
 | `eveningSortTime` | text `HH:mm` | Default 20:00 |
 | `airingEnabled` | boolean, nullable | **null = not asked yet** (just-in-time prompt) |

@@ -24,6 +24,7 @@ WeatherBackground (clair), NightBackground (sombre), WeatherHeader, ProgramChip,
 - Le thème suit le réglage du système.
 - Lignes météo : une prévision utile (« Pluie 70 % vers 18 h ») et un conseil (« Parapluie conseillé vers 12 h 30 »).
 - Météo qui compte dans la tenue : celle des heures de départ et de retour du bureau (réglages « Départ pour le bureau » et « Retour du bureau », par défaut 8 h 30 et 18 h 30), plus 11 h – 15 h si « Je sors le midi » est activé.
+- Jours sans bureau : Détente et Sport, de 9 h à 20 h par défaut ; Télétravail, aucune plage (sauf déplacement ajouté pour la journée), plus 11 h – 15 h si « Je sors le midi » est activé. Voir `SPEC.md` §6.2.
 
 ### Tenue
 - Une colonne : haut, bas, chaussures. Deux colonnes dès qu’il y a des couches : couches à gauche (la couche 1 alignée sur le haut), haut / bas / chaussures à droite.
@@ -51,7 +52,6 @@ WeatherBackground (clair), NightBackground (sombre), WeatherHeader, ProgramChip,
 
 - Fournisseur météo (seule la ville est envoyée) et attribution à afficher dans « Données météo ».
 - Règle exacte d’adéquation météo (seuils de température par usage « Chaud / Doux / Frais / Froid »).
-- Jours sans bureau (Télétravail, Détente) : les heures de départ et de retour ne s’appliquent pas. Quelle plage horaire de météo compte ces jours-là (journée entière, ou 8 h 30 – 18 h 30 par défaut) ?
 
 ## Écrans validés
 
