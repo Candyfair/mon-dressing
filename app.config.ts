@@ -16,6 +16,7 @@ const config: ExpoConfig = {
   userInterfaceStyle: 'automatic',
   ios: {
     bundleIdentifier: applicationId,
+    appleTeamId: 'WFS7KVB6Q9',
     supportsTablet: false,
   },
   android: {
