@@ -44,25 +44,33 @@ The fallback decision (`SPEC.md` §10.4) is taken in S2, once both devices have 
 ## Results
 
 ### iPhone 12 mini
-Date: — · iOS: — · Build: —
+Date: 2026-11-06 · iOS: 27.0.1 · Build: Debug (`npx expo run:ios --device`)
 
 | # | Rating | Duration (ms) | Size | Notes |
 |---|---|---|---|---|
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
-| 4 | | | | |
-| 5 | | | | |
-| 6 | | | | |
-| 7 | | | | |
-| 8 | | | | |
-| 9 | | | | |
-| 10 | | | | |
-| 11 | | | | |
-| 12 | | | | |
-| 13 | | | | |
-| 14 | | | | |
-| 15 | | | | |
+| 1 | Good | 747 | 2954 × 3419 |  |
+| 2 | Good | 416 | 2878 × 3277 |  |
+| 3 | Good | 347 | 2877 × 2804 |  |
+| 4 | Good | 419 | 2558 × 2962 |  |
+| 5 | Acceptable | 336 | 2860 × 3009 | Wooden hanger kept; its metal hook was removed |
+| 6 | Unusable | 576 | 2942 × 4032 | Light blue jeans on a white surface: only a small part of the background removed, on the right |
+| 7 | Unusable | 484 | 2830 × 3985 | Background kept as if it were part of the garment |
+| 8 | Good | 381 | 2924 × 1961 |  |
+| 9 | Acceptable | 351 | 2009 × 4009 | Same as 5: wooden part of the hanger kept |
+| 10 | Good | 245 | 2954 × 1490 |  |
+| 11 | Good | 396 | 2896 × 2875 |  |
+| 12 | Good | 294 | 3734 × 2062 |  |
+| 13 | Good | 351 | 2274 × 3300 |  |
+| 14 | Unusable | 498 | 2682 × 3969 | Part of the background merged into the garment |
+| 15 | Good | 307 | 1977 × 2316 |  |
+
+**Summary:** 10 good, 2 acceptable, 3 unusable. Both acceptable cases keep a wooden hanger. The unusable ones are low contrast (6, 7) and a busy background (14).
+
+**Timings:** median 381 ms, mean 410 ms, range 245–747 ms. The slowest is the first photo, which probably includes loading the model; the others stay under 600 ms. Debug build, so a release build should be at least as fast.
+
+**Output size:** the PNGs keep the source resolution, up to 3734 × 2062 and 2942 × 4032 px. To keep in mind for storage and card thumbnails in S3.
+
+Rows follow the selection order (the order of the cases above), not the file names.
 
 ### Galaxy A06
 Not run yet (S2).
