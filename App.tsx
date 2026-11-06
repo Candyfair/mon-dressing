@@ -1,10 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
+
+import { CutoutHarnessScreen } from './src/features/cutout-harness/CutoutHarnessScreen';
 
 export default function App() {
   return (
-    <View style={{ flex: 1 }}>
+    <>
+      <CutoutHarnessScreen />
       <StatusBar style="auto" />
-    </View>
+    </>
   );
 }
