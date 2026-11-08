@@ -113,9 +113,11 @@ private fun cutOutSubject(context: Context, sourceUri: Uri): CutoutResult {
 private fun decodeUpright(context: Context, uri: Uri): Bitmap {
   val resolver = context.contentResolver
 
+  // With inJustDecodeBounds, decodeStream always returns null: only the stream itself is checked,
+  // and an unreadable image shows up as non-positive dimensions below.
   val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-  resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
-    ?: throw InvalidSourceException(uri)
+  val boundsStream = resolver.openInputStream(uri) ?: throw InvalidSourceException(uri)
+  boundsStream.use { BitmapFactory.decodeStream(it, null, bounds) }
   val longestSide = max(bounds.outWidth, bounds.outHeight)
   if (longestSide <= 0) throw InvalidSourceException(uri)
 
