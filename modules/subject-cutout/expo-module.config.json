@@ -1,6 +1,9 @@
 {
-  "platforms": ["apple"],
+  "platforms": ["apple", "android"],
   "apple": {
     "modules": ["SubjectCutoutModule"]
+  },
+  "android": {
+    "modules": ["com.candyfairstudio.subjectcutout.SubjectCutoutModule"]
   }
 }
