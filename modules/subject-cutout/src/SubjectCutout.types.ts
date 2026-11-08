@@ -5,5 +5,4 @@ export type CutoutResult = {
   height: number;
 };
 
-export type CutoutErrorCode =
-  'ERR_UNSUPPORTED_OS' | 'ERR_INVALID_SOURCE' | 'ERR_NO_SUBJECT' | 'ERR_CUTOUT_FAILED';
+export type CutoutErrorCode = 'ERR_INVALID_SOURCE' | 'ERR_NO_SUBJECT' | 'ERR_CUTOUT_FAILED';

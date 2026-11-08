@@ -32,6 +32,10 @@ const config: ExpoConfig = {
   web: {
     favicon: './assets/favicon.png',
   },
+  plugins: [
+    // iOS 17 is the floor of Vision's VNGenerateForegroundInstanceMaskRequest (SPEC §10.1).
+    ['expo-build-properties', { ios: { deploymentTarget: '17.0' } }],
+  ],
 };
 
 export default config;
