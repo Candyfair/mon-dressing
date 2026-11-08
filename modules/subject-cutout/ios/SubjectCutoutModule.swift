@@ -14,19 +14,11 @@ public class SubjectCutoutModule: Module {
 
     // Async functions run on a background queue by default, so Vision never blocks the UI.
     AsyncFunction("cutOutSubject") { (sourceUri: URL) throws -> CutoutResult in
-      guard #available(iOS 17.0, *) else {
-        throw Exception(
-          name: "UnsupportedOS",
-          description: "Subject cutout requires iOS 17 or later",
-          code: "ERR_UNSUPPORTED_OS"
-        )
-      }
       return try autoreleasepool { try cutOutSubject(from: sourceUri) }
     }
   }
 }
 
-@available(iOS 17.0, *)
 private func cutOutSubject(from sourceUri: URL) throws -> CutoutResult {
   // applyOrientationProperty keeps portrait photos upright: EXIF orientation is honoured.
   guard let source = CIImage(contentsOf: sourceUri, options: [.applyOrientationProperty: true])
