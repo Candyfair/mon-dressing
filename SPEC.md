@@ -350,6 +350,8 @@ Full-screen camera, always dark ("Posez la pièce à plat, bien éclairée", sta
 - Home-made **Expo module** (Expo Modules API): Swift + Vision on iOS, Kotlin + ML Kit Subject Segmentation on Android (ML Kit API currently **beta**). `react-native-subject-lift` is a reading reference only, not a dependency.
 - Single function: image in → cutout image (PNG with alpha) out.
 - Requires a development build (no Expo Go).
+- **iOS 17 minimum** (floor of Vision's foreground instance mask).
+- **Android**: the model is delivered by Google Play services, not shipped in the APK. It is requested at install time through the manifest, then checked before each cutout and downloaded on demand if missing (`ERR_MODEL_UNAVAILABLE` on failure). Input scaled down to 2048 px on the longest side.
 
 ### §10.2 Asynchronous processing
 Photo saved immediately; cutout computed afterwards; card shows a loading state. Burst-mode timing (R2) must not include processing time.
@@ -362,6 +364,8 @@ Toggle "Détourée / Photo d'origine" on the garment sheet. Cards are designed t
 2. Embedded open-source segmentation model (ONNX or equivalent).
 3. **Replicate** via a serverless proxy holding the key (try another Replicate model before giving up). Photoroom rejected. Would require privacy policy and store privacy labels update.
 4. UX/UI case study.
+
+**S2 decision (2026-11-08):** step 1 is kept on both platforms, no fallback is started (13/15 usable on iPhone 12 mini, 15/15 on Galaxy A06; results in `docs/cutout-protocol.md`).
 
 **End-to-end verification (§10):** run the fixed 15-photo protocol on both devices after any module change; record quality notes and processing time per photo in `docs/cutout-protocol.md`.
 
@@ -458,8 +462,6 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | Rotation weights: recency cap, favourite bonus, fit bonus (§7 step 4) | S4 (10 reference scenarios + rotation scenario) |
 | Rain probability threshold and ± window margin | S4 |
 | Bike correction on the weather category | S4 |
-| Minimum iOS version (cutout API) | S2 |
-| Android ML Kit model delivery / size | S2 |
 | Android system backup coverage for photos | S3 |
 | Glass blur vs semi-opaque on Android (design: blur, semi-opaque fallback on low-end Android) | S6 |
 | Animation durations and curves (swipe, fade, bounce, end of sort) | S6 prototype |
@@ -496,6 +498,9 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-02 | Final name decided in a dedicated session in Tier 2 (S11) | **Frog-à-porter**, decided before S11 | Name found early; availability checks done (§13.5) |
 | 2026-11-02 | Proposed bundle ID `com.candygetshandy.wardrobe`, privacy page on candygetshandy.com (Ghost) | `com.candyfairstudio.wardrobe`, privacy page on candyfairstudio.com | App attached to candyfairstudio.com, the studio showcase shared with Christian |
 | 2026-11-03 | Relax / sport active day defaults to 09:00–19:00 | 09:00–20:00 | Candice's decision |
+| 2026-11-08 | Minimum iOS version (open) | iOS 17 | Floor of the Vision cutout API; no "cutout unavailable" state to design |
+| 2026-11-08 | Android ML Kit model delivery / size (open) | Requested at install through the manifest, checked and downloaded on demand before a cutout; size not measured | The model is only available through Google Play services |
+| 2026-11-08 | Fallback chain (§10.4) decided after S2 | Native APIs on both platforms, no fallback started | Protocol: 13/15 usable on iOS, 15/15 on Android; iOS failures covered by shooting guidance and §10.3 |
 
 ---
 
