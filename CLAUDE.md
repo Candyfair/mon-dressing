@@ -61,6 +61,7 @@ Stop and ask **only** if the decision is irreversible or costly to change later,
 - One branch per feature (`feat/<scope>-<short-name>`), merged into `main` after Candice's validation.
 - **Never commit or push directly to `main`.**
 - **Before any push**, show Candice the full text of the commits and of the PR (title + body), then wait for her explicit authorization to push.
+- **PR auto-fix, on by default**: once a PR is open, Claude subscribes to its activity and fixes CI failures and review comments. Level 3 fixes (types, lint, tests, formatting) are committed and pushed without waiting, the commit message documents the fix, and Candice gets a report afterwards. Any fix touching level 1 or level 2 still follows the rule above.
 
 ### 4.5 Enforcement layer
 | Rule | Enforcement |
