@@ -28,11 +28,33 @@ Real garments from the wardrobe, shot the way burst mode will be used: phone in 
 | 15 | Low-light shot |
 
 ## Method
-1. Build with `npx expo run:ios --device`. A debug build is enough for quality, but timings should be read with care: note the build type.
+1. Build the app on the device:
+   - iOS: `npx expo run:ios --device`;
+   - Android: `npx expo run:android --device`, on a **fresh install** (uninstall the app first; see "Android setup" below).
+
+   A debug build is enough for quality, but read the timings with care and note the build type.
 2. Close other apps, then open the app (cutout harness screen).
 3. Pick the 15 photos in order. They are processed one at a time.
 4. Check each cutout on the white, black and magenta backdrops: magenta reveals fringes and holes.
 5. Export the CSV and copy the timings below.
+
+### Android specifics
+- **Model download.** ML Kit Subject Segmentation is delivered by Google Play services, not shipped in the APK. On a sideloaded debug build, the first cutout can wait for the download. Record photo 1's duration separately, and note whether the device was on Wi-Fi.
+- **Model size.** Note the size given in Google's documentation, and the storage used by Google Play services before and after the first install (Settings › Apps › Google Play services › Storage).
+- **Selection order.** `orderedSelection` only exists on iOS. Check that the rows come back in the order the photos were picked; otherwise, pick them one by one.
+- **Resolution.** Android scales the longest side down to 2048 px before segmentation, while iOS keeps the source resolution. Compare quality with that in mind.
+
+### Android setup (Mac mini, once)
+1. Install the JDK required by the current Expo SDK (Expo documentation, "Set up your environment" › Android device › Development build), for example `brew install --cask zulu@17`.
+2. Install Android Studio. In SDK Manager, add the Android SDK Platform listed in the same Expo page and the Android SDK Platform-Tools.
+3. Add to `~/.zshrc`, then open a new terminal:
+   ```bash
+   export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+   export ANDROID_HOME=$HOME/Library/Android/sdk
+   export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools
+   ```
+4. On the Galaxy A06: Settings › About phone › Software information, tap "Build number" seven times. Then, in Developer options, turn on "USB debugging".
+5. Plug the phone in, accept the debugging prompt, and check that `adb devices` lists it.
 
 ## Rating
 - **Good**: usable as is.
