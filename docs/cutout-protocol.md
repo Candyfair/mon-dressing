@@ -95,4 +95,41 @@ Date: 2026-11-06 · iOS: 27.0.1 · Build: Debug (`npx expo run:ios --device`)
 Rows follow the selection order (the order of the cases above), not the file names.
 
 ### Galaxy A06
-Not run yet (S2).
+Date: 2026-11-08 · Android: 16 · Build: Debug (`npx expo run:android --device`) · Fresh install, Wi-Fi
+
+Source photos: the iPhone set, transferred as JPEG at 100 % quality.
+
+| # | Rating | Duration (ms) | Size | Notes |
+|---|---|---|---|---|
+| 1 | Good | 7371 | 1500 × 1736 | First cutout after a fresh install: includes initialisation and possibly the model download |
+| 2 | Good | 3772 | 1461 × 1664 |  |
+| 3 | Good | 3602 | 1330 × 1569 |  |
+| 4 | Good | 3789 | 1299 × 1509 |  |
+| 5 | Acceptable | 3182 | 1454 × 1462 | Small part of the wooden hanger kept |
+| 6 | Good | 5015 | 1272 × 1893 |  |
+| 7 | Acceptable | 5269 | 1283 × 1960 | A very small part of the background kept with the garment |
+| 8 | Good | 4424 | 1486 × 993 |  |
+| 9 | Good | 3238 | 1020 × 1968 |  |
+| 10 | Good | 2746 | 1506 × 756 |  |
+| 11 | Good | 3612 | 1472 × 1459 |  |
+| 12 | Good | 2812 | 1896 × 1047 |  |
+| 13 | Good | 2964 | 1153 × 1674 |  |
+| 14 | Good | 3446 | 1462 × 1421 |  |
+| 15 | Good | 3737 | 1424 × 1219 |  |
+
+**Summary:** 13 good, 2 acceptable, 0 unusable. The three cases that fail on iOS (low contrast 6 and 7, busy background 14) pass here; 7 keeps a very small part of the background.
+
+**Timings:** median 3612 ms, mean 3932 ms (3686 ms without photo 1), range 2746–7371 ms: about ten times slower than the iPhone 12 mini. Photo 1 cannot separate the model download from initialisation.
+
+**Model size:** not measured.
+
+**Output size:** at most 1968 px on the longest side, after the 2048 px input downscale and the crop.
+
+Rows follow the selection order (the order of the cases above), checked on the device.
+
+## Decision (S2)
+Native APIs are kept on both platforms (step 1 of `SPEC.md` §10.4); no fallback is started. 13/15 usable on iOS, 15/15 on Android. The iOS failures are low-contrast and busy-background shots, covered by the shooting guidance and the user fallback (§10.3: original photo, "Réessayer").
+
+Consequences for S3:
+- Android takes about 3.5 s per cutout: in burst mode, the queue for 10 garments takes about 40 s in the background, so the loading state of the cards must stay clear.
+- Output resolution differs between platforms (source size on iOS, at most 2048 px on Android): to settle with storage and thumbnails.
