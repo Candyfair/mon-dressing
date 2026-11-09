@@ -1,11 +1,7 @@
 import { eq } from 'drizzle-orm';
-import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core';
 
-import * as schema from './schema';
 import { SETTINGS_ID, settings, wardrobes } from './schema';
-
-// Both drivers used by the app (expo-sqlite) and the tests (better-sqlite3) are synchronous.
-export type SyncDatabase = BaseSQLiteDatabase<'sync', unknown, typeof schema>;
+import type { SyncDatabase } from './types';
 
 export interface BootstrapDeps {
   now: Date;
