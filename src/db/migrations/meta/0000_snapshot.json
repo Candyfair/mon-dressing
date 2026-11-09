@@ -1,0 +1,884 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "bb8a237c-1154-4772-a1c9-aba1a8f63509",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "dayOverrides": {
+      "name": "dayOverrides",
+      "columns": {
+        "date": {
+          "name": "date",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "activity": {
+          "name": "activity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "commuteModes": {
+          "name": "commuteModes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "occasion": {
+          "name": "occasion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "garmentEvents": {
+      "name": "garmentEvents",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "garmentId": {
+          "name": "garmentId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fromLocation": {
+          "name": "fromLocation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "toLocation": {
+          "name": "toLocation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "toIron": {
+          "name": "toIron",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "outfitId": {
+          "name": "outfitId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "occurredAt": {
+          "name": "occurredAt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "garment_events_garment_type_occurred_idx": {
+          "name": "garment_events_garment_type_occurred_idx",
+          "columns": [
+            "garmentId",
+            "type",
+            "occurredAt"
+          ],
+          "isUnique": false
+        },
+        "garment_events_type_occurred_idx": {
+          "name": "garment_events_type_occurred_idx",
+          "columns": [
+            "type",
+            "occurredAt"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "garmentEvents_garmentId_garments_id_fk": {
+          "name": "garmentEvents_garmentId_garments_id_fk",
+          "tableFrom": "garmentEvents",
+          "tableTo": "garments",
+          "columnsFrom": [
+            "garmentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "garmentEvents_outfitId_outfits_id_fk": {
+          "name": "garmentEvents_outfitId_outfits_id_fk",
+          "tableFrom": "garmentEvents",
+          "tableTo": "outfits",
+          "columnsFrom": [
+            "outfitId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "garmentUsages": {
+      "name": "garmentUsages",
+      "columns": {
+        "garmentId": {
+          "name": "garmentId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "usage": {
+          "name": "usage",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "garmentUsages_garmentId_garments_id_fk": {
+          "name": "garmentUsages_garmentId_garments_id_fk",
+          "tableFrom": "garmentUsages",
+          "tableTo": "garments",
+          "columnsFrom": [
+            "garmentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "garmentUsages_garmentId_usage_pk": {
+          "columns": [
+            "garmentId",
+            "usage"
+          ],
+          "name": "garmentUsages_garmentId_usage_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "garments": {
+      "name": "garments",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "wardrobeId": {
+          "name": "wardrobeId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "slot": {
+          "name": "slot",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "subtype": {
+          "name": "subtype",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "statementPiece": {
+          "name": "statementPiece",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "needsIroning": {
+          "name": "needsIroning",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "isFavorite": {
+          "name": "isFavorite",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "isDemo": {
+          "name": "isDemo",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "wearCount": {
+          "name": "wearCount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "location": {
+          "name": "location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'stored'"
+        },
+        "locationSince": {
+          "name": "locationSince",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "toIron": {
+          "name": "toIron",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "photoOriginalPath": {
+          "name": "photoOriginalPath",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "photoCutoutPath": {
+          "name": "photoCutoutPath",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "cutoutStatus": {
+          "name": "cutoutStatus",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'pending'"
+        },
+        "useCutout": {
+          "name": "useCutout",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "garments_wardrobe_slot_idx": {
+          "name": "garments_wardrobe_slot_idx",
+          "columns": [
+            "wardrobeId",
+            "slot"
+          ],
+          "isUnique": false
+        },
+        "garments_wardrobe_location_idx": {
+          "name": "garments_wardrobe_location_idx",
+          "columns": [
+            "wardrobeId",
+            "location"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "garments_wardrobeId_wardrobes_id_fk": {
+          "name": "garments_wardrobeId_wardrobes_id_fk",
+          "tableFrom": "garments",
+          "tableTo": "wardrobes",
+          "columnsFrom": [
+            "wardrobeId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "garments_wear_count_check": {
+          "name": "garments_wear_count_check",
+          "value": "\"garments\".\"wearCount\" >= 0"
+        }
+      }
+    },
+    "outfitItems": {
+      "name": "outfitItems",
+      "columns": {
+        "outfitId": {
+          "name": "outfitId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "slot": {
+          "name": "slot",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "garmentId": {
+          "name": "garmentId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "outfitItems_outfitId_outfits_id_fk": {
+          "name": "outfitItems_outfitId_outfits_id_fk",
+          "tableFrom": "outfitItems",
+          "tableTo": "outfits",
+          "columnsFrom": [
+            "outfitId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "outfitItems_garmentId_garments_id_fk": {
+          "name": "outfitItems_garmentId_garments_id_fk",
+          "tableFrom": "outfitItems",
+          "tableTo": "garments",
+          "columnsFrom": [
+            "garmentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "outfitItems_outfitId_slot_pk": {
+          "columns": [
+            "outfitId",
+            "slot"
+          ],
+          "name": "outfitItems_outfitId_slot_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "outfits": {
+      "name": "outfits",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "wardrobeId": {
+          "name": "wardrobeId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "date": {
+          "name": "date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "activity": {
+          "name": "activity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "commuteModes": {
+          "name": "commuteModes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "occasion": {
+          "name": "occasion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "validatedAt": {
+          "name": "validatedAt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "sortedAt": {
+          "name": "sortedAt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "outfits_wardrobe_date_status_idx": {
+          "name": "outfits_wardrobe_date_status_idx",
+          "columns": [
+            "wardrobeId",
+            "date",
+            "status"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "outfits_wardrobeId_wardrobes_id_fk": {
+          "name": "outfits_wardrobeId_wardrobes_id_fk",
+          "tableFrom": "outfits",
+          "tableTo": "wardrobes",
+          "columnsFrom": [
+            "wardrobeId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "settings": {
+      "name": "settings",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "activeWardrobeId": {
+          "name": "activeWardrobeId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "commuteModes": {
+          "name": "commuteModes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'[]'"
+        },
+        "officeDepartureTime": {
+          "name": "officeDepartureTime",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'08:30'"
+        },
+        "officeReturnTime": {
+          "name": "officeReturnTime",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'18:30'"
+        },
+        "lunchOutingEnabled": {
+          "name": "lunchOutingEnabled",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "activeDayStart": {
+          "name": "activeDayStart",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'09:00'"
+        },
+        "activeDayEnd": {
+          "name": "activeDayEnd",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'20:00'"
+        },
+        "outfitReadyTime": {
+          "name": "outfitReadyTime",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'07:00'"
+        },
+        "eveningSortTime": {
+          "name": "eveningSortTime",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'20:00'"
+        },
+        "airingEnabled": {
+          "name": "airingEnabled",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "dryingRackCountsAsStorage": {
+          "name": "dryingRackCountsAsStorage",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "dryingDelayHours": {
+          "name": "dryingDelayHours",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 24
+        },
+        "morningNotification": {
+          "name": "morningNotification",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "eveningSortNotification": {
+          "name": "eveningSortNotification",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "laundryDryNotification": {
+          "name": "laundryDryNotification",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "useGeolocation": {
+          "name": "useGeolocation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "language": {
+          "name": "language",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'fr'"
+        },
+        "onboardingCompletedAt": {
+          "name": "onboardingCompletedAt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "demoCleanupOfferedAt": {
+          "name": "demoCleanupOfferedAt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "hintsSeen": {
+          "name": "hintsSeen",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'[]'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "settings_activeWardrobeId_wardrobes_id_fk": {
+          "name": "settings_activeWardrobeId_wardrobes_id_fk",
+          "tableFrom": "settings",
+          "tableTo": "wardrobes",
+          "columnsFrom": [
+            "activeWardrobeId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "wardrobes": {
+      "name": "wardrobes",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "cityName": {
+          "name": "cityName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "timeZone": {
+          "name": "timeZone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "wearLimits": {
+      "name": "wearLimits",
+      "columns": {
+        "subtype": {
+          "name": "subtype",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "maxWears": {
+          "name": "maxWears",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "wear_limits_max_wears_check": {
+          "name": "wear_limits_max_wears_check",
+          "value": "\"wearLimits\".\"maxWears\" >= 1"
+        }
+      }
+    },
+    "weeklyProgram": {
+      "name": "weeklyProgram",
+      "columns": {
+        "weekday": {
+          "name": "weekday",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "activity": {
+          "name": "activity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}
