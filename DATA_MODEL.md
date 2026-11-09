@@ -1,7 +1,8 @@
 # Frog-à-porter — Data model
 
 > Persistence: **expo-sqlite + Drizzle ORM**, local only (SPEC §11).
-> Schema source of truth: `src/db/schema.ts`. Migrations generated with `drizzle-kit generate`, bundled and applied at startup (`useMigrations`).
+> Schema source of truth: `src/db/schema.ts`. Migrations generated with `npm run db:generate` (`drizzle-kit generate`) into `src/db/migrations/`, bundled and applied at startup (`migrate` in `src/db/DatabaseProvider.tsx`).
+> Foreign keys are enabled on every connection (`PRAGMA foreign_keys = ON`); without it SQLite applies no cascade.
 > **Any change to this model = level 1 review** (diff + exact commit message approved individually, see `CLAUDE.md`).
 
 ## 1. Conventions
@@ -15,6 +16,8 @@
 - Booleans: integer 0/1 (`integer({ mode: 'boolean' })`).
 
 ## 2. Enums
+
+Defined in `src/domain/types.ts` as `as const` arrays with derived union types. No SQL `CHECK` on enum columns (adding a value would require a table rebuild); `CHECK` constraints only on numeric bounds (`wearCount >= 0`, `maxWears >= 1`).
 
 ```ts
 type Slot = 'top' | 'bottom' | 'onePiece' | 'midLayer' | 'outerLayer' | 'shoes';
@@ -45,9 +48,9 @@ Engine-eligible (SPEC §8.1): `toIron = false` ∧ location `stored`, `airing` (
 | `id` | text PK | UUID |
 | `name` | text | "Principale", "Valise Bretagne"… |
 | `kind` | text `WardrobeKind` | Only `main` has a UI in v1 |
-| `cityName` | text | Displayed city |
-| `latitude`, `longitude` | real | For Open-Meteo |
-| `timeZone` | text | IANA, e.g. `Europe/Paris` |
+| `cityName` | text, nullable | Displayed city; **null = not chosen yet** (onboarding or geolocation) |
+| `latitude`, `longitude` | real, nullable | For Open-Meteo; null with `cityName` |
+| `timeZone` | text | IANA, e.g. `Europe/Paris`; set from the device when the wardrobe is created |
 | `createdAt` | integer ms | |
 
 ### `garments`
@@ -138,11 +141,13 @@ Unique per (wardrobeId, date, status).
 | `source` | text `EventSource` | Where the change came from; the washes-avoided counter counts `locationChanged` → `airing` with source `eveningSort` in the current month |
 | `fromLocation`, `toLocation` | text `Location`, nullable | For `locationChanged` |
 | `toIron` | boolean, nullable | New value, for `ironingChanged` |
-| `outfitId` | text FK → outfits, nullable | For `worn` and evening-sort moves |
+| `outfitId` | text FK → outfits, nullable, on delete set null | For `worn` and evening-sort moves; history survives the outfit |
 | `occurredAt` | integer ms | |
-Index: `(garmentId, type, occurredAt)` (last `worn` per garment for the rotation, SPEC §7), `(type, occurredAt)`. **Never updated or deleted** except by cascade.
+Index: `(garmentId, type, occurredAt)` (last `worn` per garment for the rotation, SPEC §7), `(type, occurredAt)`. **Never updated or deleted** except by cascade (garment) or set null (`outfitId`).
 
 ### `settings` — single row (`id = 'singleton'`)
+Created with the main wardrobe on first launch by `ensureDefaults` (`src/db/bootstrap.ts`, idempotent); every default below is a column default in the schema.
+
 | Column | Type | Notes |
 |---|---|---|
 | `activeWardrobeId` | text FK → wardrobes | |
