@@ -137,7 +137,7 @@ Unique per (wardrobeId, date, status).
 |---|---|---|
 | `id` | text PK | UUID |
 | `garmentId` | text FK → garments, cascade | |
-| `type` | text `GarmentEventType` | `worn` on validation (or when a probable outfit is sorted), `locationChanged` on every move, `ironingChanged` when `toIron` changes |
+| `type` | text `GarmentEventType` | `worn` on validation (or when a probable outfit is sorted), `locationChanged` on every move (including airing → airing when a worn piece is aired again in the evening sort: a new airing period, `locationSince` reset), `ironingChanged` when `toIron` changes |
 | `source` | text `EventSource` | Where the change came from; the washes-avoided counter counts `locationChanged` → `airing` with source `eveningSort` in the current month |
 | `fromLocation`, `toLocation` | text `Location`, nullable | For `locationChanged` |
 | `toIron` | boolean, nullable | New value, for `ironingChanged` |

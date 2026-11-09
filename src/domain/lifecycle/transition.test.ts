@@ -29,6 +29,7 @@ interface Row {
   toIron?: boolean; // new flag value, before the drying rule
   requiresToIron?: boolean;
   wears?: true;
+  renewsLocation?: true; // records the move even when the location stays the same
 }
 
 const WORN_FROM = ['stored', 'airing', 'onDryingRack'] as const;
@@ -46,6 +47,7 @@ const TABLE: Row[] = [
     command: { type: 'sort', to, outfitId: 'outfit-1' },
     from: WORN_FROM,
     to,
+    ...(to === 'airing' ? { renewsLocation: true as const } : {}),
   })),
   { label: 'washDone', command: { type: 'washDone' }, from: ['dirty'], to: 'drying' },
   {
@@ -125,9 +127,9 @@ function expectedOutcome({ row, start }: Case) {
     return 'notAllowed' as const;
   }
   const wearCount = entersDrying ? 0 : start.wearCount + (row.wears ? 1 : 0);
-  const changed =
-    location !== start.location || toIron !== start.toIron || wearCount !== start.wearCount;
-  return changed ? { location, toIron, wearCount } : ('unchanged' as const);
+  const moved = location !== start.location || row.renewsLocation === true;
+  const changed = moved || toIron !== start.toIron || wearCount !== start.wearCount;
+  return changed ? { location, toIron, wearCount, moved } : ('unchanged' as const);
 }
 
 describe('transition table', () => {
@@ -143,14 +145,14 @@ describe('transition table', () => {
       throw new Error(`expected a transition, got ${result.reason}`);
     }
     const state = { ...testCase.start, ...result.patch };
+    const { moved, ...expectedState } = expected;
     expect({
       location: state.location,
       toIron: state.toIron,
       wearCount: state.wearCount,
-    }).toEqual(expected);
+    }).toEqual(expectedState);
 
-    // locationSince moves exactly when the location does.
-    const moved = expected.location !== testCase.start.location;
+    // locationSince moves exactly when a move is recorded.
     expect(state.locationSince).toEqual(moved ? NOW : BEFORE);
 
     // One event per changed field, plus `worn` for a wear.
@@ -192,6 +194,26 @@ describe('transition events', () => {
           fromLocation: 'stored',
           toLocation: 'airing',
           outfitId: 'outfit-1',
+        },
+      ],
+    });
+  });
+
+  it('records airing again a piece that was worn from the balcony', () => {
+    const aired = garment({ location: 'airing' });
+
+    const result = transition(aired, { type: 'sort', to: 'airing', outfitId: 'outfit-2' }, NOW);
+
+    expect(result).toEqual({
+      ok: true,
+      patch: { location: 'airing', locationSince: NOW },
+      events: [
+        {
+          type: 'locationChanged',
+          source: 'eveningSort',
+          fromLocation: 'airing',
+          toLocation: 'airing',
+          outfitId: 'outfit-2',
         },
       ],
     });
