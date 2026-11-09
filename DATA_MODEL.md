@@ -34,7 +34,7 @@ type Usage =                                    // SPEC §4.3, stored as "<group
   | `occasion.${Occasion}`;
 type WardrobeKind = 'main' | 'secondary';
 type GarmentEventType = 'locationChanged' | 'ironingChanged' | 'worn';
-type EventSource = 'eveningSort' | 'laundry' | 'wardrobe' | 'automatic';
+type EventSource = 'today' | 'eveningSort' | 'laundry' | 'wardrobe' | 'automatic'; // today = outfit validated on Today
 type OutfitStatus = 'validated' | 'probable';
 ```
 
