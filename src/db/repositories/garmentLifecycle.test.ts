@@ -211,6 +211,11 @@ describe('SPEC §8 walkthrough', () => {
   const LIMITS: Record<string, number> = { tshirt: 2, jeans: 10, shirt: 4 };
   const DRYING_DELAY_HOURS = 24;
 
+  // Every step of the walkthrough must be allowed.
+  function applyOk(db: TestDb, operations: LifecycleOperation[], now: Date) {
+    expect(apply(db, operations, now)).toEqual({ ok: true });
+  }
+
   function sortAsRecommended(db: TestDb, ids: string[], outfitId: string, now: Date) {
     const operations = ids.map((id): LifecycleOperation => {
       const piece = db.select().from(garments).where(eq(garments.id, id)).get();
@@ -222,7 +227,7 @@ describe('SPEC §8 walkthrough', () => {
         command: { type: 'sort', to: recommendSort(piece, LIMITS[id], true), outfitId },
       };
     });
-    expect(apply(db, operations, now)).toEqual({ ok: true });
+    applyOk(db, operations, now);
   }
 
   it('walks every piece through use, sort, laundry, drying and ironing', () => {
@@ -236,9 +241,9 @@ describe('SPEC §8 walkthrough', () => {
     });
 
     // Day 1: validation, then evening sort as recommended.
-    apply(db, [wear('tshirt', 'o1'), wear('jeans', 'o1'), wear('shirt', 'o1')], at(0));
+    applyOk(db, [wear('tshirt', 'o1'), wear('jeans', 'o1'), wear('shirt', 'o1')], at(0));
     sortAsRecommended(db, ['tshirt', 'jeans'], 'o1', at(13));
-    apply(
+    applyOk(
       db,
       [{ garmentId: 'shirt', command: { type: 'sort', to: 'dirty', outfitId: 'o1' } }],
       at(13),
@@ -248,13 +253,13 @@ describe('SPEC §8 walkthrough', () => {
     expect(state(db, 'shirt')).toEqual({ location: 'dirty', toIron: false, wearCount: 1 });
 
     // Day 2: the aired t-shirt reaches its limit and goes to the basket.
-    apply(db, [wear('tshirt', 'o2'), wear('jeans', 'o2')], at(24));
+    applyOk(db, [wear('tshirt', 'o2'), wear('jeans', 'o2')], at(24));
     sortAsRecommended(db, ['tshirt', 'jeans'], 'o2', at(37));
     expect(state(db, 'tshirt')).toEqual({ location: 'dirty', toIron: false, wearCount: 2 });
     expect(state(db, 'jeans')).toEqual({ location: 'airing', toIron: false, wearCount: 2 });
 
     // Laundry: wash the basket.
-    apply(
+    applyOk(
       db,
       ['tshirt', 'shirt'].map((id) => ({ garmentId: id, command: { type: 'washDone' } })),
       at(38),
@@ -266,7 +271,7 @@ describe('SPEC §8 walkthrough', () => {
     const drying = db.select().from(garments).where(eq(garments.location, 'drying')).all();
     expect(drying.filter((piece) => isDryDue(piece, at(61), DRYING_DELAY_HOURS))).toHaveLength(0);
     const due = drying.filter((piece) => isDryDue(piece, at(62), DRYING_DELAY_HOURS));
-    apply(
+    applyOk(
       db,
       due.map((piece) => ({
         garmentId: piece.id,
@@ -277,14 +282,14 @@ describe('SPEC §8 walkthrough', () => {
     expect(state(db, 'shirt')).toEqual({ location: 'onDryingRack', toIron: true, wearCount: 0 });
 
     // Put away: the shirt stays to iron ("clean basket"), then is ironed.
-    apply(
+    applyOk(
       db,
       ['tshirt', 'shirt'].map((id) => ({ garmentId: id, command: { type: 'putAway' } })),
       at(70),
     );
     expect(state(db, 'tshirt')).toEqual({ location: 'stored', toIron: false, wearCount: 0 });
     expect(state(db, 'shirt')).toEqual({ location: 'stored', toIron: true, wearCount: 0 });
-    apply(db, [{ garmentId: 'shirt', command: { type: 'ironed' } }], at(71));
+    applyOk(db, [{ garmentId: 'shirt', command: { type: 'ironed' } }], at(71));
     expect(state(db, 'shirt')).toEqual({ location: 'stored', toIron: false, wearCount: 0 });
 
     // History.
