@@ -173,10 +173,10 @@ Weather is **not** stored in SQLite: TanStack Query cache only.
 
 | Invariant | Enforcement |
 |---|---|
-| `garments.location`, `locationSince`, `toIron`, `wearCount` are written **only** by `src/domain/lifecycle/` | Pre-commit check (grep) + code review level 1 |
-| Every location or ironing change writes a `garmentEvents` row **in the same transaction** | Lifecycle module API is the only entry point; tested |
+| `garments.location`, `locationSince`, `toIron`, `wearCount` are decided **only** by `src/domain/lifecycle/` (branded `LifecyclePatch`) and written only by `src/db/repositories/garmentLifecycle.ts` | Pre-commit check (grep) + code review level 1 |
+| Every location or ironing change writes a `garmentEvents` row **in the same transaction** | `applyLifecycle` is the only entry point (all or nothing per batch); tested |
 | Entering `drying` resets `wearCount` to 0 and sets `toIron = needsIroning` | State machine tests |
-| `drying` → `onDryingRack` only (automatic after `dryingDelayHours`, or "Déjà sec ?") | State machine tests |
+| In the Laundry, `drying` → `onDryingRack` only (automatic after `dryingDelayHours`, or "Déjà sec ?"); the Wardrobe long press may still correct it to any status (SPEC §8.4) | State machine tests |
 | `shoes` never enter `airing`, `dirty`, `drying`, `onDryingRack`, and never get `toIron` | State machine tests |
 | A garment with `toIron = true` is never engine-eligible | Engine tests |
 | Demo garments can be inserted only when the wardrobe has no garment | Demo service test |
