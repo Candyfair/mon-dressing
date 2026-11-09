@@ -18,7 +18,8 @@ export type TransitionResult =
 interface Target {
   location: Location;
   toIron: boolean;
-  wears: 0 | 1;
+  // Outfit the garment is worn in, for a wear; null otherwise.
+  wornIn: string | null;
   // Starts a new period at the target location even when it is the current
   // one: airing a piece again after wearing it avoids another wash.
   renewsLocation: boolean;
@@ -45,7 +46,7 @@ export function transition(
     location: target.location,
     // Washing resets the counter and sets "to iron" for pieces that need it.
     toIron: entersDrying ? garment.needsIroning : target.toIron,
-    wearCount: entersDrying ? 0 : garment.wearCount + target.wears,
+    wearCount: entersDrying ? 0 : garment.wearCount + (target.wornIn === null ? 0 : 1),
   };
 
   const source = sourceOf(command);
@@ -53,8 +54,8 @@ export function transition(
   const patch: Partial<LifecycleState> = {};
   const events: LifecycleEventDraft[] = [];
 
-  if (command.type === 'wear') {
-    events.push({ type: 'worn', source, outfitId: command.outfitId });
+  if (target.wornIn !== null) {
+    events.push({ type: 'worn', source, outfitId: target.wornIn });
   }
   if (next.location !== garment.location || target.renewsLocation) {
     patch.location = next.location;
@@ -90,7 +91,7 @@ function targetOf(garment: LifecycleGarment, command: LifecycleCommand): Target 
   const unchanged: Target = {
     location: garment.location,
     toIron: garment.toIron,
-    wears: 0,
+    wornIn: null,
     renewsLocation: false,
   };
   const moveFrom = (from: Location, to: Location): Target | null =>
@@ -98,7 +99,9 @@ function targetOf(garment: LifecycleGarment, command: LifecycleCommand): Target 
 
   switch (command.type) {
     case 'wear':
-      return WORN_FROM.includes(garment.location) ? { ...unchanged, wears: 1 } : null;
+      return WORN_FROM.includes(garment.location)
+        ? { ...unchanged, wornIn: command.outfitId }
+        : null;
     case 'sort':
       return WORN_FROM.includes(garment.location)
         ? { ...unchanged, location: command.to, renewsLocation: command.to === 'airing' }
