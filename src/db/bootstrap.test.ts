@@ -5,11 +5,11 @@ import { randomUUID } from 'node:crypto';
 
 import { ensureDefaults } from './bootstrap';
 import { settings, wardrobes } from './schema';
-import { createTestDb } from './testing/createTestDb';
+import { createTestDb, type TestDb } from './testing/createTestDb';
 
 const NOW = new Date('2026-11-09T08:00:00.000Z');
 
-function bootstrap(db: ReturnType<typeof createTestDb>['db']) {
+function bootstrap(db: TestDb) {
   ensureDefaults(db, { now: NOW, newId: randomUUID, timeZone: 'Europe/Paris' });
 }
 

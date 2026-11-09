@@ -12,5 +12,3 @@ const expoDb = openDatabaseSync(DATABASE_NAME, { enableChangeListener: true });
 expoDb.execSync('PRAGMA foreign_keys = ON;');
 
 export const db = drizzle(expoDb, { schema });
-
-export type AppDatabase = typeof db;

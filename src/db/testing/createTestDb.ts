@@ -16,3 +16,5 @@ export function createTestDb() {
   migrate(db, { migrationsFolder: path.join(__dirname, '..', 'migrations') });
   return { db, sqlite };
 }
+
+export type TestDb = ReturnType<typeof createTestDb>['db'];

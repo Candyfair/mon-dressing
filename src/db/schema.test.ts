@@ -12,11 +12,9 @@ import {
   wardrobes,
   wearLimits,
 } from './schema';
-import { createTestDb } from './testing/createTestDb';
+import { createTestDb, type TestDb } from './testing/createTestDb';
 
 const NOW = new Date('2026-11-09T08:00:00.000Z');
-
-type TestDb = ReturnType<typeof createTestDb>['db'];
 
 function seedWardrobe(db: TestDb, id = 'wardrobe-1') {
   db.insert(wardrobes)
