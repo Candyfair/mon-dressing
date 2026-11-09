@@ -297,6 +297,12 @@ describe('SPEC §8 walkthrough', () => {
       'locationChanged', // → onDryingRack
       'locationChanged', // → stored
     ]);
+    expect(eventTypes(db, 'jeans')).toEqual([
+      'worn',
+      'locationChanged', // → airing
+      'worn',
+      'locationChanged', // airing again (a second wash avoided)
+    ]);
     expect(eventTypes(db, 'shirt')).toEqual([
       'worn',
       'locationChanged', // → dirty

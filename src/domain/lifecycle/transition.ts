@@ -19,6 +19,9 @@ interface Target {
   location: Location;
   toIron: boolean;
   wears: 0 | 1;
+  // Starts a new period at the target location even when it is the current
+  // one: airing a piece again after wearing it avoids another wash.
+  renewsLocation: boolean;
 }
 
 // A worn piece was available, hence in one of these locations.
@@ -53,7 +56,7 @@ export function transition(
   if (command.type === 'wear') {
     events.push({ type: 'worn', source, outfitId: command.outfitId });
   }
-  if (next.location !== garment.location) {
+  if (next.location !== garment.location || target.renewsLocation) {
     patch.location = next.location;
     patch.locationSince = now;
     events.push({
@@ -84,7 +87,12 @@ export function initialLifecycle(now: Date): InitialLifecycle {
 }
 
 function targetOf(garment: LifecycleGarment, command: LifecycleCommand): Target | null {
-  const unchanged: Target = { location: garment.location, toIron: garment.toIron, wears: 0 };
+  const unchanged: Target = {
+    location: garment.location,
+    toIron: garment.toIron,
+    wears: 0,
+    renewsLocation: false,
+  };
   const moveFrom = (from: Location, to: Location): Target | null =>
     garment.location === from ? { ...unchanged, location: to } : null;
 
@@ -92,7 +100,9 @@ function targetOf(garment: LifecycleGarment, command: LifecycleCommand): Target 
     case 'wear':
       return WORN_FROM.includes(garment.location) ? { ...unchanged, wears: 1 } : null;
     case 'sort':
-      return WORN_FROM.includes(garment.location) ? { ...unchanged, location: command.to } : null;
+      return WORN_FROM.includes(garment.location)
+        ? { ...unchanged, location: command.to, renewsLocation: command.to === 'airing' }
+        : null;
     case 'washDone':
       return moveFrom('dirty', 'drying');
     case 'markDry':
