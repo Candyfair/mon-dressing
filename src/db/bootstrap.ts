@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm';
 
-import { SETTINGS_ID, settings, wardrobes } from './schema';
+import { defaultWearLimits } from '../domain/catalogue/subtypes';
+import { SETTINGS_ID, settings, wardrobes, wearLimits } from './schema';
 import type { SyncDatabase } from './types';
 
 export interface BootstrapDeps {
@@ -14,8 +15,10 @@ export interface BootstrapDeps {
 const MAIN_WARDROBE_NAME = 'Principale';
 
 /**
- * Creates the main wardrobe and the settings row on first launch.
- * Idempotent: does nothing once the settings row exists.
+ * Runs at every launch, idempotent:
+ * - first launch: creates the main wardrobe and the settings row;
+ * - every launch: gives each catalogue type its starting wear limit if it has
+ *   none yet (types added by a newer catalogue), keeping the user's values.
  */
 export function ensureDefaults(db: SyncDatabase, { now, newId, timeZone }: BootstrapDeps): void {
   db.transaction((tx) => {
@@ -24,15 +27,21 @@ export function ensureDefaults(db: SyncDatabase, { now, newId, timeZone }: Boots
       .from(settings)
       .where(eq(settings.id, SETTINGS_ID))
       .get();
-    if (existing) {
-      return;
+    if (!existing) {
+      const wardrobeId = newId();
+      tx.insert(wardrobes)
+        .values({
+          id: wardrobeId,
+          name: MAIN_WARDROBE_NAME,
+          kind: 'main',
+          timeZone,
+          createdAt: now,
+        })
+        .run();
+      // Every other setting takes its default from the schema.
+      tx.insert(settings).values({ id: SETTINGS_ID, activeWardrobeId: wardrobeId }).run();
     }
 
-    const wardrobeId = newId();
-    tx.insert(wardrobes)
-      .values({ id: wardrobeId, name: MAIN_WARDROBE_NAME, kind: 'main', timeZone, createdAt: now })
-      .run();
-    // Every other setting takes its default from the schema.
-    tx.insert(settings).values({ id: SETTINGS_ID, activeWardrobeId: wardrobeId }).run();
+    tx.insert(wearLimits).values(defaultWearLimits()).onConflictDoNothing().run();
   });
 }

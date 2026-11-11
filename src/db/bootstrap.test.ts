@@ -1,10 +1,12 @@
 /**
  * @jest-environment node
  */
+import { eq } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 
+import { defaultWearLimits } from '../domain/catalogue/subtypes';
 import { ensureDefaults } from './bootstrap';
-import { settings, wardrobes } from './schema';
+import { settings, wardrobes, wearLimits } from './schema';
 import { createTestDb, type TestDb } from './testing/createTestDb';
 
 const NOW = new Date('2026-11-09T08:00:00.000Z');
@@ -68,5 +70,32 @@ describe('ensureDefaults', () => {
 
     expect(db.select().from(wardrobes).all()).toEqual(before);
     expect(db.select().from(settings).all()).toHaveLength(1);
+  });
+
+  it('seeds the starting wear limit of every type that goes to the laundry', () => {
+    const { db } = createTestDb();
+
+    bootstrap(db);
+
+    expect(db.select().from(wearLimits).all()).toEqual(defaultWearLimits());
+  });
+
+  it("keeps the user's wear limits and adds the missing ones on later launches", () => {
+    const { db } = createTestDb();
+    bootstrap(db);
+    db.update(wearLimits).set({ maxWears: 3 }).where(eq(wearLimits.subtype, 'tshirt')).run();
+    db.delete(wearLimits).where(eq(wearLimits.subtype, 'coat')).run();
+
+    bootstrap(db);
+
+    const limits = Object.fromEntries(
+      db
+        .select()
+        .from(wearLimits)
+        .all()
+        .map((limit) => [limit.subtype, limit.maxWears]),
+    );
+    expect(limits.tshirt).toBe(3);
+    expect(limits.coat).toBe(30);
   });
 });
