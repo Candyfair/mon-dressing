@@ -185,17 +185,26 @@ Weather is **not** stored in SQLite: TanStack Query cache only.
 
 ## 5. Subtype catalogue (code, not a table)
 
-`src/domain/catalogue/subtypes.ts` — versioned TypeScript constant, one entry per subtype:
+`src/domain/catalogue/subtypes.ts` — versioned TypeScript constant, one entry per subtype. A type decides **only** the slot and the starting wear limit: no usage, warmth or formality, the app never infers anything else (SPEC §4.2). Type tiles are text only (design `Option`), so no icon; labels are i18n keys `subtypes.<key>`.
 
 ```ts
-interface Subtype {
-  key: string;             // 'tshirt', 'shirt', 'jeans', 'dress', 'raincoat', 'ankleBoots'…
-  slot: Slot;
-  defaultMaxWears: number; // starting wear limit, from the official ADEME list (SPEC §14.1)
-  icon: string;
-}
+type Subtype =
+  | { key: string; slot: Exclude<Slot, 'shoes'>; defaultMaxWears: number }
+  | { key: string; slot: 'shoes' };         // shoes are never washed: no wear limit
 ```
-The catalogue carries **no usage, warmth or formality**: the app never infers usages from the type (SPEC §4.2). Starting values are an open item until S3.
+
+Starting wear limits (approved 2026-11-11, SPEC §14.2): ADEME guidance as relayed by the press, lower bound kept; Candice's values where it says nothing (*).
+
+| Slot | Types (key: wears) |
+|---|---|
+| `top` | tshirt 4, tankTop 4, shirt 4, blouse 4, woolTop 7* |
+| `midLayer` | sweatshirt 5*, sweater 10, cardigan 10*, blazer 10* |
+| `bottom` | jeans 15, trousers 7*, skirt 4*, shorts 4* |
+| `onePiece` | dress 4, jumpsuit 4*, dungarees 15* |
+| `outerLayer` | jacket 30*, coat 30*, raincoat 30* |
+| `shoes` | sneakers, ankleBoots, shoes (no limit) |
+
+`wearLimits` gets one row per type with a limit, written by `ensureDefaults` at every launch (`onConflictDoNothing`): a type added by a newer catalogue gets its starting value, the user's values are kept. No `wearLimits` row for shoes. `garments.subtype` and `wearLimits.subtype` are typed `SubtypeKey`.
 
 ## 6. Migration policy
 
