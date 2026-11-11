@@ -55,7 +55,8 @@
     "lint": "expo lint",
     "test": "jest",
     "prepare": "husky",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "tokens:generate": "node scripts/generate-tokens.js"
   },
   "private": true,
   "jest": {
