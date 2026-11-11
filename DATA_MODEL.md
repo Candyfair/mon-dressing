@@ -197,7 +197,7 @@ Starting wear limits (approved 2026-11-11, SPEC §14.2): ADEME guidance as relay
 
 | Slot | Types (key: wears) |
 |---|---|
-| `top` | tshirt 4, tankTop 4, shirt 4, blouse 4, woolTop 7* |
+| `top` | tshirt 4, tankTop 4, shirt 4, blouse 4, cottonTop 4, woolTop 7* |
 | `midLayer` | sweatshirt 5*, sweater 10, cardigan 10*, blazer 10* |
 | `bottom` | jeans 15, trousers 7*, skirt 4*, shorts 4* |
 | `onePiece` | dress 4, jumpsuit 4*, dungarees 15* |

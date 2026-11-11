@@ -500,7 +500,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-08 | Minimum iOS version (open) | iOS 17 | Floor of the Vision cutout API; no "cutout unavailable" state to design |
 | 2026-11-08 | Android ML Kit model delivery / size (open) | Requested at install through the manifest, checked and downloaded on demand before a cutout; size not measured | The model is only available through Google Play services |
 | 2026-11-08 | Fallback chain (§10.4) decided after S2 | Native APIs on both platforms, no fallback started | Protocol: 13/15 usable on iOS, 15/15 on Android; iOS failures covered by shooting guidance and §10.3 |
-| 2026-11-11 | Starting wear limits from the official ADEME page (open) | ADEME guidance as relayed by the press (lower bound of each range), Candice's values for the other types; 22 types incl. "Haut en laine" (7); shoes have no limit; Settings copy « Valeurs de départ inspirées des repères de l'ADEME » | The ADEME site no longer gives per-garment figures; the press infographic covers only some types |
+| 2026-11-11 | Starting wear limits from the official ADEME page (open) | ADEME guidance as relayed by the press (lower bound of each range), Candice's values for the other types; 23 types incl. "Haut en laine" (7) and "Haut en coton" (4, added the same day); shoes have no limit; Settings copy « Valeurs de départ inspirées des repères de l'ADEME » | The ADEME site no longer gives per-garment figures; the press infographic covers only some types |
 
 ---
 

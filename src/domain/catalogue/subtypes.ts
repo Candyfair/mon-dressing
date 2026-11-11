@@ -34,6 +34,7 @@ export const SUBTYPES = [
   { key: 'tankTop', slot: 'top', defaultMaxWears: 4 },
   { key: 'shirt', slot: 'top', defaultMaxWears: 4 },
   { key: 'blouse', slot: 'top', defaultMaxWears: 4 },
+  { key: 'cottonTop', slot: 'top', defaultMaxWears: 4 },
   { key: 'woolTop', slot: 'top', defaultMaxWears: 7 },
   // Layer 1
   { key: 'sweatshirt', slot: 'midLayer', defaultMaxWears: 5 },
