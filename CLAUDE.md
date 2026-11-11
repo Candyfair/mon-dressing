@@ -61,7 +61,7 @@ Stop and ask **only** if the decision is irreversible or costly to change later,
 - One branch per feature (`feat/<scope>-<short-name>`), merged into `main` after Candice's validation.
 - **Never commit or push directly to `main`.**
 - **Before any push**, show Candice the full text of the commits and of the PR (title + body), then wait for her explicit authorization to push.
-- **Pre-PR review, every time**: just before opening a PR, run the `thermo-nuclear-code-quality-review` skill on the merge-base diff (`git diff --merge-base origin/main HEAD`) and show Candice its verdict together with the PR title and body. Blocking findings are fixed before the PR is opened; non-blocking ones are listed for her decision.
+- **Pre-PR review, every time**: just before opening a PR, a subagent with a fresh context runs the `thermo-nuclear-code-quality-review` skill on the merge-base diff (`git diff --merge-base origin/main HEAD`); Claude shows Candice its verdict together with the PR title and body. Blocking findings are fixed before the PR is opened; non-blocking ones are listed for her decision.
 - **PR auto-fix, on by default**: once a PR is open, Claude subscribes to its activity and fixes CI failures and review comments. Level 3 fixes (types, lint, tests, formatting) are committed and pushed without waiting, the commit message documents the fix, and Candice gets a report afterwards. Any fix touching level 1 or level 2 still follows the rule above.
 
 ### 4.5 Enforcement layer
