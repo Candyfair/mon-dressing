@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { DatabaseProvider } from '../db/DatabaseProvider';
+import '../i18n';
 
 export default function RootLayout() {
   return (

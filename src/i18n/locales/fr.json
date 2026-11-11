@@ -1,0 +1,27 @@
+{
+  "subtypes": {
+    "tshirt": "T-shirt",
+    "tankTop": "Débardeur",
+    "shirt": "Chemise",
+    "blouse": "Blouse",
+    "cottonTop": "Haut en coton",
+    "woolTop": "Haut en laine",
+    "sweatshirt": "Sweat",
+    "sweater": "Pull",
+    "cardigan": "Gilet",
+    "blazer": "Blazer",
+    "jeans": "Jean",
+    "trousers": "Pantalon",
+    "skirt": "Jupe",
+    "shorts": "Short",
+    "dress": "Robe",
+    "jumpsuit": "Combinaison",
+    "dungarees": "Salopette",
+    "jacket": "Veste",
+    "coat": "Manteau",
+    "raincoat": "Imperméable",
+    "sneakers": "Baskets",
+    "ankleBoots": "Bottines",
+    "shoes": "Chaussures"
+  }
+}
