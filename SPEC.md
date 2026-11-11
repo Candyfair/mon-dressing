@@ -231,7 +231,7 @@ A garment has **one location** plus an independent **"to iron" flag**.
 - Shoes are never sorted: they always return to `stored`.
 
 ### §8.2 Wear counter
-- `wearCount` since last wash, compared with the **wear limit of the garment's type** ("Ports avant lavage", set per type in Settings, starting values from the official ADEME list — §14.1; "Revenir aux valeurs de départ").
+- `wearCount` since last wash, compared with the **wear limit of the garment's type** ("Ports avant lavage", set per type in Settings, starting values inspired by ADEME guidance — DATA_MODEL.md §5, §14.2; "Revenir aux valeurs de départ").
 - Incremented on **outfit validation** (or when a probable outfit is sorted, §8.5).
 
 ### §8.3 Airing option ("eco option")
@@ -456,7 +456,6 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 ### §14.1 Open items — do not assume, ask before implementing
 | Item | Resolved when |
 |---|---|
-| Starting wear limits per type, from the **official ADEME page** | S3 |
 | Felt-temperature thresholds for Hot / Mild / Cool / Cold | S4 |
 | Rule deciding which layer slots appear from the weather conditions | S4 |
 | Rotation weights: recency cap, favourite bonus, fit bonus (§7 step 4) | S4 (10 reference scenarios + rotation scenario) |
@@ -501,6 +500,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-08 | Minimum iOS version (open) | iOS 17 | Floor of the Vision cutout API; no "cutout unavailable" state to design |
 | 2026-11-08 | Android ML Kit model delivery / size (open) | Requested at install through the manifest, checked and downloaded on demand before a cutout; size not measured | The model is only available through Google Play services |
 | 2026-11-08 | Fallback chain (§10.4) decided after S2 | Native APIs on both platforms, no fallback started | Protocol: 13/15 usable on iOS, 15/15 on Android; iOS failures covered by shooting guidance and §10.3 |
+| 2026-11-11 | Starting wear limits from the official ADEME page (open) | ADEME guidance as relayed by the press (lower bound of each range), Candice's values for the other types; 22 types incl. "Haut en laine" (7); shoes have no limit; Settings copy « Valeurs de départ inspirées des repères de l'ADEME » | The ADEME site no longer gives per-garment figures; the press infographic covers only some types |
 
 ---
 
