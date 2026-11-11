@@ -10,6 +10,8 @@ const applicationId = isProduction
 const config: ExpoConfig = {
   name: isProduction ? 'Frog-à-porter' : 'Frog-à-porter dev',
   slug: 'frog-a-porter',
+  // Deep-link scheme required by Expo Router; distinct per variant so both apps can coexist.
+  scheme: isProduction ? 'frogaporter' : 'frogaporter-dev',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
@@ -33,6 +35,7 @@ const config: ExpoConfig = {
     favicon: './assets/favicon.png',
   },
   plugins: [
+    'expo-router',
     // iOS 17 is the floor of Vision's VNGenerateForegroundInstanceMaskRequest (SPEC §10.1).
     ['expo-build-properties', { ios: { deploymentTarget: '17.0' } }],
   ],
