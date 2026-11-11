@@ -28,6 +28,7 @@ describe('subtype catalogue', () => {
       tankTop: 4,
       shirt: 4,
       blouse: 4,
+      cottonTop: 4,
       woolTop: 7,
       sweatshirt: 5,
       sweater: 10,
