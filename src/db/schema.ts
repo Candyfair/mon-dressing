@@ -15,6 +15,7 @@ import {
   uniqueIndex,
 } from 'drizzle-orm/sqlite-core';
 
+import type { SubtypeKey } from '../domain/catalogue/subtypes';
 import type {
   Activity,
   CommuteMode,
@@ -51,7 +52,7 @@ export const garments = sqliteTable(
       .references(() => wardrobes.id, { onDelete: 'cascade' }),
     name: text(),
     slot: text().$type<Slot>().notNull(),
-    subtype: text().notNull(),
+    subtype: text().$type<SubtypeKey>().notNull(),
     statementPiece: integer({ mode: 'boolean' }).notNull().default(false),
     needsIroning: integer({ mode: 'boolean' }).notNull().default(false),
     isFavorite: integer({ mode: 'boolean' }).notNull().default(false),
@@ -91,7 +92,7 @@ export const garmentUsages = sqliteTable(
 export const wearLimits = sqliteTable(
   'wearLimits',
   {
-    subtype: text().primaryKey(),
+    subtype: text().$type<SubtypeKey>().primaryKey(),
     maxWears: integer().notNull(),
   },
   (t) => [check('wear_limits_max_wears_check', sql`${t.maxWears} >= 1`)],
