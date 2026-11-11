@@ -204,7 +204,7 @@ Starting wear limits (approved 2026-11-11, SPEC §14.2): ADEME guidance as relay
 | `outerLayer` | jacket 30*, coat 30*, raincoat 30* |
 | `shoes` | sneakers, ankleBoots, shoes (no limit) |
 
-`wearLimits` gets one row per type with a limit, written by `ensureDefaults` at every launch (`onConflictDoNothing`): a type added by a newer catalogue gets its starting value, the user's values are kept. No `wearLimits` row for shoes. `garments.subtype` and `wearLimits.subtype` are typed `SubtypeKey`.
+`wearLimits` gets one row per type with a limit, written by `ensureDefaults` at every launch (`onConflictDoNothing`): a type added by a newer catalogue gets its starting value, the user's values are kept. No `wearLimits` row for shoes. `garments.subtype` and `wearLimits.subtype` are typed `SubtypeKey`. **Keys are persisted**: types can be added freely, but a key is never renamed or removed without a migration of the garments that use it (`getSubtype` throws on an unknown key).
 
 ## 6. Migration policy
 
