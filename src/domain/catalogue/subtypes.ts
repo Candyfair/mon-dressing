@@ -24,6 +24,9 @@ export type Subtype = WashableSubtype | ShoeSubtype;
  * ADEME guidance as relayed by the press ("at least 4" for cotton or silk
  * tops and dresses, 10 to 15 for wool sweaters, 15 to 30 for jeans; lower
  * bound kept), Candice's values for the types it does not cover.
+ *
+ * Keys are persisted in garments.subtype: add types freely, never rename or
+ * remove a key without a migration of the garments that use it.
  */
 export const SUBTYPES = [
   // Tops
