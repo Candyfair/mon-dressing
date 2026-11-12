@@ -30,6 +30,9 @@ const FONT_FAMILIES = [
   },
 ];
 
+// iOS camera prompt, from design/specs/07-ajout-en-rafale.md (AG3).
+const CAMERA_PERMISSION = 'Frog-à-porter en a besoin pour photographier vos vêtements.';
+
 const fontDefinitions = ({ files, folder }: (typeof FONT_FAMILIES)[number]) =>
   Object.entries(files).map(([weight, file]) => ({
     path: `node_modules/@expo-google-fonts/${folder}/${file}`,
@@ -79,6 +82,26 @@ const config: ExpoConfig = {
             fontDefinitions: fontDefinitions(family),
           })),
         },
+      },
+    ],
+    // Photos only: no microphone, no barcode scanner (keeps ML Kit barcode out of the APK).
+    [
+      'expo-camera',
+      {
+        cameraPermission: CAMERA_PERMISSION,
+        microphonePermission: false,
+        recordAudioAndroid: false,
+        barcodeScannerEnabled: false,
+      },
+    ],
+    // The gallery uses the system photo picker, which needs no library permission.
+    // Without these options the plugin adds English prompts and RECORD_AUDIO.
+    [
+      'expo-image-picker',
+      {
+        photosPermission: false,
+        cameraPermission: CAMERA_PERMISSION,
+        microphonePermission: false,
       },
     ],
     // iOS 17 is the floor of Vision's VNGenerateForegroundInstanceMaskRequest (SPEC §10.1).
