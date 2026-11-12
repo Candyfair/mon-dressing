@@ -54,6 +54,28 @@ describe('generate-tokens', () => {
     ).toThrow('Circular token reference: a → b → a');
   });
 
+  it('rejects a letter spacing that is not in em', () => {
+    const tokens = source([]);
+    tokens.type = {
+      families: { text: '"Instrument Sans", sans-serif' },
+      groups: [
+        {
+          family: 'text',
+          styles: [
+            {
+              name: 'chip',
+              fontSize: '13px',
+              lineHeight: 1,
+              fontWeight: 600,
+              letterSpacing: '1px',
+            },
+          ],
+        },
+      ],
+    };
+    expect(() => buildTokens(tokens)).toThrow('Expected an em value, got "1px"');
+  });
+
   it('converts sizes and typography to points', () => {
     const { size, typography, fontFamilies } = buildTokens(readSource());
 

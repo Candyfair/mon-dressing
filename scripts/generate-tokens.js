@@ -24,6 +24,15 @@ function points(value) {
   return Number(match[1]);
 }
 
+// "-0.04em" → -0.04, relative to the font size.
+function ems(value) {
+  const match = /^(-?[\d.]+)em$/.exec(value);
+  if (!match) {
+    throw new Error(`Expected an em value, got ${JSON.stringify(value)}`);
+  }
+  return Number(match[1]);
+}
+
 function round(value) {
   return Math.round(value * 100) / 100;
 }
@@ -78,9 +87,7 @@ function typography(type) {
         typeof style.lineHeight === 'number'
           ? style.lineHeight * fontSize
           : points(style.lineHeight);
-      const letterSpacing = style.letterSpacing
-        ? Number(/^(-?[\d.]+)em$/.exec(style.letterSpacing)[1]) * fontSize
-        : undefined;
+      const letterSpacing = style.letterSpacing ? ems(style.letterSpacing) * fontSize : undefined;
       return [
         camelCase(style.name),
         {
