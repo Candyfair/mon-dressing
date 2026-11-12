@@ -12,16 +12,19 @@ const applicationId = isProduction
 const FONT_FAMILIES = [
   {
     fontFamily: 'Space Grotesk',
-    files: { 500: 'SpaceGrotesk_500Medium', 600: 'SpaceGrotesk_600SemiBold' },
+    files: {
+      500: '500Medium/SpaceGrotesk_500Medium.ttf',
+      600: '600SemiBold/SpaceGrotesk_600SemiBold.ttf',
+    },
     folder: 'space-grotesk',
   },
   {
     fontFamily: 'Instrument Sans',
     files: {
-      400: 'InstrumentSans_400Regular',
-      500: 'InstrumentSans_500Medium',
-      600: 'InstrumentSans_600SemiBold',
-      700: 'InstrumentSans_700Bold',
+      400: '400Regular/InstrumentSans_400Regular.ttf',
+      500: '500Medium/InstrumentSans_500Medium.ttf',
+      600: '600SemiBold/InstrumentSans_600SemiBold.ttf',
+      700: '700Bold/InstrumentSans_700Bold.ttf',
     },
     folder: 'instrument-sans',
   },
@@ -29,7 +32,7 @@ const FONT_FAMILIES = [
 
 const fontDefinitions = ({ files, folder }: (typeof FONT_FAMILIES)[number]) =>
   Object.entries(files).map(([weight, file]) => ({
-    path: `node_modules/@expo-google-fonts/${folder}/${file.split('_')[1]}/${file}.ttf`,
+    path: `node_modules/@expo-google-fonts/${folder}/${file}`,
     weight: Number(weight),
   }));
 
