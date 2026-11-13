@@ -33,6 +33,17 @@ const ICONS = {
       <Path key="b" d="M10 9V7.5A1.5 1.5 0 0 1 11.5 6h6.5a1.5 1.5 0 0 1 1.5 1.5v2" />,
     ],
   },
+  cameraOff: {
+    strokeWidth: 1.7,
+    shapes: [
+      <Path key="a" d="M3 3l18 18" />,
+      <Path
+        key="b"
+        d="M9.5 5h5l1.5 2h3a1.5 1.5 0 0 1 1.5 1.5v8M17 19H4.5A1.5 1.5 0 0 1 3 17.5v-9A1.5 1.5 0 0 1 4.5 7H7"
+      />,
+      <Path key="c" d="M9.9 10.2a3 3 0 0 0 4 4" />,
+    ],
+  },
   check: { strokeWidth: 2.6, shapes: [<Path key="p" d="M5 12.5l4.5 4.5L19 7.5" />] },
   chevronDown: { strokeWidth: 2, shapes: [<Path key="p" d="M6 9l6 6 6-6" />] },
   progress: { strokeWidth: 2.2, shapes: [<Path key="p" d="M12 3a9 9 0 1 0 9 9" />] },

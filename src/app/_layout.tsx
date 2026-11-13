@@ -22,7 +22,9 @@ function AppShell() {
   useResumePendingCutouts();
   return (
     <>
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="add" options={{ presentation: 'fullScreenModal' }} />
+      </Stack>
       <StatusBar style="auto" />
     </>
   );
