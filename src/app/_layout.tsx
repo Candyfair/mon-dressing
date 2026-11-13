@@ -4,16 +4,27 @@ import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { DatabaseProvider } from '../db/DatabaseProvider';
+import { useResumePendingCutouts } from '../features/add/cutout';
 import '../i18n';
 
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={styles.root}>
       <DatabaseProvider>
-        <Stack screenOptions={{ headerShown: false }} />
-        <StatusBar style="auto" />
+        <AppShell />
       </DatabaseProvider>
     </GestureHandlerRootView>
+  );
+}
+
+// Rendered once the database is ready.
+function AppShell() {
+  useResumePendingCutouts();
+  return (
+    <>
+      <Stack screenOptions={{ headerShown: false }} />
+      <StatusBar style="auto" />
+    </>
   );
 }
 
