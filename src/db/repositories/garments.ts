@@ -1,6 +1,8 @@
 // Garment reads and writes outside the lifecycle columns
 // (those go through garmentLifecycle.ts).
-import { eq } from 'drizzle-orm';
+import { desc, eq, max } from 'drizzle-orm';
+
+import type { SubtypeKey } from '../../domain/catalogue/subtypes';
 
 import { garments } from '../schema';
 import type { SyncDatabase } from '../types';
@@ -31,4 +33,17 @@ export function pendingCutouts(db: SyncDatabase): { id: string; photoOriginalPat
     .where(eq(garments.cutoutStatus, 'pending'))
     .orderBy(garments.createdAt)
     .all();
+}
+
+/** The last distinct types added to a wardrobe, most recent first. */
+export function recentSubtypes(db: SyncDatabase, wardrobeId: string, limit: number): SubtypeKey[] {
+  return db
+    .select({ subtype: garments.subtype, lastAdded: max(garments.createdAt) })
+    .from(garments)
+    .where(eq(garments.wardrobeId, wardrobeId))
+    .groupBy(garments.subtype)
+    .orderBy(desc(max(garments.createdAt)))
+    .limit(limit)
+    .all()
+    .map((row) => row.subtype);
 }

@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
 
-import { useTheme } from './theme';
+import { type Theme, useTheme } from './theme';
 import { fontFamilies, radius, size } from './tokens';
 
 // Variants used so far (design-system/components/Button). Text styles from
@@ -14,6 +14,8 @@ interface ButtonProps {
   disabled?: boolean;
   /** Stretches to the parent width (bottom of a sheet). */
   fullWidth?: boolean;
+  /** Fixed theme for a screen that ignores the system one (the always-dark camera). */
+  theme?: Theme;
 }
 
 export function Button({
@@ -22,8 +24,10 @@ export function Button({
   variant = 'primary',
   disabled = false,
   fullWidth = false,
+  theme,
 }: ButtonProps) {
-  const { colors } = useTheme();
+  const systemTheme = useTheme();
+  const { colors } = theme ?? systemTheme;
   const look = (() => {
     switch (variant) {
       case 'primary':

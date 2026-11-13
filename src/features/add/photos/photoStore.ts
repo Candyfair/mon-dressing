@@ -34,21 +34,38 @@ export async function normalizePhoto(uri: string, { width, height }: PhotoSize):
   return result.uri;
 }
 
-function moveInto(cacheUri: string, relativePath: string): string {
-  const destination = new File(Paths.document, relativePath);
-  destination.parentDirectory.create({ intermediates: true, idempotent: true });
-  new File(cacheUri).moveSync(destination, { overwrite: true });
-  return relativePath;
+/**
+ * Quarter turn clockwise, re-encoded like normalizePhoto. Returns a new
+ * cache URI; the previous file is left to the caller.
+ */
+export async function rotatePhoto(uri: string): Promise<string> {
+  const image = await ImageManipulator.manipulate(uri).rotate(90).renderAsync();
+  const result = await image.saveAsync({ format: SaveFormat.JPEG, compress: JPEG_QUALITY });
+  return result.uri;
 }
 
-/** Moves the normalized original out of the cache. Returns its relative path. */
+function destinationFor(relativePath: string): File {
+  const destination = new File(Paths.document, relativePath);
+  destination.parentDirectory.create({ intermediates: true, idempotent: true });
+  return destination;
+}
+
+/**
+ * Copies the normalized original into the garment folder; returns its
+ * relative path. A copy, not a move: a cutout still waiting in the queue
+ * reads the cache file, which is discarded once that cutout has ended.
+ */
 export function storeOriginalPhoto(garmentId: string, cacheUri: string): string {
-  return moveInto(cacheUri, originalPhotoPath(garmentId));
+  const relativePath = originalPhotoPath(garmentId);
+  new File(cacheUri).copySync(destinationFor(relativePath), { overwrite: true });
+  return relativePath;
 }
 
 /** Moves a cutout PNG out of the cache. Returns its relative path. */
 export function storeCutoutPhoto(garmentId: string, cacheUri: string): string {
-  return moveInto(cacheUri, cutoutPhotoPath(garmentId));
+  const relativePath = cutoutPhotoPath(garmentId);
+  new File(cacheUri).moveSync(destinationFor(relativePath), { overwrite: true });
+  return relativePath;
 }
 
 /** Removes a temporary file (retaken photo, unused cutout). */

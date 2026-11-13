@@ -2,6 +2,72 @@
   "common": {
     "close": "Fermer"
   },
+  "add": {
+    "title": "Ajout en rafale",
+    "done": "Terminer",
+    "instruction": "Posez la pièce à plat, bien éclairée",
+    "takePhoto": "Prendre la photo",
+    "pickFromGallery": "Choisir dans la galerie",
+    "addedCount_one": "{{count}} pièce ajoutée, voir",
+    "addedCount_other": "{{count}} pièces ajoutées, voir",
+    "retake": "Reprendre",
+    "retakeLabel": "Reprendre la photo",
+    "rotateLabel": "Pivoter la photo",
+    "cuttingOut": "Détourage…",
+    "cutOut": "Pièce détourée",
+    "typeQuestion": "Quel type de pièce ?",
+    "recent": "Récents",
+    "allTypes": "Tous les types",
+    "changeType": "Changer de type",
+    "favorite": "Favori",
+    "statementPiece": "Pièce forte",
+    "needsIroning": "Se repasse",
+    "moreDetails": "Plus de détails",
+    "optional": "· facultatif",
+    "usageHelp": "Sans précision dans une sous-catégorie, la pièce est proposée dans tous les cas. Choisissez des usages pour ne la proposer qu’à ces moments-là.",
+    "save": "Enregistrer · photo suivante",
+    "cameraDenied": {
+      "title": "L’appareil photo est désactivé",
+      "text": "Frog-à-porter en a besoin pour photographier vos vêtements. Vous pouvez l’autoriser dans les réglages du téléphone.",
+      "openSettings": "Ouvrir les réglages"
+    }
+  },
+  "usages": {
+    "groups": {
+      "weather": "Météo",
+      "activity": "Activité",
+      "commute": "Déplacement",
+      "occasion": "Occasion"
+    },
+    "weather": {
+      "hot": "Chaud",
+      "mild": "Doux",
+      "cool": "Frais",
+      "cold": "Froid",
+      "rain": "Pluie"
+    },
+    "activity": {
+      "office": "Bureau",
+      "remote": "Télétravail",
+      "relax": "Détente",
+      "sport": "Sport"
+    },
+    "commute": {
+      "walking": "À pied",
+      "bike": "Vélo",
+      "scooter": "Trottinette",
+      "publicTransport": "Transports en commun",
+      "car": "Voiture",
+      "motorbike": "Moto"
+    },
+    "occasion": {
+      "everyday": "Quotidien",
+      "evening": "Soirée",
+      "festive": "Festif",
+      "ceremony": "Cérémonie",
+      "jobInterview": "Entretien professionnel"
+    }
+  },
   "subtypes": {
     "tshirt": "T-shirt",
     "tankTop": "Débardeur",
