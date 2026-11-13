@@ -1,4 +1,7 @@
 {
+  "common": {
+    "close": "Fermer"
+  },
   "subtypes": {
     "tshirt": "T-shirt",
     "tankTop": "Débardeur",
