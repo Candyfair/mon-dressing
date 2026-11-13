@@ -16,8 +16,10 @@ import type { Usage } from '../../domain/types';
 import { garmentEvents, garments, garmentUsages } from '../schema';
 import type { SyncDatabase } from '../types';
 
-// The cutout may already be done when the garment is saved (burst add flow).
-export type NewGarmentCutout = { status: 'pending' } | { status: 'done'; path: string };
+// The cutout starts at capture time (burst add flow), so it may already be
+// over when the garment is saved.
+export type CutoutOutcome = { status: 'done'; path: string } | { status: 'failed' };
+export type NewGarmentCutout = { status: 'pending' } | CutoutOutcome;
 
 /** What the add flow decides. Lifecycle columns are not part of it. */
 export interface NewGarmentDraft {
