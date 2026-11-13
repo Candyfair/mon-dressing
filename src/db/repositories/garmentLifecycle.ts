@@ -3,15 +3,65 @@
 // their garmentEvents rows in one transaction.
 import { eq, inArray } from 'drizzle-orm';
 
+import { getSubtype, type SubtypeKey } from '../../domain/catalogue/subtypes';
 import {
+  initialLifecycle,
   type LifecycleCommand,
   type LifecycleEventDraft,
   type LifecycleGarment,
   type LifecyclePatch,
   transition,
 } from '../../domain/lifecycle';
-import { garmentEvents, garments } from '../schema';
+import type { Usage } from '../../domain/types';
+import { garmentEvents, garments, garmentUsages } from '../schema';
 import type { SyncDatabase } from '../types';
+
+// The cutout may already be done when the garment is saved (burst add flow).
+export type NewGarmentCutout = { status: 'pending' } | { status: 'done'; path: string };
+
+/** What the add flow decides. Lifecycle columns are not part of it. */
+export interface NewGarmentDraft {
+  // Chosen by the caller: the photo paths contain it.
+  id: string;
+  wardrobeId: string;
+  subtype: SubtypeKey;
+  isFavorite: boolean;
+  statementPiece: boolean;
+  needsIroning: boolean;
+  usages: readonly Usage[];
+  photoOriginalPath: string;
+  cutout: NewGarmentCutout;
+}
+
+/**
+ * Creates a garment in its initial lifecycle state, with its usages, in one
+ * transaction. No event is written: a creation is not a change of location.
+ */
+export function insertGarment(
+  db: SyncDatabase,
+  { cutout, usages, ...draft }: NewGarmentDraft,
+  { now }: { now: Date },
+): void {
+  db.transaction((tx) => {
+    tx.insert(garments)
+      .values({
+        ...draft,
+        ...initialLifecycle(now),
+        slot: getSubtype(draft.subtype).slot,
+        cutoutStatus: cutout.status,
+        photoCutoutPath: cutout.status === 'done' ? cutout.path : null,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .run();
+    const distinctUsages = [...new Set(usages)];
+    if (distinctUsages.length > 0) {
+      tx.insert(garmentUsages)
+        .values(distinctUsages.map((usage) => ({ garmentId: draft.id, usage })))
+        .run();
+    }
+  });
+}
 
 export interface LifecycleOperation {
   garmentId: string;

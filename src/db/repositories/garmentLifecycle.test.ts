@@ -5,9 +5,14 @@ import { eq, sql } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 
 import { isDryDue, recommendSort } from '../../domain/lifecycle';
-import { garmentEvents, garments, outfits, wardrobes } from '../schema';
+import { garmentEvents, garments, garmentUsages, outfits, wardrobes } from '../schema';
 import { createTestDb, type TestDb } from '../testing/createTestDb';
-import { applyLifecycle, type LifecycleOperation } from './garmentLifecycle';
+import {
+  applyLifecycle,
+  insertGarment,
+  type LifecycleOperation,
+  type NewGarmentDraft,
+} from './garmentLifecycle';
 
 const DAY_1 = new Date('2026-11-09T07:00:00.000Z');
 const HOUR_MS = 60 * 60 * 1000;
@@ -317,5 +322,74 @@ describe('SPEC §8 walkthrough', () => {
       'locationChanged', // → stored
       'ironingChanged', // ironed
     ]);
+  });
+});
+
+describe('insertGarment', () => {
+  const draft = (overrides: Partial<NewGarmentDraft> = {}): NewGarmentDraft => ({
+    id: 'new',
+    wardrobeId: 'w',
+    subtype: 'shirt',
+    isFavorite: true,
+    statementPiece: false,
+    needsIroning: true,
+    usages: ['weather.mild', 'activity.office', 'weather.mild'],
+    photoOriginalPath: 'photos/new/original.jpg',
+    cutout: { status: 'pending' },
+    ...overrides,
+  });
+
+  it('creates the garment in its initial state, with its slot and usages', () => {
+    const { db } = createTestDb();
+    seed(db);
+    insertGarment(db, draft(), { now: at(2) });
+
+    const row = db.select().from(garments).where(eq(garments.id, 'new')).get();
+    expect(row).toMatchObject({
+      slot: 'top',
+      subtype: 'shirt',
+      isFavorite: true,
+      needsIroning: true,
+      location: 'stored',
+      locationSince: at(2),
+      toIron: false,
+      wearCount: 0,
+      cutoutStatus: 'pending',
+      photoCutoutPath: null,
+      createdAt: at(2),
+      updatedAt: at(2),
+    });
+    const usages = db
+      .select({ usage: garmentUsages.usage })
+      .from(garmentUsages)
+      .where(eq(garmentUsages.garmentId, 'new'))
+      .all()
+      .map((u) => u.usage);
+    expect(usages.sort()).toEqual(['activity.office', 'weather.mild']);
+    // A creation is not a change of location.
+    expect(db.select().from(garmentEvents).all()).toEqual([]);
+  });
+
+  it('stores a cutout that finished before saving', () => {
+    const { db } = createTestDb();
+    seed(db);
+    insertGarment(
+      db,
+      draft({ usages: [], cutout: { status: 'done', path: 'photos/new/cutout.png' } }),
+      { now: at(2) },
+    );
+    const row = db.select().from(garments).where(eq(garments.id, 'new')).get();
+    expect(row).toMatchObject({ cutoutStatus: 'done', photoCutoutPath: 'photos/new/cutout.png' });
+    expect(db.select().from(garmentUsages).all()).toEqual([]);
+  });
+
+  it('writes nothing when the usages cannot be written', () => {
+    const { db, sqlite } = createTestDb();
+    seed(db);
+    sqlite.exec(
+      "CREATE TRIGGER fail_usages BEFORE INSERT ON garmentUsages BEGIN SELECT RAISE(ABORT, 'boom'); END",
+    );
+    expect(() => insertGarment(db, draft(), { now: at(2) })).toThrow('boom');
+    expect(db.select().from(garments).where(eq(garments.id, 'new')).get()).toBeUndefined();
   });
 });
