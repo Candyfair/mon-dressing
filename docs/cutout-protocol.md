@@ -33,7 +33,7 @@ Real garments from the wardrobe, shot the way burst mode will be used: phone in 
    - Android: `npx expo run:android --device`, on a **fresh install** (uninstall the app first; see "Android setup" below).
 
    A debug build is enough for quality, but read the timings with care and note the build type.
-2. Close other apps, then open the app (cutout harness screen).
+2. Close other apps, then open the app on the cutout harness screen. The harness was removed in S3 once the burst add flow replaced it: restore it on a scratch branch with `git checkout e13faff -- src/features/cutout-harness` and point `src/app/index.tsx` to `CutoutHarnessScreen`.
 3. Pick the 15 photos in order. They are processed one at a time.
 4. Check each cutout on the white, black and magenta backdrops: magenta reveals fringes and holes.
 5. Export the CSV and copy the timings below.

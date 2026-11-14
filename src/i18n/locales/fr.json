@@ -92,5 +92,16 @@
     "sneakers": "Baskets",
     "ankleBoots": "Bottines",
     "shoes": "Chaussures"
+  },
+  "dev": {
+    "title_one": "{{count}} pièce",
+    "title_other": "{{count}} pièces",
+    "add": "Ajouter",
+    "empty": "Aucune pièce pour l’instant.",
+    "cutout": {
+      "pending": "Détourage en attente",
+      "done": "Détourée",
+      "failed": "Détourage échoué, photo d’origine"
+    }
   }
 }

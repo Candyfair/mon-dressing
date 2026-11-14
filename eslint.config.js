@@ -19,11 +19,6 @@ module.exports = defineConfig([
     },
   },
   {
-    // Internal cutout test tool, never shipped, removed after S2.
-    files: ['src/features/cutout-harness/**'],
-    rules: { 'i18next/no-literal-string': 'off' },
-  },
-  {
     ignores: [
       'dist/*',
       'design/*',

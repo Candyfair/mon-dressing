@@ -1,4 +1,4 @@
-// Temporary home route: the cutout harness, until the burst add flow replaces it.
-import { CutoutHarnessScreen } from '../features/cutout-harness/CutoutHarnessScreen';
+// Provisional home route (development list), until the Wardrobe and Today screens replace it.
+import { DevGarmentList } from '../features/dev/DevGarmentList';
 
-export default CutoutHarnessScreen;
+export default DevGarmentList;
