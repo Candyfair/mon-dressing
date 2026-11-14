@@ -44,9 +44,22 @@ export interface CapturedPhoto extends PhotoSize {
   isTemporary: boolean;
 }
 
+// Runs a file clean-up, reporting a failure instead of throwing.
+function quietly(cleanUp: () => void): void {
+  try {
+    cleanUp();
+  } catch (error) {
+    reportError(error);
+  }
+}
+
+function discardQuietly(cacheUri: string): void {
+  quietly(() => discardCachedFile(cacheUri));
+}
+
 // Deletes the draft photo once its cutout no longer needs it.
 function releaseWhenSettled(draft: Draft): void {
-  void draft.job.settled.then(() => discardCachedFile(draft.photoUri)).catch(reportError);
+  void draft.job.settled.then(() => discardQuietly(draft.photoUri));
 }
 
 function abandon(draft: Draft): void {
@@ -126,13 +139,18 @@ export function useBurstSession() {
         if (!photo) {
           return;
         }
-        const uri = await normalizePhoto(photo.uri, photo);
-        if (photo.isTemporary) {
-          discardCachedFile(photo.uri);
+        let uri: string;
+        try {
+          uri = await normalizePhoto(photo.uri, photo);
+        } finally {
+          // The camera's own file is not needed once normalized, or on failure.
+          if (photo.isTemporary) {
+            discardQuietly(photo.uri);
+          }
         }
         // Closed while the photo was prepared: nothing left to describe it.
         if (!isMountedRef.current) {
-          discardCachedFile(uri);
+          discardQuietly(uri);
           return;
         }
         setDraft({
@@ -171,7 +189,7 @@ export function useBurstSession() {
     try {
       const uri = await rotatePhoto(current.photoUri);
       if (draftRef.current?.job !== current.job) {
-        discardCachedFile(uri);
+        discardQuietly(uri);
         return;
       }
       abandon(current);
@@ -208,14 +226,17 @@ export function useBurstSession() {
         );
       } catch (error) {
         reportError(error);
-        try {
-          deleteGarmentPhotos(id);
-        } catch (cleanupError) {
-          reportError(cleanupError);
-        }
+        quietly(() => deleteGarmentPhotos(id));
         return;
       }
-      cutoutQueue.claim(current.job, id);
+      // The garment exists from here on: whatever happens, the draft is done.
+      // If the claim failed, the garment stays pending and its cutout runs
+      // again at the next launch.
+      try {
+        cutoutQueue.claim(current.job, id);
+      } catch (error) {
+        reportError(error);
+      }
       releaseWhenSettled(current);
       if (__DEV__) {
         const seconds = ((Date.now() - current.startedAt) / 1000).toFixed(1);

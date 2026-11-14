@@ -143,6 +143,8 @@ describe('CutoutQueue', () => {
     await queue.idle();
     expect(deps.reportError).toHaveBeenCalledWith(new Error('disk full'));
     expect(deps.record).toHaveBeenCalledWith('g1', { status: 'failed' });
+    // The PNG that could not be stored does not stay in the cache.
+    expect(deps.discard).toHaveBeenCalledWith('cache/a.png');
   });
 
   it('keeps running cutouts after a file error on a discarded photo', async () => {

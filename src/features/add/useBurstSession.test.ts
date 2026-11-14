@@ -244,4 +244,33 @@ describe('useBurstSession', () => {
     expect(discardCachedFile).toHaveBeenCalledWith('cache/normalized.jpg');
     expect(insertGarment).not.toHaveBeenCalled();
   });
+
+  it('deletes the camera file when the photo cannot be prepared', async () => {
+    const { result } = await renderHook(() => useBurstSession());
+    jest.mocked(normalizePhoto).mockRejectedValueOnce(new Error('decode error'));
+    await act(() => result.current.capture(async () => CAMERA_PHOTO));
+    expect(reportError).toHaveBeenCalledWith(new Error('decode error'));
+    expect(discardCachedFile).toHaveBeenCalledWith('cache/camera.jpg');
+    expect(result.current.draft).toBeNull();
+    expect(result.current.isBusy).toBe(false);
+  });
+
+  it('closes the draft once the garment exists, even if the claim fails', async () => {
+    const { result } = await withDraft();
+    // A job that already belongs to a garment: the real claim() refuses it.
+    mockCutout.queue.claim(result.current.draft!.job, 'other');
+    await act(async () => result.current.save(CHOICE));
+    expect(insertGarment).toHaveBeenCalledTimes(1);
+    expect(reportError).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.stringContaining('already belongs') }),
+    );
+    expect(result.current.draft).toBeNull();
+    expect(result.current.added.count).toBe(1);
+
+    // The new garment keeps its pending cutout, resumed at the next launch.
+    await flush();
+    mockCutout.calls[0]?.finish();
+    await mockCutout.queue.idle();
+    expect(mockCutout.deps.record).not.toHaveBeenCalledWith('g1', expect.anything());
+  });
 });
