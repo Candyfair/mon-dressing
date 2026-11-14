@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
-import { fontFamilies, radius, size } from '../../ui/tokens';
+import { fontFamilies, radius, size, spacing } from '../../ui/tokens';
 import { cameraColors } from './cameraColors';
 
 interface CommonProps {
@@ -40,7 +40,9 @@ export function GlassButton({
       hitSlop={Math.max(0, (size.sizeTap - diameter) / 2)}
       style={({ pressed }) => [
         styles.base,
-        icon ? { width: diameter, height: diameter } : { height: diameter, paddingHorizontal: 16 },
+        icon
+          ? { width: diameter, height: diameter }
+          : { height: diameter, paddingHorizontal: spacing.space16 },
         (pressed || disabled) && styles.dimmed,
       ]}
     >

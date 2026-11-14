@@ -12,7 +12,7 @@ export interface CutoutQueueDeps {
   cutOut: (sourceUri: string) => Promise<{ uri: string }>;
   /** Moves a cutout out of the cache into the garment folder; returns its relative path. */
   storeCutout: (garmentId: string, cacheUri: string) => string;
-  /** Deletes a cutout nobody will use (retaken photo). */
+  /** Deletes a cutout nobody will use (retaken photo, or one that could not be stored). */
   discard: (cacheUri: string) => void;
   /** Writes the outcome on a saved garment. */
   record: (garmentId: string, outcome: CutoutOutcome) => void;
@@ -144,11 +144,7 @@ export class CutoutQueue {
         return;
       case 'discarded':
         if (result.status === 'done') {
-          try {
-            this.deps.discard(result.cacheUri);
-          } catch (error) {
-            this.deps.reportError(error);
-          }
+          this.discardQuietly(result.cacheUri);
         }
         return;
       case 'garment': {
@@ -175,7 +171,16 @@ export class CutoutQueue {
       return { status: 'done', path: this.deps.storeCutout(garmentId, result.cacheUri) };
     } catch (error) {
       this.deps.reportError(error);
+      this.discardQuietly(result.cacheUri);
       return { status: 'failed' };
+    }
+  }
+
+  private discardQuietly(cacheUri: string): void {
+    try {
+      this.deps.discard(cacheUri);
+    } catch (error) {
+      this.deps.reportError(error);
     }
   }
 }

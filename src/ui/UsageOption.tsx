@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { Icon } from './Icon';
 import { useTheme } from './theme';
-import { fontFamilies, radius, size } from './tokens';
+import { fontFamilies, radius, size, spacing } from './tokens';
 
 interface UsageOptionProps {
   label: string;
@@ -37,7 +37,7 @@ export function UsageOption({ label, selected, onToggle }: UsageOptionProps) {
 const styles = StyleSheet.create({
   option: {
     minHeight: size.sizeOptionSmall,
-    paddingHorizontal: 10,
+    paddingHorizontal: spacing.space10,
     borderWidth: 1,
     borderRadius: radius.radiusFull,
     flexDirection: 'row',
