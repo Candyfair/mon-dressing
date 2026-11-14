@@ -395,8 +395,9 @@ Toggle "Détourée / Photo d'origine" on the garment sheet. Cards are designed t
 - Relative photo paths (export/import).
 
 ### §11.4 Backup
-- Tier 1: rely on system backups (iOS documents directory). Android coverage to verify (§14.1).
-- Tier 2: manual export/import archive (DB + photos).
+- Tier 1: rely on system backups. iOS: iCloud backup of the documents directory (database and photos). Android: Auto Backup stops at 25 MB per app, about 18 garments, then backs up nothing (`docs/android-backup.md`).
+- Android rules (S11): photos excluded from system backup, database kept, so it always stays under the quota; after a reinstall, garments come back without their photos ("missing photo" state, §14.1).
+- Tier 2: manual export/import archive (DB + photos), the only photo backup on Android; high priority in S11.
 
 ---
 
@@ -461,11 +462,11 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | Rotation weights: recency cap, favourite bonus, fit bonus (§7 step 4) | S4 (10 reference scenarios + rotation scenario) |
 | Rain probability threshold and ± window margin | S4 |
 | Bike correction on the weather category | S4 |
-| Android system backup coverage for photos | S3 |
 | Glass blur vs semi-opaque on Android (design: blur, semi-opaque fallback on low-end Android) | S6 |
 | Animation durations and curves (swipe, fade, bounce, end of sort) | S6 prototype |
 | Ironing carousel (not designed) | Before S8 |
 | Demo wardrobe content | S10 |
+| "Missing photo" state on cards (Android restore without photos, §11.4) | Before S11 |
 | Final weather mascot illustrations, onboarding illustration | Before S12 |
 | "Frog-à-porter et moi" text, photo, contact e-mail | Before S12 |
 | Open-Meteo non-commercial confirmation | Before S12 |
@@ -501,6 +502,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-08 | Android ML Kit model delivery / size (open) | Requested at install through the manifest, checked and downloaded on demand before a cutout; size not measured | The model is only available through Google Play services |
 | 2026-11-08 | Fallback chain (§10.4) decided after S2 | Native APIs on both platforms, no fallback started | Protocol: 13/15 usable on iOS, 15/15 on Android; iOS failures covered by shooting guidance and §10.3 |
 | 2026-11-11 | Starting wear limits from the official ADEME page (open) | ADEME guidance as relayed by the press (lower bound of each range), Candice's values for the other types; 23 types incl. "Haut en laine" (7) and "Haut en coton" (4, added the same day); shoes have no limit; Settings copy « Valeurs de départ inspirées des repères de l'ADEME » | The ADEME site no longer gives per-garment figures; the press infographic covers only some types |
+| 2026-11-14 | Tier 1 relies on system backups; Android coverage to verify | Android: photos excluded from system backup, database kept (S11); export/import high priority in S11 | Auto Backup stops at 25 MB, about 18 garments at 1.3 MB each, then backs up nothing (`docs/android-backup.md`) |
 
 ---
 
@@ -529,6 +531,6 @@ Create the personal Apple Developer account (identity verification can take days
 | Session | Ships | Verification | Risk |
 |---|---|---|---|
 | S10 | Outfit variants, demo data (Candice's photos, rules §9.7); start recruiting the 12 testers; create Play Console account if not done | Recruiter flow < 10 s to value | R5 |
-| S11 | App icon, English localisation, export/import (priority per Android backup finding) | Round-trip export/import on another device | — |
+| S11 | App icon, English localisation, export/import (high priority: only photo backup on Android), Android backup rules (photos excluded), "missing photo" state | Round-trip export/import on another device | — |
 | S12 | Privacy page on candyfairstudio.com, Open-Meteo confirmation, store listings, tip jar IAP, Maestro flows; **start TestFlight + Play closed test (14 days)** | Maestro green; builds accepted in test tracks | R5, R8 |
 | S13 | Fixes from tester feedback, production release | Live on both stores | — |
