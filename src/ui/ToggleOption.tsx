@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { Icon, type IconName } from './Icon';
 import { useTheme } from './theme';
-import { fontFamilies, radius, size } from './tokens';
+import { fontFamilies, radius, size, spacing } from './tokens';
 
 interface ToggleOptionProps {
   label: string;
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.radiusFull,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: spacing.space6,
   },
   label: { fontFamily: fontFamilies.text, fontWeight: '600', fontSize: 13.5 },
 });

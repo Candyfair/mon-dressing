@@ -9,8 +9,10 @@ jest.mock('../../ui/Sheet', () => ({
   Sheet: ({ children }: { children: ReactNode }) => children,
 }));
 
-async function renderSheet(onSave = jest.fn()) {
-  await render(<TypeSheet recentSubtypes={['tshirt', 'shirt', 'jeans']} onSave={onSave} />);
+async function renderSheet(onSave = jest.fn(), { isBusy = false } = {}) {
+  await render(
+    <TypeSheet recentSubtypes={['tshirt', 'shirt', 'jeans']} isBusy={isBusy} onSave={onSave} />,
+  );
   return onSave;
 }
 
@@ -26,6 +28,14 @@ describe('TypeSheet', () => {
 
   it('cannot save before a type is chosen', async () => {
     const onSave = await renderSheet();
+    expect(saveButton()).toBeDisabled();
+    await fireEvent.press(saveButton());
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('cannot save while the photo is being rotated', async () => {
+    const onSave = await renderSheet(jest.fn(), { isBusy: true });
+    await fireEvent.press(screen.getByRole('button', { name: 'Jean' }));
     expect(saveButton()).toBeDisabled();
     await fireEvent.press(saveButton());
     expect(onSave).not.toHaveBeenCalled();

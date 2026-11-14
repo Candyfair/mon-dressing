@@ -4,15 +4,18 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 import { fontFamilies, radius, size } from '../../ui/tokens';
 import { cameraColors } from './cameraColors';
 
-interface GlassButtonProps {
+interface CommonProps {
   onPress: () => void;
-  accessibilityLabel?: string;
   disabled?: boolean;
-  /** Round icon button when set, text pill otherwise. */
-  icon?: ReactNode;
-  label?: string;
   diameter?: number;
 }
+
+// Round icon button, which needs an accessible name, or text pill.
+type GlassButtonProps = CommonProps &
+  (
+    | { icon: ReactNode; accessibilityLabel: string; label?: never }
+    | { label: string; accessibilityLabel?: string; icon?: never }
+  );
 
 /**
  * Translucent control over the camera picture (mockups AG1 to AG3). The

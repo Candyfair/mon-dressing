@@ -3,10 +3,10 @@
 import { desc, eq, max } from 'drizzle-orm';
 
 import type { SubtypeKey } from '../../domain/catalogue/subtypes';
+import type { CutoutOutcome } from '../../domain/types';
 
 import { garments } from '../schema';
 import type { SyncDatabase } from '../types';
-import type { CutoutOutcome } from './garmentLifecycle';
 
 /** Records the end of a background cutout. */
 export function setCutoutResult(

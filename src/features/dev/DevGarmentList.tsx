@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     gap: spacing.space14,
   },
   thumbnail: { width: THUMBNAIL, height: THUMBNAIL },
-  text: { flex: 1, gap: 2 },
+  text: { flex: 1, gap: spacing.space2 },
   subtype: { fontFamily: fontFamilies.text, fontWeight: '600', fontSize: 15 },
   status: { fontFamily: fontFamilies.text, fontSize: 13 },
 });
