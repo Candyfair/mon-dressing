@@ -104,6 +104,8 @@ const config: ExpoConfig = {
         microphonePermission: false,
       },
     ],
+    // Android: keeps the ML Kit model list to subject segmentation (manifest merge).
+    './modules/subject-cutout/plugin/withSubjectSegmentationModel.js',
     // iOS 17 is the floor of Vision's VNGenerateForegroundInstanceMaskRequest (SPEC §10.1).
     ['expo-build-properties', { ios: { deploymentTarget: '17.0' } }],
   ],
