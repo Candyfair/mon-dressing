@@ -27,6 +27,8 @@ function rowsOf<T>(items: readonly T[]): T[][] {
 
 interface TypeSheetProps {
   recentSubtypes: readonly SubtypeKey[];
+  /** A rotation is in progress: saving waits for it. */
+  isBusy: boolean;
   onSave: (choice: GarmentChoice) => void;
 }
 
@@ -34,7 +36,7 @@ interface TypeSheetProps {
  * "Quel type de pièce ?" (AG2, AG4, AG5). Only the type is required; the
  * toggles and usages are optional and nothing is inferred from the type.
  */
-export function TypeSheet({ recentSubtypes, onSave }: TypeSheetProps) {
+export function TypeSheet({ recentSubtypes, isBusy, onSave }: TypeSheetProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [subtype, setSubtype] = useState<SubtypeKey | null>(null);
@@ -62,7 +64,7 @@ export function TypeSheet({ recentSubtypes, onSave }: TypeSheetProps) {
     });
 
   const save = () => {
-    if (subtype) {
+    if (subtype && !isBusy) {
       onSave({ subtype, isFavorite, statementPiece, needsIroning, usages: [...usages] });
     }
   };
@@ -181,7 +183,7 @@ export function TypeSheet({ recentSubtypes, onSave }: TypeSheetProps) {
         ) : null}
       </ScrollView>
       <View style={styles.footer}>
-        <Button label={t('add.save')} onPress={save} disabled={!subtype} fullWidth />
+        <Button label={t('add.save')} onPress={save} disabled={!subtype || isBusy} fullWidth />
       </View>
     </Sheet>
   );

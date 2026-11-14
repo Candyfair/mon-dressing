@@ -12,6 +12,7 @@ import { GlassButton } from './GlassButton';
 interface DraftPhotoProps {
   photoUri: string;
   cutoutStatus: CutoutJobStatus;
+  /** A rotation is in progress: retake and rotate wait for it. */
   isBusy: boolean;
   onRetake: () => void;
   onRotate: () => void;
@@ -35,6 +36,7 @@ export function DraftPhoto({
         <GlassButton
           label={t('add.retake')}
           accessibilityLabel={t('add.retakeLabel')}
+          disabled={isBusy}
           onPress={onRetake}
           diameter={36}
         />

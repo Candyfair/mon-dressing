@@ -4,9 +4,10 @@
 import { eq } from 'drizzle-orm';
 
 import type { SubtypeKey } from '../../domain/catalogue/subtypes';
+import type { NewGarmentCutout } from '../../domain/types';
 import { garments, wardrobes } from '../schema';
 import { createTestDb, type TestDb } from '../testing/createTestDb';
-import { insertGarment, type NewGarmentCutout } from './garmentLifecycle';
+import { insertGarment } from './garmentLifecycle';
 import { pendingCutouts, recentSubtypes, setCutoutResult } from './garments';
 
 const T0 = new Date('2026-11-13T08:00:00.000Z');

@@ -12,14 +12,9 @@ import {
   type LifecyclePatch,
   transition,
 } from '../../domain/lifecycle';
-import type { Usage } from '../../domain/types';
+import type { NewGarmentCutout, Usage } from '../../domain/types';
 import { garmentEvents, garments, garmentUsages } from '../schema';
 import type { SyncDatabase } from '../types';
-
-// The cutout starts at capture time (burst add flow), so it may already be
-// over when the garment is saved.
-export type CutoutOutcome = { status: 'done'; path: string } | { status: 'failed' };
-export type NewGarmentCutout = { status: 'pending' } | CutoutOutcome;
 
 /** What the add flow decides. Lifecycle columns are not part of it. */
 export interface NewGarmentDraft {
@@ -32,6 +27,9 @@ export interface NewGarmentDraft {
   needsIroning: boolean;
   usages: readonly Usage[];
   photoOriginalPath: string;
+  // The burst flow always inserts `pending` and records the outcome once the
+  // row exists. `done` and `failed` are for garments that arrive with their
+  // cutout settled (demo wardrobe in S10, import in S11).
   cutout: NewGarmentCutout;
 }
 

@@ -10,6 +10,12 @@ export type Location = (typeof LOCATIONS)[number];
 export const CUTOUT_STATUSES = ['pending', 'done', 'failed'] as const;
 export type CutoutStatus = (typeof CUTOUT_STATUSES)[number];
 
+/** How a cutout ended, as written on its garment. */
+export type CutoutOutcome = { status: 'done'; path: string } | { status: 'failed' };
+// The cutout starts at capture time, so it may already be over when the
+// garment is created.
+export type NewGarmentCutout = { status: 'pending' } | CutoutOutcome;
+
 export const ACTIVITIES = ['office', 'remote', 'relax', 'sport'] as const;
 export type Activity = (typeof ACTIVITIES)[number];
 

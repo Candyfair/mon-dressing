@@ -3,7 +3,7 @@
 // ends. Cutouts run one at a time to keep low-end Android phones responsive.
 //
 // Pure TypeScript with injected effects, so it is tested without native code.
-import type { CutoutOutcome, NewGarmentCutout } from '../../../db/repositories/garmentLifecycle';
+import type { CutoutOutcome } from '../../../domain/types';
 
 export type CutoutJobStatus = 'running' | 'done' | 'failed';
 
@@ -66,23 +66,19 @@ export class CutoutQueue {
   }
 
   /**
-   * Gives a draft job its garment, at save time. Returns what to insert:
-   * the finished outcome, or `pending` if the cutout is still running (its
-   * outcome is then recorded when it ends).
-   *
-   * Call it right before the synchronous insert, without awaiting in
-   * between: an outcome is recorded in a later task, after the row exists.
+   * Gives a draft job its garment, once the garment row exists (created with
+   * a pending cutout). A finished outcome is recorded right away, a running
+   * one when it ends.
    */
-  claim(job: CutoutJob, garmentId: string): NewGarmentCutout {
+  claim(job: CutoutJob, garmentId: string): void {
     const own = this.own(job);
     if (own.owner.kind !== 'draft') {
       throw new Error('This cutout already belongs to a garment or was discarded');
     }
     own.owner = { kind: 'garment', garmentId };
-    if (own.result === null) {
-      return { status: 'pending' };
+    if (own.result !== null) {
+      this.settle(own, own.result);
     }
-    return this.outcomeFor(garmentId, own.result);
   }
 
   /** Drops a draft job (photo retaken, add flow closed). */
@@ -92,8 +88,8 @@ export class CutoutQueue {
       return;
     }
     own.owner = { kind: 'discarded' };
-    if (own.result?.status === 'done') {
-      this.deps.discard(own.result.cacheUri);
+    if (own.result !== null) {
+      this.settle(own, own.result);
     }
   }
 
@@ -117,27 +113,30 @@ export class CutoutQueue {
   }
 
   private enqueue(job: Job): Job {
-    this.tail = this.tail.then(() => this.run(job));
+    // run() never throws; the catch keeps the chain alive if that ever changes.
+    this.tail = this.tail.then(() => this.run(job)).catch(this.deps.reportError);
     return job;
   }
 
   private async run(job: Job): Promise<void> {
-    if (job.owner.kind === 'discarded') {
-      job.result = { status: 'failed' };
-      job.resolveSettled('failed');
-      return;
-    }
+    let result: Result = { status: 'failed' };
     try {
-      const { uri } = await this.deps.cutOut(job.sourceUri);
-      job.result = { status: 'done', cacheUri: uri };
+      if (job.owner.kind !== 'discarded') {
+        const { uri } = await this.deps.cutOut(job.sourceUri);
+        result = { status: 'done', cacheUri: uri };
+      }
     } catch {
       // No subject, model unavailable…: the original photo is used (SPEC §10.3).
-      job.result = { status: 'failed' };
     }
-    this.settle(job, job.result);
-    job.resolveSettled(job.result.status);
+    job.result = result;
+    try {
+      this.settle(job, result);
+    } finally {
+      job.resolveSettled(result.status);
+    }
   }
 
+  /** Hands a finished result to the job's owner. File and database errors are reported. */
   private settle(job: Job, result: Result): void {
     switch (job.owner.kind) {
       case 'draft':
@@ -145,7 +144,11 @@ export class CutoutQueue {
         return;
       case 'discarded':
         if (result.status === 'done') {
-          this.deps.discard(result.cacheUri);
+          try {
+            this.deps.discard(result.cacheUri);
+          } catch (error) {
+            this.deps.reportError(error);
+          }
         }
         return;
       case 'garment': {

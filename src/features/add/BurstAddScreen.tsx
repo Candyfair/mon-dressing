@@ -17,10 +17,6 @@ import { type CapturedPhoto, useBurstSession } from './useBurstSession';
 // Recent types shown first in the type sheet (AG2 shows three).
 const RECENT_TYPES = 3;
 
-function reportError(error: unknown) {
-  console.warn('Burst add error', error);
-}
-
 /** Burst add flow (design/specs/07): photo → type → save → next photo. */
 export function BurstAddScreen() {
   const cameraRef = useRef<CameraView>(null);
@@ -55,36 +51,23 @@ export function BurstAddScreen() {
 
   const close = () => router.back();
 
-  const begin = (photo: CapturedPhoto, startedAt: number) => {
-    session.begin(photo, startedAt).catch(reportError);
-  };
-
-  const takePhoto = async () => {
-    const startedAt = Date.now();
-    try {
+  const takePhoto = () =>
+    session.capture(async () => {
       const picture = await cameraRef.current?.takePictureAsync({ quality: 0.9 });
-      if (picture) {
-        begin({ ...picture, isTemporary: true }, startedAt);
-      }
-    } catch (error) {
-      reportError(error);
-    }
-  };
-
-  const pickFromGallery = async () => {
-    const startedAt = Date.now();
-    const picked = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      quality: 1,
+      return picture ? { ...picture, isTemporary: true } : null;
     });
-    const asset = picked.canceled ? undefined : picked.assets[0];
-    if (asset) {
-      begin(
-        { uri: asset.uri, width: asset.width, height: asset.height, isTemporary: false },
-        startedAt,
-      );
-    }
-  };
+
+  const pickFromGallery = () =>
+    session.capture(async (): Promise<CapturedPhoto | null> => {
+      const picked = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        quality: 1,
+      });
+      const asset = picked.canceled ? undefined : picked.assets[0];
+      return asset
+        ? { uri: asset.uri, width: asset.width, height: asset.height, isTemporary: false }
+        : null;
+    });
 
   if (!permission) {
     return <View style={styles.screen} />;
@@ -120,12 +103,17 @@ export function BurstAddScreen() {
         <>
           <DraftPhoto
             photoUri={draft.photoUri}
-            cutoutStatus={session.cutoutStatus}
+            cutoutStatus={draft.cutoutStatus}
             isBusy={session.isBusy}
             onRetake={session.retake}
-            onRotate={() => void session.rotate().catch(reportError)}
+            onRotate={() => void session.rotate()}
           />
-          <TypeSheet key={draft.key} recentSubtypes={recents} onSave={session.save} />
+          <TypeSheet
+            key={draft.key}
+            recentSubtypes={recents}
+            isBusy={session.isBusy}
+            onSave={session.save}
+          />
         </>
       ) : null}
     </View>
