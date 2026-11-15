@@ -1,5 +1,5 @@
 export type { LifecycleCommand, SortDestination, WardrobeStatus } from './commands';
-export { isDryDue, recommendSort } from './recommendations';
+export { hasReachedWearLimit, isDryDue, recommendSort } from './recommendations';
 export { initialLifecycle, transition, type TransitionResult } from './transition';
 export type {
   InitialLifecycle,

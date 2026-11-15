@@ -1,3 +1,4 @@
+import { parseUsage } from '../catalogue/usageGroups';
 import type { Activity, CommuteMode, DayContext, Occasion, Usage, WeatherUsage } from '../types';
 
 export interface UsageMatch {
@@ -20,9 +21,25 @@ interface GroupedUsages {
 function groupUsages(usages: readonly Usage[]): GroupedUsages {
   const grouped: GroupedUsages = { weather: [], activity: [], commute: [], occasion: [] };
   for (const usage of usages) {
-    const [group, value] = usage.split('.') as [keyof GroupedUsages, string];
-    // Each group only receives its own values (the Usage template type).
-    (grouped[group] as string[]).push(value);
+    const parsed = parseUsage(usage);
+    switch (parsed.group) {
+      case 'weather':
+        grouped.weather.push(parsed.value);
+        break;
+      case 'activity':
+        grouped.activity.push(parsed.value);
+        break;
+      case 'commute':
+        grouped.commute.push(parsed.value);
+        break;
+      case 'occasion':
+        grouped.occasion.push(parsed.value);
+        break;
+      default: {
+        const exhaustive: never = parsed;
+        throw new Error(`Unknown usage group: ${String(exhaustive)}`);
+      }
+    }
   }
   return grouped;
 }

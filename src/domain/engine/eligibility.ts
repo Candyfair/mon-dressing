@@ -1,3 +1,4 @@
+import { hasReachedWearLimit } from '../lifecycle';
 import { localDate, type LocalDate } from '../time';
 import type { EngineGarment, EngineSettings } from './types';
 
@@ -32,7 +33,7 @@ export function isAvailable(
   }
 }
 
-/** Under its type's wear limit (SPEC §8.2); at the limit it goes to the laundry. */
+/** Under its type's wear limit (SPEC §8.2), the same rule as the evening sort. */
 export function isWithinWearLimit(garment: EngineGarment): boolean {
-  return garment.maxWears === null || garment.wearCount < garment.maxWears;
+  return !hasReachedWearLimit(garment.wearCount, garment.maxWears);
 }
