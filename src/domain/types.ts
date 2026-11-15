@@ -63,3 +63,14 @@ export type RotationPace = (typeof ROTATION_PACES)[number];
 // Language of the UI (settings.language).
 export const LANGUAGES = ['fr', 'en'] as const;
 export type Language = (typeof LANGUAGES)[number];
+
+/** What today is made of (SPEC §5.1), once the weekly program and the override are merged. */
+export interface DayContext {
+  activity: Activity;
+  // Empty on days without a commute (remote, relax, sport unless overridden).
+  commuteModes: readonly CommuteMode[];
+  occasion: Occasion;
+}
+
+// Felt-temperature categories, the first four weather usages (SPEC §6.3).
+export type FeltCategory = Exclude<WeatherUsage, 'rain'>;
