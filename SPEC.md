@@ -167,20 +167,22 @@ Usages are **tags the user gives a garment**, in four groups. The app never dedu
 ### §6.2 Windows
 | Day type | Windows constraining the outfit | Windows producing a reminder only |
 |---|---|---|
-| Office | Outbound and return commutes (± 1 h for rain); **11:00–15:00 if "Je sors le midi" is on** | — |
+| Office | Outbound and return commutes: felt temperature over the hour after each time, rain over ± 1 h; **11:00–15:00 if "Je sors le midi" is on** | — |
 | Remote | None, unless a commute is added by override; **11:00–15:00 if "Je sors le midi" is on** | — |
 | Relax, sport | Whole active day (default 09:00–20:00) | — |
 
 ### §6.3 Weather conditions of the day
-- The **minimum felt temperature during constraining windows** (not the daily average) maps to one category: Hot, Mild, Cool or Cold (thresholds: §14.1).
-- Bike commute: category shifted colder (relative wind; correction value §14.1).
-- Rain probability above threshold during a constraining window adds the **Rain** condition.
-- Days without constraining window: indoor comfort; outer layers not proposed.
-- The conditions decide **which layer slots appear** (rule: §14.1) and filter garments through their Weather usages (§7).
+- The **minimum felt temperature during constraining windows** (not the daily average) maps to one category: **Cold < 10 °C ≤ Cool < 17 °C ≤ Mild < 22 °C ≤ Hot**.
+- Bike commute: **−3 °C on the felt temperature of the commute windows** (relative wind); the lunch window is not corrected.
+- Rain probability **≥ 40 %** during a constraining window adds the **Rain** condition.
+- Days without constraining window: indoor comfort; the category comes from the active day (default 09:00–20:00); never the Rain condition, never layer 2, no shoes in the default outfit.
+- The conditions decide **which layer slots appear**: Hot, Mild → none; Cool → layer 1; Cold → layers 1 and 2; Rain adds layer 2. They also filter garments through their Weather usages (§7).
+- All values live in `src/domain/weather/thresholds.ts` (decided 2026-11-15).
 - Display: three ambiences only — rain, sun, cold (`design/specs/01-aujourdhui.md`).
 
 ### §6.4 Reminders line
 - Two lines under the temperature: a useful forecast ("Pluie 70 % vers 18 h") and a piece of advice ("Parapluie conseillé vers 12 h 30", "Gel jusqu'à 10 h"). Text rules only, no slot.
+- Sky line: rain peak ≥ 40 % and its hour, else snow, sunny all day, cloudy (at least half of the hours) or clear sky. Advice line, by priority: umbrella (at the commute time, or the first rainy hour; also for rain outside the windows), frost (air ≤ 0 °C in a morning window, "until" the last freezing hour), gloves and scarf (felt < 5 °C on a bike, scooter or motorbike commute), heat (felt ≥ 30 °C), else the day's maximum. Indoor days only get heat and the maximum.
 
 ### §6.5 Location
 - City set at onboarding ("Utiliser ma position" or city search).
@@ -199,12 +201,13 @@ Usages are **tags the user gives a garment**, in four groups. The app never dedu
   2. Usage filter, group by group (weather, activity, commute, occasion): a garment **with no usage in the group passes**; otherwise at least one of its usages must match the day (weather: one of today's conditions, §6.3; commute: it must cover **every** commute mode of the day).
   3. Layers: layer slots shown according to the weather conditions (§6.3); the user can add or remove a layer.
   4. Order each row by a **deterministic rotation** so outfits vary from one day to the next:
-     - main criterion: **time since last worn** (last `worn` event, §8.6), capped; never-worn garments count as worn long ago; yesterday's pieces go to the end of the row;
-     - **favourite bonus**, equivalent to a few days of recency (never an absolute priority, §4.4);
-     - small **fit bonus** for an explicitly matching usage versus "all cases";
-     - stable tie-break (e.g. creation date) — no randomness.
-     Weights: §14.1. Ordering only: nothing is hidden or advised against, every eligible garment stays one swipe away.
-  5. Default outfit = first garment of each row, respecting the coordination rule (§4.5) and **avoiding exactly yesterday's outfit**; one-pieces compete in the top row (§4.1).
+     - yesterday's pieces go to the end of the row (from the history or yesterday's outfit);
+     - **explicit matches first**: a garment whose usage explicitly matches the day's activity, commute or occasion comes before one matching only the weather, which comes before an "all cases" garment ("Télétravail first, then the weather");
+     - then **time since last worn** (last `worn` event, §8.6), in local days, capped; never-worn garments count as the cap;
+     - plus a **favourite bonus** in days (never an absolute priority, §4.4);
+     - stable tie-break: creation date, then id — no randomness.
+     Cap and bonus follow the **"Rotation des tenues"** setting (`settings.rotationPace`): long (default) = 14 days, favourite +3 days; short = 10 days, +2 days. Ordering only: nothing is hidden or advised against, every eligible garment stays one swipe away.
+  5. Default outfit = first garment of each row, respecting the coordination rule (§4.5: when a later row only has statement pieces, the earlier statement piece hands over to a plain one of its row; if impossible the outfit is flagged) and **avoiding exactly yesterday's outfit** when another choice exists; one-pieces compete in the top row (§4.1); no shoes on an indoor day (§6.3).
   6. Output: default outfit + **ranked alternatives per row**.
 - Swiping a row **never changes other rows** (the only exception: a one-piece hides the bottom row, §4.1). If the user's choice breaks a rule (two statement pieces), a discreet indicator shows it; nothing is corrected automatically.
 - Once the outfit is validated ("Je porte cette tenue"), it is **frozen for the day** (no recomputation on later opens, even if the forecast changes).
@@ -335,6 +338,7 @@ Full-screen camera, always dark ("Posez la pièce à plat, bien éclairée", sta
 - Ma semaine: Semaine type, Trajet du bureau, Je sors le midi, Ville.
 - Horaires: Tenue prête à (07:00), Départ pour le bureau (08:30), Retour du bureau (18:30), Tri du soir à partir de (20:00).
 - Linge: L'étendoir sert de rangement, Temps de séchage (24 h), Aération, Ports avant lavage (per type, §8.2).
+- Rotation des tenues: long (default) or short (§7 step 4). **Not in `design/specs/10` yet**: placement and copy to design before S9.
 - Notifications (opt-in): Tenue du matin, Rappel du tri du soir, Linge sec.
 - Dressing de démo (§9.7).
 - À propos: Frog-à-porter et moi, Offrez-moi un thé (Tier 2, §13.6), Écrire à la développeuse, Politique de confidentialité, Données météo (Open-Meteo attribution), Version.
@@ -457,11 +461,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 ### §14.1 Open items — do not assume, ask before implementing
 | Item | Resolved when |
 |---|---|
-| Felt-temperature thresholds for Hot / Mild / Cool / Cold | S4 |
-| Rule deciding which layer slots appear from the weather conditions | S4 |
-| Rotation weights: recency cap, favourite bonus, fit bonus (§7 step 4) | S4 (10 reference scenarios + rotation scenario) |
-| Rain probability threshold and ± window margin | S4 |
-| Bike correction on the weather category | S4 |
+| Today without shoes (indoor day, §6.3) and "Rotation des tenues" setting (§9.8): not designed | Before S7 / S9 |
 | Glass blur vs semi-opaque on Android (design: blur, semi-opaque fallback on low-end Android) | S6 |
 | Animation durations and curves (swipe, fade, bounce, end of sort) | S6 prototype |
 | Ironing carousel (not designed) | Before S8 |
@@ -503,6 +503,9 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-08 | Fallback chain (§10.4) decided after S2 | Native APIs on both platforms, no fallback started | Protocol: 13/15 usable on iOS, 15/15 on Android; iOS failures covered by shooting guidance and §10.3 |
 | 2026-11-11 | Starting wear limits from the official ADEME page (open) | ADEME guidance as relayed by the press (lower bound of each range), Candice's values for the other types; 23 types incl. "Haut en laine" (7) and "Haut en coton" (4, added the same day); shoes have no limit; Settings copy « Valeurs de départ inspirées des repères de l'ADEME » | The ADEME site no longer gives per-garment figures; the press infographic covers only some types |
 | 2026-11-14 | Tier 1 relies on system backups; Android coverage to verify | Android: photos excluded from system backup, database kept (S11); export/import high priority in S11 | Auto Backup stops at 25 MB, about 18 garments at 1.3 MB each, then backs up nothing (`docs/android-backup.md`) |
+| 2026-11-15 | Felt thresholds, layer rule, rain threshold and margin, bike correction (open) | Cold < 10 ≤ Cool < 17 ≤ Mild < 22 ≤ Hot; Cool → layer 1, Cold → layers 1 + 2, Rain adds layer 2; rain ≥ 40 %, ± 1 h around commutes; bike −3 °C on commute windows | Candice's decisions, S4 |
+| 2026-11-15 | Rotation weights incl. a small fit bonus (open) | Explicit matches lead the row (context, then weather); recency cap and favourite bonus set by a "Rotation des tenues" setting: long 14 d / +3 d (default), short 10 d / +2 d | Candice hesitated between a personal and a general rhythm; she wants "Télétravail" pieces to come first, then the weather |
+| 2026-11-15 | Indoor days: "indoor comfort, no outer layer" | Category from the active day, layer 1 by the weather, never layer 2 nor Rain, no shoes in the default outfit | Candice's decisions, S4 |
 
 ---
 
