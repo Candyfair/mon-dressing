@@ -50,6 +50,11 @@ export function DevGarmentList() {
         <Text accessibilityRole="header" style={[styles.title, { color: colors.ink }]}>
           {t('dev.title', { count: data.length })}
         </Text>
+        <Button
+          label={t('dev.openEngine')}
+          variant="outline"
+          onPress={() => router.push('/dev/engine')}
+        />
         <Button label={t('dev.add')} onPress={() => router.push('/add')} />
       </View>
       <FlatList
