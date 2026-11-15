@@ -1,4 +1,4 @@
-import { isDryDue, recommendSort } from './recommendations';
+import { hasReachedWearLimit, isDryDue, recommendSort } from './recommendations';
 
 describe('recommendSort', () => {
   it('recommends airing under the wear limit', () => {
@@ -35,5 +35,13 @@ describe('isDryDue', () => {
   it('only applies to drying pieces', () => {
     const now = new Date('2026-11-12T09:00:00.000Z');
     expect(isDryDue({ location: 'dirty', locationSince: since }, now, 24)).toBe(false);
+  });
+});
+
+describe('hasReachedWearLimit', () => {
+  it('is reached at the limit, never without one', () => {
+    expect(hasReachedWearLimit(3, 4)).toBe(false);
+    expect(hasReachedWearLimit(4, 4)).toBe(true);
+    expect(hasReachedWearLimit(99, null)).toBe(false);
   });
 });
