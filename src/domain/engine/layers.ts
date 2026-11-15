@@ -16,3 +16,11 @@ export function suggestedLayers(weather: DayWeather | null): Record<LayerSlot, b
     outerLayer: !weather.indoorOnly && (cold || weather.rain),
   };
 }
+
+/**
+ * Shoes belong to the default outfit unless the day is spent indoors
+ * (decided 2026-11-15). Unknown weather keeps them: going out is the safe guess.
+ */
+export function shoesSuggested(weather: DayWeather | null): boolean {
+  return !(weather?.indoorOnly ?? false);
+}

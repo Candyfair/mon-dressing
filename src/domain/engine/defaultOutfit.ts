@@ -10,6 +10,7 @@ interface DefaultOutfitInput {
   rows: Record<RowSlot, readonly string[]>;
   garmentsById: ReadonlyMap<string, EngineGarment>;
   suggestedLayers: Record<LayerSlot, boolean>;
+  shoesSuggested: boolean;
   yesterday: OutfitSelection | null;
 }
 
@@ -37,6 +38,7 @@ export function defaultOutfit({
   rows,
   garmentsById,
   suggestedLayers,
+  shoesSuggested,
   yesterday,
 }: DefaultOutfitInput): DefaultOutfit {
   const garment = (id: string): EngineGarment => {
@@ -62,6 +64,7 @@ export function defaultOutfit({
       continue;
     }
     if ((row === 'midLayer' || row === 'outerLayer') && !suggestedLayers[row]) continue;
+    if (row === 'shoes' && !shoesSuggested) continue;
 
     const statementPick = picks.find((pick) => isStatement(rows[pick.row][pick.index]));
     if (!statementPick) {

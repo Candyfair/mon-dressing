@@ -2,9 +2,12 @@ import type { Activity, CommuteMode, DayContext, Occasion, Usage, WeatherUsage }
 
 export interface UsageMatch {
   passes: boolean;
-  // Groups where the garment has a usage that explicitly matches the day:
-  // such garments come first in their row (decided 2026-11-15).
-  explicitMatches: number;
+  // Activity, commute and occasion groups where the garment has a usage that
+  // explicitly matches the day: such garments come first in their row.
+  contextMatches: number;
+  // A Weather usage matching today's conditions: next in line, after the
+  // context ("Télétravail first, then the weather", Candice, 2026-11-15).
+  weatherMatch: boolean;
 }
 
 interface GroupedUsages {
@@ -43,10 +46,11 @@ export function matchUsages(
   conditions: readonly WeatherUsage[] | null,
 ): UsageMatch {
   const grouped = groupUsages(usages);
-  const verdicts: GroupVerdict[] = [
+  const weather: GroupVerdict =
     conditions === null
       ? 'allCases'
-      : verdict(grouped.weather, () => grouped.weather.some((value) => conditions.includes(value))),
+      : verdict(grouped.weather, () => grouped.weather.some((value) => conditions.includes(value)));
+  const contextVerdicts: GroupVerdict[] = [
     verdict(grouped.activity, () => grouped.activity.includes(context.activity)),
     // No commute today: the Commute group does not apply.
     context.commuteModes.length === 0
@@ -57,7 +61,8 @@ export function matchUsages(
     verdict(grouped.occasion, () => grouped.occasion.includes(context.occasion)),
   ];
   return {
-    passes: !verdicts.includes('noMatch'),
-    explicitMatches: verdicts.filter((value) => value === 'match').length,
+    passes: weather !== 'noMatch' && !contextVerdicts.includes('noMatch'),
+    contextMatches: contextVerdicts.filter((value) => value === 'match').length,
+    weatherMatch: weather === 'match',
   };
 }
