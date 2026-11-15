@@ -1,3 +1,4 @@
+import { HOUR_MS } from '../time';
 import type { FeltCategory, WeatherUsage } from '../types';
 import {
   BIKE_FELT_CORRECTION,
@@ -13,8 +14,6 @@ import type {
   WindowWeather,
 } from './types';
 import { isIndoorDay } from './windows';
-
-const HOUR_MS = 60 * 60 * 1000;
 
 /** The forecast hours overlapping an interval. */
 export function hoursIn(forecast: Forecast, { start, end }: Interval): HourlyPoint[] {

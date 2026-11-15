@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 
-import { SETTINGS_ID, settings } from '../schema';
+import { SETTINGS_ID, settings, type Settings } from '../schema';
 import type { SyncDatabase } from '../types';
 
 /** The wardrobe new garments go to. The settings row exists once the database is ready. */
@@ -14,4 +14,13 @@ export function activeWardrobeId(db: SyncDatabase): string {
     throw new Error('Settings row missing: ensureDefaults has not run');
   }
   return row.id;
+}
+
+/** The settings row; it exists once the database is ready. */
+export function getSettings(db: SyncDatabase): Settings {
+  const row = db.select().from(settings).where(eq(settings.id, SETTINGS_ID)).get();
+  if (!row) {
+    throw new Error('Settings row missing: ensureDefaults has not run');
+  }
+  return row;
 }

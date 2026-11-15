@@ -6,7 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { DatabaseProvider } from '../db/DatabaseProvider';
 import { useResumePendingCutouts } from '../features/add/cutout';
-import { queryClient } from '../features/weather/useForecast';
+import { queryClient } from '../features/weather/queryClient';
 import '../i18n';
 
 export default function RootLayout() {

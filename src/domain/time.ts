@@ -8,7 +8,8 @@ export type LocalDate = string;
 export type LocalTime = string;
 
 const MINUTE_MS = 60 * 1000;
-const DAY_MS = 24 * 60 * MINUTE_MS;
+export const HOUR_MS = 60 * MINUTE_MS;
+const DAY_MS = 24 * HOUR_MS;
 
 const formatters = new Map<string, Intl.DateTimeFormat>();
 

@@ -10,7 +10,8 @@ import { garmentEvents, outfitItems, outfits, wardrobes, wearLimits } from '../s
 import { createTestDb, type TestDb } from '../testing/createTestDb';
 import { loadEngineGarments, yesterdayOutfit } from './engineInputs';
 import { insertGarment } from './garmentLifecycle';
-import { getActiveWardrobe, getSettings, setWardrobeLocation } from './wardrobes';
+import { getSettings } from './settings';
+import { getActiveWardrobe, setWardrobeLocation } from './wardrobes';
 
 const T0 = new Date('2026-11-10T08:00:00.000Z');
 
