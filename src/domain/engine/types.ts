@@ -45,7 +45,19 @@ export interface SuggestInput {
 
 /** The carousels of Today: one-pieces share the top row (SPEC §4.1). */
 export type RowSlot = Exclude<Slot, 'onePiece'>;
+// Display order, also the order in which the default outfit picks: the
+// earlier row keeps the statement piece.
 export const ROW_SLOTS: readonly RowSlot[] = ['top', 'bottom', 'midLayer', 'outerLayer', 'shoes'];
+
+/** The row a garment is shown in. */
+export function rowOf(garment: Pick<EngineGarment, 'slot'>): RowSlot {
+  return garment.slot === 'onePiece' ? 'top' : garment.slot;
+}
+
+/** The outfit slot a garment of a row fills: `top` or `onePiece` in the top row. */
+export function slotInRow(row: RowSlot, garment: Pick<EngineGarment, 'slot'>): Slot {
+  return row === 'top' ? garment.slot : row;
+}
 
 export type LayerSlot = 'midLayer' | 'outerLayer';
 

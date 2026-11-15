@@ -152,6 +152,9 @@ describe('suggestedLayers', () => {
       outerLayer: false,
     });
     expect(suggestedLayers(null, false)).toEqual({ midLayer: false, outerLayer: false });
+    // The indoor day alone decides, whatever the weather object says.
+    expect(suggestedLayers(weather('cold'), true)).toEqual({ midLayer: true, outerLayer: false });
+    expect(suggestedLayers(weather('cold', { indoorOnly: true }), false).outerLayer).toBe(true);
   });
 });
 

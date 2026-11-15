@@ -19,11 +19,3 @@ export function suggestedLayers(
     outerLayer: !indoorDay && (cold || weather.rain),
   };
 }
-
-/**
- * Shoes belong to the default outfit unless the day is spent indoors
- * (decided 2026-11-15), with or without a forecast.
- */
-export function shoesSuggested(indoorDay: boolean): boolean {
-  return !indoorDay;
-}

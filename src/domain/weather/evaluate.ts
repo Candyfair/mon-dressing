@@ -12,6 +12,7 @@ import type {
   Interval,
   WindowWeather,
 } from './types';
+import { isIndoorDay } from './windows';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -63,7 +64,7 @@ export function evaluateDay(
   windows: readonly DayWindow[],
   activeDay: DayWindow,
 ): DayWeather | null {
-  const indoorOnly = windows.length === 0;
+  const indoorOnly = isIndoorDay(windows);
   const evaluated: WindowWeather[] = [];
   for (const window of indoorOnly ? [activeDay] : windows) {
     const weather = windowWeather(forecast, window);

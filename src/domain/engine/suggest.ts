@@ -1,20 +1,17 @@
 import { defaultOutfit } from './defaultOutfit';
 import { isAvailable, isWithinWearLimit } from './eligibility';
-import { shoesSuggested, suggestedLayers } from './layers';
+import { suggestedLayers } from './layers';
 import { compareRanked, type RankedGarment, rotationScore, wasWornYesterday } from './rotation';
 import {
   type EngineGarment,
   type OutfitSelection,
   ROW_SLOTS,
+  rowOf,
   type RowSlot,
   type SuggestInput,
   type Suggestion,
 } from './types';
 import { matchUsages } from './usageFilter';
-
-function rowOf(garment: EngineGarment): RowSlot {
-  return garment.slot === 'onePiece' ? 'top' : garment.slot;
-}
 
 /**
  * The suggestion engine (SPEC §7). Pure and deterministic: everything comes
@@ -56,7 +53,8 @@ export function suggest(input: SuggestInput): Suggestion {
 
   // Steps 3 and 5: layers and shoes, then the default outfit.
   const layers = suggestedLayers(weather, indoorDay);
-  const shoes = shoesSuggested(indoorDay);
+  // SPEC §6.3: no shoes in the default outfit of an indoor day.
+  const shoes = !indoorDay;
   const { outfit, coordinationBroken } = defaultOutfit({
     rows,
     garmentsById: new Map(garments.map((garment) => [garment.id, garment])),
