@@ -163,7 +163,13 @@
       "proposed": "proposée",
       "notProposed": "non proposée",
       "emptyRow": "Aucune pièce",
-      "broken": "Deux pièces fortes impossibles à éviter"
+      "broken": "Deux pièces fortes impossibles à éviter",
+      "day_one": "Jour +{{count}}",
+      "day_other": "Jour +{{count}}",
+      "day_zero": "Aujourd’hui",
+      "nextDay": "Porter et passer au lendemain",
+      "restart": "Recommencer",
+      "worn": "J+{{day}} : {{pieces}}"
     }
   }
 }
