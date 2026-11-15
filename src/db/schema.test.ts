@@ -1,7 +1,10 @@
 /**
  * @jest-environment node
  */
+import Database from 'better-sqlite3';
 import { eq } from 'drizzle-orm';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 
 import {
   garmentEvents,
@@ -196,5 +199,32 @@ describe('constraints', () => {
     expect(() => db.insert(wearLimits).values({ subtype: 'tshirt', maxWears: 0 }).run()).toThrow(
       /CHECK/,
     );
+  });
+});
+
+describe('migrations', () => {
+  // A database created by an earlier version of the app, before 0001.
+  function databaseAt0000() {
+    const sqlite = new Database(':memory:');
+    const initial = readFileSync(path.join(__dirname, 'migrations', '0000_initial.sql'), 'utf8');
+    for (const statement of initial.split('--> statement-breakpoint')) {
+      sqlite.exec(statement);
+    }
+    sqlite.exec(
+      `insert into wardrobes (id, name, kind, timeZone, createdAt)
+         values ('wardrobe-1', 'Principale', 'main', 'Europe/Paris', 0);
+       insert into settings (id, activeWardrobeId) values ('singleton', 'wardrobe-1');`,
+    );
+    return sqlite;
+  }
+
+  it('0001 gives the existing settings row the long rotation pace', () => {
+    const sqlite = databaseAt0000();
+
+    sqlite.exec(readFileSync(path.join(__dirname, 'migrations', '0001_rotation_pace.sql'), 'utf8'));
+
+    expect(sqlite.prepare('select rotationPace from settings').get()).toEqual({
+      rotationPace: 'long',
+    });
   });
 });
