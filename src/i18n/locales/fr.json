@@ -93,6 +93,26 @@
     "ankleBoots": "Bottines",
     "shoes": "Chaussures"
   },
+  "weather": {
+    "time": {
+      "hour": "{{hour}} h",
+      "hourMinute": "{{hour}} h {{minute}}"
+    },
+    "sky": {
+      "rain": "Pluie {{probability}} % vers {{time}}",
+      "snow": "Neige",
+      "sunnyAllDay": "Ensoleillé toute la journée",
+      "cloudy": "Nuageux",
+      "clearSky": "Ciel dégagé"
+    },
+    "advice": {
+      "umbrella": "Parapluie conseillé vers {{time}}",
+      "frost": "Gel jusqu’à {{time}}",
+      "glovesAndScarf": "Gants et écharpe conseillés",
+      "heat": "Forte chaleur vers {{time}}",
+      "maxTemperature": "Max. {{value}}° vers {{time}}"
+    }
+  },
   "dev": {
     "title_one": "{{count}} pièce",
     "title_other": "{{count}} pièces",
@@ -102,6 +122,48 @@
       "pending": "Détourage en attente",
       "done": "Détourée",
       "failed": "Détourage échoué, photo d’origine"
+    },
+    "openEngine": "Moteur",
+    "engine": {
+      "title": "Moteur de suggestion",
+      "back": "Retour",
+      "noCity": "Aucune ville choisie",
+      "city": "Ville : {{name}}",
+      "citySearch": "Chercher une ville",
+      "search": "Chercher",
+      "today": "Aujourd’hui",
+      "scenario": "Scénario {{number}}",
+      "realWardrobe": "Mon dressing",
+      "referenceWardrobe": "Dressing de test",
+      "lunch": "Je sors le midi",
+      "rotationPace": {
+        "long": "Rotation longue",
+        "short": "Rotation courte"
+      },
+      "loading": "Chargement de la météo…",
+      "weatherUnknown": "Météo indisponible",
+      "noContext": "Choisis une activité",
+      "indoor": "Journée à l’intérieur",
+      "conditions": "{{conditions}} · ressenti min. {{felt}}°",
+      "window": "{{kind}} : {{felt}}°, pluie {{rain}} %",
+      "windowKind": {
+        "outbound": "Aller",
+        "return": "Retour",
+        "lunch": "Midi",
+        "activeDay": "Journée"
+      },
+      "rows": {
+        "top": "Haut",
+        "bottom": "Bas",
+        "midLayer": "Couche 1",
+        "outerLayer": "Couche 2",
+        "shoes": "Chaussures"
+      },
+      "rowLabel": "{{row}} · {{state}}",
+      "proposed": "proposée",
+      "notProposed": "non proposée",
+      "emptyRow": "Aucune pièce",
+      "broken": "Deux pièces fortes impossibles à éviter"
     }
   }
 }
