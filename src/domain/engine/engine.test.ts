@@ -40,6 +40,7 @@ function input(garments: EngineGarment[], overrides: Partial<SuggestInput> = {})
     garments,
     context: OFFICE_BIKE,
     weather: weather('mild'),
+    indoorDay: false,
     settings: { dryingRackCountsAsStorage: true, rotationPace: 'long' },
     yesterday: null,
     ...overrides,
@@ -135,22 +136,22 @@ describe('matchUsages', () => {
 
 describe('suggestedLayers', () => {
   it('follows the approved rule', () => {
-    expect(suggestedLayers(weather('hot'))).toEqual({ midLayer: false, outerLayer: false });
-    expect(suggestedLayers(weather('mild'))).toEqual({ midLayer: false, outerLayer: false });
-    expect(suggestedLayers(weather('cool'))).toEqual({ midLayer: true, outerLayer: false });
-    expect(suggestedLayers(weather('cold'))).toEqual({ midLayer: true, outerLayer: true });
-    expect(suggestedLayers(weather('mild', { rain: true }))).toEqual({
+    expect(suggestedLayers(weather('hot'), false)).toEqual({ midLayer: false, outerLayer: false });
+    expect(suggestedLayers(weather('mild'), false)).toEqual({ midLayer: false, outerLayer: false });
+    expect(suggestedLayers(weather('cool'), false)).toEqual({ midLayer: true, outerLayer: false });
+    expect(suggestedLayers(weather('cold'), false)).toEqual({ midLayer: true, outerLayer: true });
+    expect(suggestedLayers(weather('mild', { rain: true }), false)).toEqual({
       midLayer: false,
       outerLayer: true,
     });
   });
 
   it('never suggests layer 2 indoors, nor any layer when the weather is unknown', () => {
-    expect(suggestedLayers(weather('cold', { indoorOnly: true }))).toEqual({
+    expect(suggestedLayers(weather('cold', { indoorOnly: true }), true)).toEqual({
       midLayer: true,
       outerLayer: false,
     });
-    expect(suggestedLayers(null)).toEqual({ midLayer: false, outerLayer: false });
+    expect(suggestedLayers(null, false)).toEqual({ midLayer: false, outerLayer: false });
   });
 });
 
@@ -272,8 +273,15 @@ describe('suggest — default outfit', () => {
   });
 
   it('leaves the shoes out of an indoor day, keeping their row', () => {
-    const suggestion = suggest(input(basics, { weather: weather('mild', { indoorOnly: true }) }));
+    const indoor = { weather: weather('mild', { indoorOnly: true }), indoorDay: true };
+    const suggestion = suggest(input(basics, indoor));
     expect(suggestion.shoesSuggested).toBe(false);
+    expect(suggestion.outfit).toEqual({ top: 'tee', bottom: 'jeans' });
+    expect(suggestion.rows.shoes).toEqual(['sneakers']);
+  });
+
+  it('knows an indoor day without forecast (offline): still no shoes', () => {
+    const suggestion = suggest(input(basics, { weather: null, indoorDay: true }));
     expect(suggestion.outfit).toEqual({ top: 'tee', bottom: 'jeans' });
     expect(suggestion.rows.shoes).toEqual(['sneakers']);
     expect(suggest(input(basics, { weather: null })).outfit.shoes).toBe('sneakers');

@@ -48,6 +48,7 @@ function simulate(days: number, pace: RotationPace): OutfitSelection[] {
       garments,
       context: CONTEXT,
       weather: MILD,
+      indoorDay: false,
       settings: { dryingRackCountsAsStorage: true, rotationPace: pace },
       yesterday,
     });

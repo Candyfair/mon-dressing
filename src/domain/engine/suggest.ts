@@ -22,7 +22,7 @@ function rowOf(garment: EngineGarment): RowSlot {
  * orders; it never hides an eligible garment.
  */
 export function suggest(input: SuggestInput): Suggestion {
-  const { date, timeZone, garments, context, weather, settings, yesterday } = input;
+  const { date, timeZone, garments, context, weather, indoorDay, settings, yesterday } = input;
   const yesterdayIds = new Set(Object.values(yesterday ?? {}));
   const conditions = weather?.conditions ?? null;
 
@@ -55,8 +55,8 @@ export function suggest(input: SuggestInput): Suggestion {
   }
 
   // Steps 3 and 5: layers and shoes, then the default outfit.
-  const layers = suggestedLayers(weather);
-  const shoes = shoesSuggested(weather);
+  const layers = suggestedLayers(weather, indoorDay);
+  const shoes = shoesSuggested(indoorDay);
   const { outfit, coordinationBroken } = defaultOutfit({
     rows,
     garmentsById: new Map(garments.map((garment) => [garment.id, garment])),
