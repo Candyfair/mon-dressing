@@ -48,7 +48,8 @@ function wallClock(instant: Date, timeZone: string): WallClock {
     year: parts.year ?? 0,
     month: parts.month ?? 0,
     day: parts.day ?? 0,
-    hour: parts.hour ?? 0,
+    // Some Intl implementations write local midnight as 24 despite h23.
+    hour: (parts.hour ?? 0) % 24,
     minute: parts.minute ?? 0,
   };
 }
