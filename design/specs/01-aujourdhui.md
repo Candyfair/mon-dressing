@@ -37,7 +37,7 @@ WeatherBackground (clair), NightBackground (sombre), WeatherHeader, ProgramChip,
 ### Choix de la tenue
 - L’application ne décide rien à la place de l’utilisatrice et ne fait pas de recommandation : elle filtre les pièces disponibles selon les usages que l’utilisatrice leur a donnés (météo, activité, déplacement, occasion).
 - Une pièce sans usage dans un groupe est proposée dans tous les cas de ce groupe.
-- Ordre des propositions dans chaque ligne : rotation selon la date du dernier port, favoris avantagés (sans priorité absolue), puis adéquation à la météo et au programme. *Écart validé le 31/10/2026 par rapport au handoff (« favoris d’abord, puis adéquation ») : voir `SPEC.md` §7.*
+- Ordre des propositions dans chaque ligne : les pièces dont un usage correspond explicitement au programme (activité, déplacement, occasion) passent devant, puis celles qui correspondent à la météo, puis les autres ; dans chaque groupe, rotation selon la date du dernier port, favoris avantagés (sans priorité absolue). *Écart validé le 31/10/2026 par rapport au handoff (« favoris d’abord, puis adéquation »), précisé le 15/11/2026 : voir `SPEC.md` §7.*
 - Une seule pièce forte par tenue : la tenue proposée n’en contient jamais deux. Si l’utilisatrice en choisit une deuxième en glissant, un indicateur discret le signale et rien n’est corrigé (voir `02-changer-une-piece.md`, AT1 et AU1). Une pièce pleine hauteur pièce forte compte pour une.
 - Pièces exclues : au sale, à sécher, à repasser. Sur l’étendoir : disponibles si l’étendoir sert de rangement (réglage) et si elles ne sont pas à repasser.
 
@@ -51,7 +51,8 @@ WeatherBackground (clair), NightBackground (sombre), WeatherHeader, ProgramChip,
 ## Questions ouvertes
 
 - Fournisseur météo (seule la ville est envoyée) et attribution à afficher dans « Données météo ».
-- Règle exacte d’adéquation météo (seuils de température par usage « Chaud / Doux / Frais / Froid »).
+- ~~Règle exacte d’adéquation météo~~ : tranchée le 15/11/2026, voir `SPEC.md` §6.3.
+- Écran sans chaussures (journée de télétravail à l’intérieur, `SPEC.md` §6.3) : à dessiner avant S7.
 
 ## Écrans validés
 
