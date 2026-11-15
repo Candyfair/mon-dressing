@@ -64,11 +64,10 @@ export type LayerSlot = 'midLayer' | 'outerLayer';
 export interface Suggestion {
   // Eligible garment ids per row, best first. Nothing eligible is hidden.
   rows: Record<RowSlot, readonly string[]>;
-  // Layer slots the weather calls for (SPEC §6.3); the user can add or remove one.
-  suggestedLayers: Record<LayerSlot, boolean>;
-  // False on an indoor day: no shoes in the default outfit, the row stays
-  // available (decided with Candice on 2026-11-15).
-  shoesSuggested: boolean;
+  // Rows the default outfit fills (SPEC §6.3, §7 step 3): top and bottom
+  // always; layers as the weather calls for them; shoes unless the day is
+  // spent indoors. The user can still add any other row.
+  proposedRows: Record<RowSlot, boolean>;
   // First garment of each row, coordination rule applied (SPEC §7 step 5).
   outfit: OutfitSelection;
   // The default outfit could not avoid two statement pieces.

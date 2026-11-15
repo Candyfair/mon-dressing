@@ -278,7 +278,7 @@ describe('suggest — default outfit', () => {
   it('leaves the shoes out of an indoor day, keeping their row', () => {
     const indoor = { weather: weather('mild', { indoorOnly: true }), indoorDay: true };
     const suggestion = suggest(input(basics, indoor));
-    expect(suggestion.shoesSuggested).toBe(false);
+    expect(suggestion.proposedRows.shoes).toBe(false);
     expect(suggestion.outfit).toEqual({ top: 'tee', bottom: 'jeans' });
     expect(suggestion.rows.shoes).toEqual(['sneakers']);
   });

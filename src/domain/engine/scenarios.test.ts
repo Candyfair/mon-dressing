@@ -142,7 +142,7 @@ describe.each(SCENARIOS.map((scenario) => [scenario.key, scenario] as const))(
     });
 
     it('suggests the expected layers and default outfit', () => {
-      expect(result.suggestion.suggestedLayers).toEqual(expected.layers);
+      expect(result.suggestion.proposedRows).toMatchObject(expected.layers);
       expect(result.suggestion.outfit).toEqual(expected.outfit);
     });
 

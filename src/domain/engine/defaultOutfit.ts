@@ -1,7 +1,6 @@
 import type { Slot } from '../types';
 import {
   type EngineGarment,
-  type LayerSlot,
   type OutfitSelection,
   ROW_SLOTS,
   type RowSlot,
@@ -16,8 +15,7 @@ export interface DefaultOutfit {
 interface DefaultOutfitInput {
   rows: Record<RowSlot, readonly string[]>;
   garmentsById: ReadonlyMap<string, EngineGarment>;
-  suggestedLayers: Record<LayerSlot, boolean>;
-  shoesSuggested: boolean;
+  proposedRows: Record<RowSlot, boolean>;
   yesterday: OutfitSelection | null;
 }
 
@@ -25,7 +23,7 @@ interface DefaultOutfitInput {
 const VARY_ORDER: readonly RowSlot[] = ['top', 'bottom', 'shoes', 'midLayer', 'outerLayer'];
 
 /** The garment chosen in a row, as its position in that row. */
-interface Pick {
+interface RowPick {
   row: RowSlot;
   index: number;
 }
@@ -43,7 +41,7 @@ class Ranking {
     return found;
   }
 
-  idAt({ row, index }: Pick): string {
+  idAt({ row, index }: RowPick): string {
     return this.rows[row][index];
   }
 
@@ -57,7 +55,7 @@ class Ranking {
     return row !== 'top' || this.garment(a).slot === this.garment(b).slot;
   }
 
-  toOutfit(picks: readonly Pick[]): OutfitSelection {
+  toOutfit(picks: readonly RowPick[]): OutfitSelection {
     const outfit: OutfitSelection = {};
     for (const pick of picks) {
       const id = this.idAt(pick);
@@ -67,7 +65,7 @@ class Ranking {
   }
 }
 
-function replaced(picks: readonly Pick[], target: Pick, index: number): Pick[] {
+function replaced(picks: readonly RowPick[], target: RowPick, index: number): RowPick[] {
   return picks.map((pick) => (pick === target ? { row: pick.row, index } : pick));
 }
 
@@ -80,8 +78,8 @@ function replaced(picks: readonly Pick[], target: Pick, index: number): Pick[] {
 function pickRows(
   ranking: Ranking,
   wanted: (row: RowSlot) => boolean,
-): { picks: Pick[]; coordinationBroken: boolean } {
-  let picks: Pick[] = [];
+): { picks: RowPick[]; coordinationBroken: boolean } {
+  let picks: RowPick[] = [];
   let coordinationBroken = false;
 
   for (const row of ROW_SLOTS) {
@@ -114,7 +112,7 @@ function pickRows(
 }
 
 /** Moves one row to another acceptable garment; null when no row can move. */
-function varied(ranking: Ranking, picks: readonly Pick[]): Pick[] | null {
+function varied(ranking: Ranking, picks: readonly RowPick[]): RowPick[] | null {
   for (const row of VARY_ORDER) {
     const pick = picks.find((candidate) => candidate.row === row);
     if (!pick) continue;
@@ -141,29 +139,12 @@ function varied(ranking: Ranking, picks: readonly Pick[]): Pick[] | null {
 export function defaultOutfit({
   rows,
   garmentsById,
-  suggestedLayers,
-  shoesSuggested,
+  proposedRows,
   yesterday,
 }: DefaultOutfitInput): DefaultOutfit {
   const ranking = new Ranking(rows, garmentsById);
-  const wanted = (row: RowSlot): boolean => {
-    switch (row) {
-      case 'top':
-      case 'bottom':
-        return true;
-      case 'midLayer':
-      case 'outerLayer':
-        return suggestedLayers[row];
-      case 'shoes':
-        return shoesSuggested;
-      default: {
-        const exhaustive: never = row;
-        throw new Error(`Unknown row: ${String(exhaustive)}`);
-      }
-    }
-  };
 
-  const { picks, coordinationBroken } = pickRows(ranking, wanted);
+  const { picks, coordinationBroken } = pickRows(ranking, (row) => proposedRows[row]);
   const outfit = ranking.toOutfit(picks);
   if (yesterday && sameOutfit(outfit, yesterday)) {
     const alternative = varied(ranking, picks);
