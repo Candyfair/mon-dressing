@@ -26,6 +26,7 @@ import type {
   Location,
   Occasion,
   OutfitStatus,
+  RotationPace,
   Slot,
   Usage,
   WardrobeKind,
@@ -186,6 +187,8 @@ export const settings = sqliteTable('settings', {
   airingEnabled: integer({ mode: 'boolean' }),
   dryingRackCountsAsStorage: integer({ mode: 'boolean' }).notNull().default(true),
   dryingDelayHours: integer().notNull().default(24),
+  // "Rotation des tenues" (SPEC §7 step 4).
+  rotationPace: text().$type<RotationPace>().notNull().default('long'),
   morningNotification: integer({ mode: 'boolean' }).notNull().default(false),
   eveningSortNotification: integer({ mode: 'boolean' }).notNull().default(false),
   laundryDryNotification: integer({ mode: 'boolean' }).notNull().default(false),

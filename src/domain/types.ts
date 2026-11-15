@@ -55,6 +55,11 @@ export type EventSource = (typeof EVENT_SOURCES)[number];
 export const OUTFIT_STATUSES = ['validated', 'probable'] as const;
 export type OutfitStatus = (typeof OUTFIT_STATUSES)[number];
 
+// How fast outfits rotate (settings.rotationPace, SPEC §7 step 4): `long`
+// spreads pieces over a longer recency cap, `short` brings them back sooner.
+export const ROTATION_PACES = ['long', 'short'] as const;
+export type RotationPace = (typeof ROTATION_PACES)[number];
+
 // Language of the UI (settings.language).
 export const LANGUAGES = ['fr', 'en'] as const;
 export type Language = (typeof LANGUAGES)[number];

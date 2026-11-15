@@ -49,6 +49,7 @@ describe('ensureDefaults', () => {
         airingEnabled: null,
         dryingRackCountsAsStorage: true,
         dryingDelayHours: 24,
+        rotationPace: 'long',
         morningNotification: false,
         eveningSortNotification: false,
         laundryDryNotification: false,

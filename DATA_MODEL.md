@@ -36,6 +36,7 @@ type WardrobeKind = 'main' | 'secondary';
 type GarmentEventType = 'locationChanged' | 'ironingChanged' | 'worn';
 type EventSource = 'today' | 'eveningSort' | 'laundry' | 'wardrobe' | 'automatic'; // today = outfit validated on Today
 type OutfitStatus = 'validated' | 'probable';
+type RotationPace = 'long' | 'short';       // SPEC §7 step 4
 ```
 
 Engine-eligible (SPEC §8.1): `toIron = false` ∧ location `stored`, `airing` (from the morning after it was set), or `onDryingRack` when `settings.dryingRackCountsAsStorage`.
@@ -160,6 +161,7 @@ Created with the main wardrobe on first launch by `ensureDefaults` (`src/db/boot
 | `airingEnabled` | boolean, nullable | **null = not asked yet** (just-in-time prompt) |
 | `dryingRackCountsAsStorage` | boolean | "L'étendoir sert de rangement", default true |
 | `dryingDelayHours` | integer | Default 24 |
+| `rotationPace` | text `RotationPace` | "Rotation des tenues": `long` (recency cap 14 days, favourite +3 days) or `short` (10 days, +2 days). Default `long` (migration `0001`) |
 | `morningNotification`, `eveningSortNotification`, `laundryDryNotification` | boolean | Default false (opt-in) |
 | `useGeolocation` | boolean | |
 | `language` | text | `fr` / `en` |
