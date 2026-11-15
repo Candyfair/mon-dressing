@@ -46,6 +46,7 @@ import {
   constrainingWindows,
   type DayWeather,
   evaluateDay,
+  isIndoorDay,
   weatherLines,
   type WeatherLines,
 } from '../../domain/weather';
@@ -175,7 +176,7 @@ export function DevEngineScreen() {
         ),
         context,
         weather,
-        indoorDay: windows.length === 0,
+        indoorDay: isIndoorDay(windows),
         settings: { ...rotation, rotationPace: pace },
         yesterday:
           history.at(-1) ?? (useReference ? null : yesterdayOutfit(db, wardrobe.id, today)),

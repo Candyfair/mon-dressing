@@ -81,6 +81,11 @@ export function constrainingWindows(
   }
 }
 
+/** No constraining window: the day is spent indoors (SPEC §6.3). */
+export function isIndoorDay(windows: readonly DayWindow[]): boolean {
+  return windows.length === 0;
+}
+
 /** The active day, also used for the category of indoor days and for reminders. */
 export function activeDayWindow(day: DayRef, settings: WindowSettings): DayWindow {
   return plainWindow('activeDay', interval(day, settings.activeDayStart, settings.activeDayEnd));

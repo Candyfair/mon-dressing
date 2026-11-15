@@ -8,6 +8,7 @@ import {
   MORNING_END,
 } from './thresholds';
 import type { DayWindow, Forecast, HourlyPoint, Interval } from './types';
+import { isIndoorDay } from './windows';
 
 // The two lines under the temperature (SPEC §6.4, design/specs/01): the sky,
 // then one piece of advice. Structured data only: copy lives in i18n.
@@ -164,7 +165,7 @@ export function weatherLines({
   const scopeHours = hoursIn(forecast, dayScope(windows, activeDay));
   if (scopeHours.length === 0) return null;
 
-  const indoorOnly = windows.length === 0;
+  const indoorOnly = isIndoorDay(windows);
   const advice =
     (indoorOnly ? null : umbrellaAdvice(forecast, windows, scopeHours, timeZone)) ??
     (indoorOnly ? null : frostAdvice(forecast, windows, scopeHours, timeZone)) ??
