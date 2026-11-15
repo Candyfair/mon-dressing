@@ -531,6 +531,6 @@ Create the personal Apple Developer account (identity verification can take days
 | Session | Ships | Verification | Risk |
 |---|---|---|---|
 | S10 | Outfit variants, demo data (Candice's photos, rules §9.7); start recruiting the 12 testers; create Play Console account if not done | Recruiter flow < 10 s to value | R5 |
-| S11 | App icon, English localisation, export/import (high priority: only photo backup on Android), Android backup rules (photos excluded), "missing photo" state | Round-trip export/import on another device | — |
+| S11 | App icon, English localisation (incl. the iOS camera prompt, set in `app.config.ts` outside i18next: Expo `locales`), export/import (high priority: only photo backup on Android), Android backup rules (photos excluded), "missing photo" state | Round-trip export/import on another device | — |
 | S12 | Privacy page on candyfairstudio.com, Open-Meteo confirmation, store listings, tip jar IAP, Maestro flows; **start TestFlight + Play closed test (14 days)** | Maestro green; builds accepted in test tracks | R5, R8 |
 | S13 | Fixes from tester feedback, production release | Live on both stores | — |
