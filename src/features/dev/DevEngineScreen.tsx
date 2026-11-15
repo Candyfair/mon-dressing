@@ -175,6 +175,7 @@ export function DevEngineScreen() {
         ),
         context,
         weather,
+        indoorDay: windows.length === 0,
         settings: { ...rotation, rotationPace: pace },
         yesterday:
           history.at(-1) ?? (useReference ? null : yesterdayOutfit(db, wardrobe.id, today)),

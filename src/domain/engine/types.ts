@@ -35,6 +35,9 @@ export interface SuggestInput {
   context: DayContext;
   // Null when the weather is unknown: no Weather filter, no layer suggested.
   weather: DayWeather | null;
+  // No constraining window today (SPEC §6.3): known from the context and the
+  // settings, even without a forecast.
+  indoorDay: boolean;
   settings: EngineSettings;
   // Yesterday's outfit (validated, else probable), if any.
   yesterday: OutfitSelection | null;

@@ -217,6 +217,7 @@ export function runScenario(
       garments,
       context: scenarioDef.context,
       weather,
+      indoorDay: windows.length === 0,
       settings,
       yesterday: scenarioDef.yesterday,
     }),
