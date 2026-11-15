@@ -1,4 +1,4 @@
-import { localTime, type LocalTime } from '../time';
+import { addMinutes, localTime, type LocalTime } from '../time';
 import type { CommuteMode, DayContext } from '../types';
 import { hoursIn, isRainy, windowWeather } from './evaluate';
 import {
@@ -8,7 +8,7 @@ import {
   MORNING_END,
 } from './thresholds';
 import type { DayWindow, Forecast, HourlyPoint, Interval } from './types';
-import { isIndoorDay } from './windows';
+import { isCommuteWindow, isIndoorDay } from './windows';
 
 // The two lines under the temperature (SPEC §6.4, design/specs/01): the sky,
 // then one piece of advice. Structured data only: copy lives in i18n.
@@ -41,7 +41,6 @@ export interface WeatherLinesInput {
   timeZone: string;
 }
 
-const HOUR_MS = 60 * 60 * 1000;
 // Commute modes exposed to the wind, for the gloves reminder.
 const EXPOSED_MODES: readonly CommuteMode[] = ['bike', 'scooter', 'motorbike'];
 
@@ -95,8 +94,7 @@ function umbrellaAdvice(
     if (firstRainy) {
       // A commute is announced at its own time (« vers 18 h 30 »), a long
       // window at its first rainy hour.
-      const isCommute = window.kind === 'outbound' || window.kind === 'return';
-      const at = isCommute ? window.temperature.start : firstRainy.time;
+      const at = isCommuteWindow(window) ? window.temperature.start : firstRainy.time;
       return { kind: 'umbrella', at: localTime(at, timeZone) };
     }
   }
@@ -119,7 +117,7 @@ function frostAdvice(
   if (!frostInWindow) return null;
   const lastFrost = scopeHours.filter((point) => isMorning(point) && isFrost(point)).at(-1);
   return lastFrost
-    ? { kind: 'frost', until: localTime(new Date(lastFrost.time.getTime() + HOUR_MS), timeZone) }
+    ? { kind: 'frost', until: localTime(addMinutes(lastFrost.time, 60), timeZone) }
     : null;
 }
 
@@ -129,12 +127,10 @@ function glovesAdvice(
   context: DayContext,
 ): AdviceLine | null {
   if (!context.commuteModes.some((mode) => EXPOSED_MODES.includes(mode))) return null;
-  const cold = windows
-    .filter((window) => window.kind === 'outbound' || window.kind === 'return')
-    .some((window) => {
-      const weather = windowWeather(forecast, window);
-      return weather !== null && weather.minFelt < GLOVES_FELT_TEMPERATURE;
-    });
+  const cold = windows.filter(isCommuteWindow).some((window) => {
+    const weather = windowWeather(forecast, window);
+    return weather !== null && weather.minFelt < GLOVES_FELT_TEMPERATURE;
+  });
   return cold ? { kind: 'glovesAndScarf' } : null;
 }
 

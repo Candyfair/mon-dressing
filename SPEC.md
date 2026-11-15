@@ -525,7 +525,7 @@ Create the personal Apple Developer account (identity verification can take days
 | S4 | Engine v0, Open-Meteo windows, reminders, 10 reference scenarios as fixtures | Scenarios rated on the real wardrobe; recorded forecasts tests | R3, R4 |
 | S5 | ~~Claude Design exploration~~ **Done**: handoff in `design/` (specs, tokens, mockups) | — | — |
 | S6 | Coded interaction prototype: Today one/two columns with lane swipe, layer sheet, shared looping carousel, radial menu, tab bar; perf on Galaxy A06 (blur fallback) | Swipes stay in their lane; smooth on A06; animation durations set | R9 |
-| S7 | Today complete (incl. guided state), validation + freeze, evening sort with end animation, probable-outfit safety net | §9 verification | — |
+| S7 | Today complete (incl. guided state), validation + freeze, evening sort with end animation, probable-outfit safety net; remove the development screens (`src/features/dev/`, `/dev/engine`) and their `dev.*` copy | §9 verification | — |
 | S8 | Laundry tab (full cycle), Wardrobe tab (carousel, grid, sheet) | §8 and §9 verifications | — |
 | S9 | Onboarding, weekly program, settings, just-in-time prompts | First-launch flow on both devices | — |
 | **Checkpoint** | **1–2 weeks of real use** (time from open to decision), then **re-examine the Tier 1 / Tier 2 cut** | Timing log | R1, R6 |

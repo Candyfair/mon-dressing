@@ -8,12 +8,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { db } from '../../db/client';
 import { loadEngineGarments, yesterdayOutfit } from '../../db/repositories/engineInputs';
-import {
-  getActiveWardrobe,
-  getSettings,
-  setWardrobeLocation,
-} from '../../db/repositories/wardrobes';
-import { garments as garmentsTable } from '../../db/schema';
+import { garmentThumbnails } from '../../db/repositories/garments';
+import { getSettings } from '../../db/repositories/settings';
+import { getActiveWardrobe, setWardrobeLocation } from '../../db/repositories/wardrobes';
 import {
   type OutfitSelection,
   ROW_SLOTS,
@@ -115,21 +112,12 @@ export function DevEngineScreen() {
   const pieces = useMemo(
     () =>
       new Map(
-        db
-          .select({
-            id: garmentsTable.id,
-            subtype: garmentsTable.subtype,
-            original: garmentsTable.photoOriginalPath,
-            cutout: garmentsTable.photoCutoutPath,
-          })
-          .from(garmentsTable)
-          .all()
-          .map((row) => [
-            row.id,
-            { photo: row.cutout ?? row.original, label: t(`subtypes.${row.subtype}`) },
-          ]),
+        garmentThumbnails(db, wardrobe.id).map((piece) => [
+          piece.id,
+          { photo: piece.photoPath, label: t(`subtypes.${piece.subtype}`) },
+        ]),
       ),
-    [t],
+    [t, wardrobe.id],
   );
   const labelOf = (id: string) => pieces.get(id)?.label ?? id;
 

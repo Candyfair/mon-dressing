@@ -81,6 +81,10 @@ export function constrainingWindows(
   }
 }
 
+export function isCommuteWindow(window: DayWindow): boolean {
+  return window.kind === 'outbound' || window.kind === 'return';
+}
+
 /** No constraining window: the day is spent indoors (SPEC §6.3). */
 export function isIndoorDay(windows: readonly DayWindow[]): boolean {
   return windows.length === 0;

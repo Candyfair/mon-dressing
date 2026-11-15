@@ -9,6 +9,7 @@ import { garments, wardrobes } from '../schema';
 import { createTestDb, type TestDb } from '../testing/createTestDb';
 import { insertGarment } from './garmentLifecycle';
 import {
+  garmentThumbnails,
   getGarmentDetails,
   pendingCutouts,
   recentSubtypes,
@@ -141,5 +142,31 @@ describe('garment details', () => {
     expect(db.select().from(garments).where(eq(garments.id, 'a')).get()?.updatedAt).toEqual(
       minutes(2),
     );
+  });
+});
+
+describe('garmentThumbnails', () => {
+  it('prefers the cutout and stays in the wardrobe', () => {
+    const { db } = createTestDb();
+    seedWardrobe(db);
+    add(db, 'a', { status: 'done', path: 'photos/a/cutout.png' }, T0);
+    add(db, 'b', { status: 'pending' }, T0);
+    db.insert(wardrobes)
+      .values({
+        id: 'x',
+        name: 'Valise',
+        kind: 'secondary',
+        timeZone: 'Europe/Paris',
+        createdAt: T0,
+      })
+      .run();
+    add(db, 'c', { status: 'pending' }, T0, 'tshirt', 'x');
+    expect(garmentThumbnails(db, 'w')).toEqual(
+      expect.arrayContaining([
+        { id: 'a', subtype: 'tshirt', photoPath: 'photos/a/cutout.png' },
+        { id: 'b', subtype: 'tshirt', photoPath: 'photos/b/original.jpg' },
+      ]),
+    );
+    expect(garmentThumbnails(db, 'w')).toHaveLength(2);
   });
 });
