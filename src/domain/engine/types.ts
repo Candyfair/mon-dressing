@@ -51,6 +51,9 @@ export interface Suggestion {
   rows: Record<RowSlot, readonly string[]>;
   // Layer slots the weather calls for (SPEC §6.3); the user can add or remove one.
   suggestedLayers: Record<LayerSlot, boolean>;
+  // False on an indoor day: no shoes in the default outfit, the row stays
+  // available (decided with Candice on 2026-11-15).
+  shoesSuggested: boolean;
   // First garment of each row, coordination rule applied (SPEC §7 step 5).
   outfit: OutfitSelection;
   // The default outfit could not avoid two statement pieces.

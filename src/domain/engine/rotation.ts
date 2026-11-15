@@ -17,7 +17,8 @@ export const ROTATION_PRESETS: Record<RotationPace, RotationPreset> = {
 
 export interface RankedGarment {
   garment: EngineGarment;
-  explicitMatches: number;
+  contextMatches: number;
+  weatherMatch: boolean;
   wornYesterday: boolean;
   score: number;
 }
@@ -51,14 +52,16 @@ export function wasWornYesterday(
 }
 
 /**
- * Row order (SPEC §7 step 4): yesterday's pieces last, then explicit matches
- * first, then the rotation score, then the oldest garment, then the id, so
- * the order never depends on chance.
+ * Row order (SPEC §7 step 4): yesterday's pieces last; then explicit usage
+ * matches first (activity, commute and occasion, then weather); then the
+ * rotation score; then the oldest garment, then the id, so the order never
+ * depends on chance.
  */
 export function compareRanked(a: RankedGarment, b: RankedGarment): number {
   return (
     Number(a.wornYesterday) - Number(b.wornYesterday) ||
-    b.explicitMatches - a.explicitMatches ||
+    b.contextMatches - a.contextMatches ||
+    Number(b.weatherMatch) - Number(a.weatherMatch) ||
     b.score - a.score ||
     a.garment.createdAt.getTime() - b.garment.createdAt.getTime() ||
     (a.garment.id < b.garment.id ? -1 : a.garment.id > b.garment.id ? 1 : 0)

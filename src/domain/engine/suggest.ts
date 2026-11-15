@@ -1,6 +1,6 @@
 import { defaultOutfit } from './defaultOutfit';
 import { isAvailable, isWithinWearLimit } from './eligibility';
-import { suggestedLayers } from './layers';
+import { shoesSuggested, suggestedLayers } from './layers';
 import { compareRanked, type RankedGarment, rotationScore, wasWornYesterday } from './rotation';
 import {
   type EngineGarment,
@@ -41,7 +41,8 @@ export function suggest(input: SuggestInput): Suggestion {
     if (!match.passes) continue;
     ranked[rowOf(garment)].push({
       garment,
-      explicitMatches: match.explicitMatches,
+      contextMatches: match.contextMatches,
+      weatherMatch: match.weatherMatch,
       wornYesterday: wasWornYesterday(garment, date, timeZone, yesterdayIds),
       score: rotationScore(garment, date, timeZone, settings.rotationPace),
     });
@@ -53,15 +54,17 @@ export function suggest(input: SuggestInput): Suggestion {
     rows[slot] = ranked[slot].sort(compareRanked).map((entry) => entry.garment.id);
   }
 
-  // Steps 3 and 5: layers, then the default outfit.
+  // Steps 3 and 5: layers and shoes, then the default outfit.
   const layers = suggestedLayers(weather);
+  const shoes = shoesSuggested(weather);
   const { outfit, coordinationBroken } = defaultOutfit({
     rows,
     garmentsById: new Map(garments.map((garment) => [garment.id, garment])),
     suggestedLayers: layers,
+    shoesSuggested: shoes,
     yesterday,
   });
-  return { rows, suggestedLayers: layers, outfit, coordinationBroken };
+  return { rows, suggestedLayers: layers, shoesSuggested: shoes, outfit, coordinationBroken };
 }
 
 /** More than one statement piece in an outfit: the discreet indicator (SPEC §4.5). */

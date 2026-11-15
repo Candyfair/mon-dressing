@@ -93,7 +93,8 @@ describe('matchUsages', () => {
   it('lets a garment without usage through every case', () => {
     expect(matchUsages([], OFFICE_BIKE, ['cold', 'rain'])).toEqual({
       passes: true,
-      explicitMatches: 0,
+      contextMatches: 0,
+      weatherMatch: false,
     });
   });
 
@@ -101,7 +102,8 @@ describe('matchUsages', () => {
     expect(matchUsages(['weather.cold'], OFFICE_BIKE, ['mild']).passes).toBe(false);
     expect(matchUsages(['weather.cold', 'weather.rain'], OFFICE_BIKE, ['cool', 'rain'])).toEqual({
       passes: true,
-      explicitMatches: 1,
+      contextMatches: 0,
+      weatherMatch: true,
     });
     // Unknown weather: the Weather group passes.
     expect(matchUsages(['weather.cold'], OFFICE_BIKE, null).passes).toBe(true);
@@ -112,12 +114,13 @@ describe('matchUsages', () => {
     expect(matchUsages(['commute.bike'], bikeAndTrain, ['mild']).passes).toBe(false);
     expect(
       matchUsages(['commute.bike', 'commute.publicTransport'], bikeAndTrain, ['mild']),
-    ).toEqual({ passes: true, explicitMatches: 1 });
+    ).toEqual({ passes: true, contextMatches: 1, weatherMatch: false });
     // No commute today: the group does not apply.
     const remote: DayContext = { activity: 'remote', commuteModes: [], occasion: 'everyday' };
     expect(matchUsages(['commute.car'], remote, ['mild'])).toEqual({
       passes: true,
-      explicitMatches: 0,
+      contextMatches: 0,
+      weatherMatch: false,
     });
   });
 
@@ -126,7 +129,7 @@ describe('matchUsages', () => {
     expect(matchUsages(['occasion.evening'], OFFICE_BIKE, ['mild']).passes).toBe(false);
     expect(
       matchUsages(['activity.office', 'occasion.everyday', 'commute.bike'], OFFICE_BIKE, ['mild']),
-    ).toEqual({ passes: true, explicitMatches: 3 });
+    ).toEqual({ passes: true, contextMatches: 3, weatherMatch: false });
   });
 });
 
@@ -213,6 +216,15 @@ describe('suggest — rows', () => {
     expect(suggest(input(garments)).rows.top).toEqual(['bikeOld', 'bikeWorn', 'any']);
   });
 
+  it('puts context matches (activity, commute, occasion) before weather matches', () => {
+    const garments = [
+      makeGarment({ id: 'mildTee', slot: 'top', usages: ['weather.mild'] }),
+      makeGarment({ id: 'officeShirt', slot: 'top', usages: ['activity.office'] }),
+      makeGarment({ id: 'any', slot: 'top', isFavorite: true }),
+    ];
+    expect(suggest(input(garments)).rows.top).toEqual(['officeShirt', 'mildTee', 'any']);
+  });
+
   it('breaks ties by creation date, then id', () => {
     const garments = [
       makeGarment({ id: 'b', slot: 'top' }),
@@ -257,6 +269,14 @@ describe('suggest — default outfit', () => {
       bottom: 'jeans',
       shoes: 'sneakers',
     });
+  });
+
+  it('leaves the shoes out of an indoor day, keeping their row', () => {
+    const suggestion = suggest(input(basics, { weather: weather('mild', { indoorOnly: true }) }));
+    expect(suggestion.shoesSuggested).toBe(false);
+    expect(suggestion.outfit).toEqual({ top: 'tee', bottom: 'jeans' });
+    expect(suggestion.rows.shoes).toEqual(['sneakers']);
+    expect(suggest(input(basics, { weather: null })).outfit.shoes).toBe('sneakers');
   });
 
   it('leaves out the bottom when a one-piece leads the top row', () => {
