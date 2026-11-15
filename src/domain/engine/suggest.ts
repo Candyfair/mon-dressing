@@ -53,16 +53,20 @@ export function suggest(input: SuggestInput): Suggestion {
 
   // Steps 3 and 5: layers and shoes, then the default outfit.
   const layers = suggestedLayers(weather, indoorDay);
-  // SPEC §6.3: no shoes in the default outfit of an indoor day.
-  const shoes = !indoorDay;
+  const proposedRows: Record<RowSlot, boolean> = {
+    top: true,
+    bottom: true,
+    ...layers,
+    // SPEC §6.3: no shoes in the default outfit of an indoor day.
+    shoes: !indoorDay,
+  };
   const { outfit, coordinationBroken } = defaultOutfit({
     rows,
     garmentsById: new Map(garments.map((garment) => [garment.id, garment])),
-    suggestedLayers: layers,
-    shoesSuggested: shoes,
+    proposedRows,
     yesterday,
   });
-  return { rows, suggestedLayers: layers, shoesSuggested: shoes, outfit, coordinationBroken };
+  return { rows, proposedRows, outfit, coordinationBroken };
 }
 
 /** More than one statement piece in an outfit: the discreet indicator (SPEC §4.5). */

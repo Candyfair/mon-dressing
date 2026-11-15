@@ -246,12 +246,7 @@ export function DevEngineScreen() {
   );
 
   const outfitIds = new Set(Object.values(run?.suggestion.outfit ?? {}));
-  const rowProposed = (slot: RowSlot): boolean => {
-    if (!run) return false;
-    if (slot === 'midLayer' || slot === 'outerLayer') return run.suggestion.suggestedLayers[slot];
-    if (slot === 'shoes') return run.suggestion.shoesSuggested;
-    return true;
-  };
+  const rowProposed = (slot: RowSlot): boolean => run?.suggestion.proposedRows[slot] ?? false;
 
   return (
     <View style={[styles.screen, { backgroundColor: colors.ground }]}>
