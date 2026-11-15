@@ -8,7 +8,13 @@ import type { NewGarmentCutout } from '../../domain/types';
 import { garments, wardrobes } from '../schema';
 import { createTestDb, type TestDb } from '../testing/createTestDb';
 import { insertGarment } from './garmentLifecycle';
-import { pendingCutouts, recentSubtypes, setCutoutResult } from './garments';
+import {
+  getGarmentDetails,
+  pendingCutouts,
+  recentSubtypes,
+  setCutoutResult,
+  setGarmentDetails,
+} from './garments';
 
 const T0 = new Date('2026-11-13T08:00:00.000Z');
 const minutes = (n: number) => new Date(T0.getTime() + n * 60_000);
@@ -107,5 +113,33 @@ describe('recentSubtypes', () => {
 
     expect(recentSubtypes(db, 'w', 3)).toEqual(['sweater', 'tshirt', 'shirt']);
     expect(recentSubtypes(db, 'other', 3)).toEqual(['dress']);
+  });
+});
+
+describe('garment details', () => {
+  it('replaces the flags and the usages together', () => {
+    const { db } = createTestDb();
+    seedWardrobe(db);
+    add(db, 'a', { status: 'pending' }, T0);
+    setGarmentDetails(
+      db,
+      'a',
+      { isFavorite: true, statementPiece: false, usages: ['weather.cold', 'activity.remote'] },
+      { now: minutes(1) },
+    );
+    setGarmentDetails(
+      db,
+      'a',
+      { isFavorite: true, statementPiece: true, usages: ['weather.hot'] },
+      { now: minutes(2) },
+    );
+    expect(getGarmentDetails(db, 'a')).toEqual({
+      isFavorite: true,
+      statementPiece: true,
+      usages: ['weather.hot'],
+    });
+    expect(db.select().from(garments).where(eq(garments.id, 'a')).get()?.updatedAt).toEqual(
+      minutes(2),
+    );
   });
 });
