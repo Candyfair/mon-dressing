@@ -467,7 +467,6 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | Ironing carousel (not designed) | Before S8 |
 | Demo wardrobe content | S10 |
 | "Missing photo" state on cards (Android restore without photos, §11.4) | Before S11 |
-| Final weather mascot illustrations, onboarding illustration | Before S12 |
 | "Frog-à-porter et moi" text, photo, contact e-mail | Before S12 |
 | Open-Meteo non-commercial confirmation | Before S12 |
 
@@ -506,6 +505,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-15 | Felt thresholds, layer rule, rain threshold and margin, bike correction (open) | Cold < 10 ≤ Cool < 17 ≤ Mild < 22 ≤ Hot; Cool → layer 1, Cold → layers 1 + 2, Rain adds layer 2; rain ≥ 40 %, ± 1 h around commutes; bike −3 °C on commute windows | Candice's decisions, S4 |
 | 2026-11-15 | Rotation weights incl. a small fit bonus (open) | Explicit matches lead the row (context, then weather); recency cap and favourite bonus set by a "Rotation des tenues" setting: long 14 d / +3 d (default), short 10 d / +2 d | Candice hesitated between a personal and a general rhythm; she wants "Télétravail" pieces to come first, then the weather |
 | 2026-11-15 | Indoor days: "indoor comfort, no outer layer" | Category from the active day, layer 1 by the weather, never layer 2 nor Rain, no shoes in the default outfit | Candice's decisions, S4 |
+| 2026-11-16 | Final weather mascot and onboarding illustration (open) | Seven hand-drawn frog states in `assets/mascot/` (welcome + six weathers), 116 pt at @1x/@2x/@3x, same images in both themes | Drawn by Candice; one square frame with a shared baseline so states swap without layout shift |
 
 ---
 
