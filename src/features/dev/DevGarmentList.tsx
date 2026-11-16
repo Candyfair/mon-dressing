@@ -55,6 +55,11 @@ export function DevGarmentList() {
           variant="outline"
           onPress={() => router.push('/dev/engine')}
         />
+        <Button
+          label={t('dev.openGestures')}
+          variant="outline"
+          onPress={() => router.push('/dev/gestures')}
+        />
         <Button label={t('dev.add')} onPress={() => router.push('/add')} />
       </View>
       <FlatList
