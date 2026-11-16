@@ -2,6 +2,10 @@
   "common": {
     "close": "Fermer"
   },
+  "carousel": {
+    "next": "Pièce suivante",
+    "previous": "Pièce précédente"
+  },
   "add": {
     "title": "Ajout en rafale",
     "done": "Terminer",
