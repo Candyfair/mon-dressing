@@ -128,6 +128,7 @@
       "failed": "Détourage échoué, photo d’origine"
     },
     "openEngine": "Moteur",
+    "openGestures": "Gestes",
     "engine": {
       "title": "Moteur de suggestion",
       "back": "Retour",
@@ -174,6 +175,22 @@
       "nextDay": "Porter et passer au lendemain",
       "restart": "Recommencer",
       "worn": "J+{{day}} : {{pieces}}"
+    },
+    "gestures": {
+      "idle": "Glisser une ligne : seules ses pièces bougent.",
+      "swiping": "Glissement en cours",
+      "oneColumn": "Une colonne",
+      "lane": "Deux colonnes : couloir de droite",
+      "sheet": "Feuille de couche",
+      "position": "{{label}} · {{index}} / {{count}}",
+      "empty": "Aucune pièce dans cette ligne",
+      "rows": {
+        "top": "Haut",
+        "bottom": "Bas",
+        "midLayer": "Couche 1",
+        "outerLayer": "Couche 2",
+        "shoes": "Chaussures"
+      }
     }
   }
 }
