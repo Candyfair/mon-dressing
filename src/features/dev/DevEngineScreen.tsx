@@ -12,10 +12,11 @@ import { garmentThumbnails } from '../../db/repositories/garments';
 import { getSettings } from '../../db/repositories/settings';
 import { getActiveWardrobe, setWardrobeLocation } from '../../db/repositories/wardrobes';
 import {
+  type DayPlan,
   type OutfitSelection,
+  planWeather,
   ROW_SLOTS,
   type RowSlot,
-  type Suggestion,
   suggest,
 } from '../../domain/engine';
 import {
@@ -38,15 +39,6 @@ import {
   ROTATION_PACES,
   type RotationPace,
 } from '../../domain/types';
-import {
-  activeDayWindow,
-  constrainingWindows,
-  type DayWeather,
-  evaluateDay,
-  isIndoorDay,
-  weatherLines,
-  type WeatherLines,
-} from '../../domain/weather';
 import { Button } from '../../ui/Button';
 import { useTheme } from '../../ui/theme';
 import { fontFamilies, radius, size, spacing } from '../../ui/tokens';
@@ -59,12 +51,6 @@ import { DevGarmentDetailsSheet } from './DevGarmentDetailsSheet';
 const TILE = 64;
 
 type Source = 'today' | ScenarioKey;
-
-interface EngineRun {
-  weather: DayWeather | null;
-  lines: WeatherLines | null;
-  suggestion: Suggestion;
-}
 
 /**
  * Development screen (S4): runs the engine on the real or the reference
@@ -121,7 +107,7 @@ export function DevEngineScreen() {
   );
   const labelOf = (id: string) => pieces.get(id)?.label ?? id;
 
-  const run = useMemo((): EngineRun | null => {
+  const run = useMemo((): DayPlan | null => {
     const rotation = { dryingRackCountsAsStorage: settings.dryingRackCountsAsStorage };
     if (source !== 'today') {
       const scenario = SCENARIOS.find((candidate) => candidate.key === source);
@@ -136,23 +122,15 @@ export function DevEngineScreen() {
     }
     const context = { activity, commuteModes, occasion };
     // Today's weather is kept for the simulated days (the forecast stops tomorrow).
-    const day = { date: today, timeZone: wardrobe.timeZone };
-    const windowSettings = { ...settings, lunchOutingEnabled: lunch };
-    const windows = constrainingWindows(day, context, windowSettings);
-    const activeDay = activeDayWindow(day, windowSettings);
-    const data = forecast.data;
-    const weather = data ? evaluateDay(data, windows, activeDay) : null;
+    const weatherPlan = planWeather({
+      date: today,
+      timeZone: wardrobe.timeZone,
+      context,
+      settings: { ...settings, lunchOutingEnabled: lunch },
+      forecast: forecast.data ?? null,
+    });
     return {
-      weather,
-      lines: data
-        ? weatherLines({
-            forecast: data,
-            windows,
-            activeDay,
-            context,
-            timeZone: wardrobe.timeZone,
-          })
-        : null,
+      ...weatherPlan,
       suggestion: suggest({
         date: addDays(today, history.length),
         timeZone: wardrobe.timeZone,
@@ -163,8 +141,8 @@ export function DevEngineScreen() {
           wardrobe.timeZone,
         ),
         context,
-        weather,
-        indoorDay: isIndoorDay(windows),
+        weather: weatherPlan.weather,
+        indoorDay: weatherPlan.indoorDay,
         settings: { ...rotation, rotationPace: pace },
         yesterday:
           history.at(-1) ?? (useReference ? null : yesterdayOutfit(db, wardrobe.id, today)),

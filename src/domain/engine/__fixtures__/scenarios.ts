@@ -1,18 +1,9 @@
 import { addDays, type LocalDate, zonedInstant } from '../../time';
 import type { DayContext, Location } from '../../types';
-import {
-  activeDayWindow,
-  constrainingWindows,
-  type DayWeather,
-  evaluateDay,
-  isIndoorDay,
-  weatherLines,
-  type WeatherLines,
-  type WindowSettings,
-} from '../../weather';
+import type { WindowSettings } from '../../weather';
 import { buildForecast, type DaySpec, WMO } from '../../weather/__fixtures__/buildForecast';
-import { suggest } from '../suggest';
-import type { EngineGarment, EngineSettings, OutfitSelection, Suggestion } from '../types';
+import { type DayPlan, planDay } from '../planDay';
+import type { EngineGarment, EngineSettings, OutfitSelection } from '../types';
 
 // The 10 reference scenarios (SPEC §3 R3, §12.1). Each one is a day: a
 // context, a recorded-style forecast and, when it matters, a wardrobe state.
@@ -167,11 +158,7 @@ export const SCENARIO_SETTINGS: Omit<WindowSettings, 'lunchOutingEnabled'> & Eng
   rotationPace: 'long',
 };
 
-export interface ScenarioResult {
-  weather: DayWeather | null;
-  lines: WeatherLines | null;
-  suggestion: Suggestion;
-}
+export type ScenarioResult = DayPlan;
 
 /** Applies a scenario's garment states (the dev screen leaves the real wardrobe as it is). */
 export function withScenarioStates(
@@ -203,24 +190,13 @@ export function runScenario(
 ): ScenarioResult {
   const { timeZone } = options;
   const settings = options.settings ?? SCENARIO_SETTINGS;
-  const windowSettings = { ...settings, lunchOutingEnabled: scenarioDef.lunchOutingEnabled };
-  const day = { date: scenarioDef.date, timeZone };
-  const forecast = buildForecast({ date: scenarioDef.date, timeZone, ...scenarioDef.forecast });
-  const windows = constrainingWindows(day, scenarioDef.context, windowSettings);
-  const activeDay = activeDayWindow(day, windowSettings);
-  const weather = evaluateDay(forecast, windows, activeDay);
-  return {
-    weather,
-    lines: weatherLines({ forecast, windows, activeDay, context: scenarioDef.context, timeZone }),
-    suggestion: suggest({
-      date: scenarioDef.date,
-      timeZone,
-      garments,
-      context: scenarioDef.context,
-      weather,
-      indoorDay: isIndoorDay(windows),
-      settings,
-      yesterday: scenarioDef.yesterday,
-    }),
-  };
+  return planDay({
+    date: scenarioDef.date,
+    timeZone,
+    context: scenarioDef.context,
+    settings: { ...settings, lunchOutingEnabled: scenarioDef.lunchOutingEnabled },
+    forecast: buildForecast({ date: scenarioDef.date, timeZone, ...scenarioDef.forecast }),
+    garments,
+    yesterday: scenarioDef.yesterday,
+  });
 }
