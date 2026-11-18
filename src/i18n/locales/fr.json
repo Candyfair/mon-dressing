@@ -6,6 +6,12 @@
     "next": "Pièce suivante",
     "previous": "Pièce précédente"
   },
+  "tabs": {
+    "nav": "Navigation principale",
+    "laundry": "Linge",
+    "today": "Aujourd’hui",
+    "wardrobe": "Dressing"
+  },
   "add": {
     "title": "Ajout en rafale",
     "done": "Terminer",
@@ -193,6 +199,7 @@
       },
       "glassBlur": "Verre : flou",
       "glassTint": "Verre : teinte sans flou"
-    }
+    },
+    "open": "Écrans de dev"
   }
 }

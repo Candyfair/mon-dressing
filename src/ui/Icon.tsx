@@ -47,6 +47,29 @@ const ICONS = {
   check: { strokeWidth: 2.6, shapes: [<Path key="p" d="M5 12.5l4.5 4.5L19 7.5" />] },
   chevronDown: { strokeWidth: 2, shapes: [<Path key="p" d="M6 9l6 6 6-6" />] },
   progress: { strokeWidth: 2.2, shapes: [<Path key="p" d="M12 3a9 9 0 1 0 9 9" />] },
+  // Tab bar (TabBar mockups): Today, Laundry, Wardrobe.
+  hanger: {
+    strokeWidth: 1.7,
+    shapes: [
+      <Path key="a" d="M10 6.5a2 2 0 1 1 2.6 1.9c-.4.1-.6.5-.6.9V10" />,
+      <Path key="b" d="M12 10 3.6 15.9a1.2 1.2 0 0 0 .7 2.1h15.4a1.2 1.2 0 0 0 .7-2.1L12 10z" />,
+    ],
+  },
+  washingMachine: {
+    strokeWidth: 1.8,
+    shapes: [
+      <Rect key="r" x={4.5} y={3} width={15} height={18} rx={2.5} />,
+      <Circle key="c" cx={12} cy={13} r={4.2} />,
+      <Path key="p" d="M7.5 6.5h2.5" />,
+    ],
+  },
+  wardrobe: {
+    strokeWidth: 1.8,
+    shapes: [
+      <Rect key="r" x={4.5} y={3} width={15} height={17} rx={1.5} />,
+      <Path key="p" d="M12 3v17M9.8 10.5v2.5M14.2 10.5v2.5M7 20v1.5M17 20v1.5" />,
+    ],
+  },
   // Not in the mockups (rotate button added 2026-11-13): provisional.
   rotate: {
     strokeWidth: 2,
@@ -60,11 +83,13 @@ interface IconProps {
   name: IconName;
   size: number;
   color: string;
+  // Some mockups draw the same icon thinner at a larger size.
+  strokeWidth?: number;
 }
 
 /** Decorative: the control that holds it carries the accessible name. */
-export function Icon({ name, size, color }: IconProps) {
-  const { strokeWidth, shapes } = ICONS[name];
+export function Icon({ name, size, color, strokeWidth }: IconProps) {
+  const icon = ICONS[name];
   return (
     <Svg
       width={size}
@@ -72,13 +97,13 @@ export function Icon({ name, size, color }: IconProps) {
       viewBox="0 0 24 24"
       fill="none"
       stroke={color}
-      strokeWidth={strokeWidth}
+      strokeWidth={strokeWidth ?? icon.strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
       accessible={false}
       importantForAccessibility="no-hide-descendants"
     >
-      {shapes}
+      {icon.shapes}
     </Svg>
   );
 }
