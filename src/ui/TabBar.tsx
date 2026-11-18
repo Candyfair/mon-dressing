@@ -15,7 +15,7 @@ import Svg, { Path } from 'react-native-svg';
 import type { Ambience } from '../domain/weather/ambience';
 import { GlassBlur } from './GlassBlur';
 import { Icon, type IconName } from './Icon';
-import { motion } from './motion';
+import { useMotion } from './motionStore';
 import { type Theme, useTheme } from './theme';
 import { fontFamilies, radius, size, spacing, typography } from './tokens';
 import { useGlassFill } from './useGlassFill';
@@ -181,15 +181,17 @@ interface SideTabProps {
 
 // 1 when the tab is selected, 0 otherwise, moving between the two.
 function useSelection(selected: boolean): SharedValue<number> {
+  const motion = useMotion();
   const selection = useSharedValue(selected ? 1 : 0);
   useEffect(() => {
     selection.set(withTiming(selected ? 1 : 0, motion.tabs.select));
-  }, [selected, selection]);
+  }, [selected, selection, motion.tabs.select]);
   return selection;
 }
 
 // One soft bubble travels from tab to tab, and becomes the pastille on Today.
 function SelectionIndicator({ active }: { active: TabName }) {
+  const motion = useMotion();
   const { colors } = useTheme();
   const reducedMotion = useReducedMotion();
   const place = useMemo(() => selectionPlace(active), [active]);
@@ -234,7 +236,19 @@ function SelectionIndicator({ active }: { active: TabName }) {
     restHeight.set(withSpring(place.height, shape));
     // Height follows the bubble's centre, so every trip with Today is diagonal.
     restTop.set(withSpring(place.top, sideTab === null ? bubbleSettle : bubbleCentre));
-  }, [active, place, reducedMotion, left, right, restWidth, restHeight, restTop, tilt, tiltTrip]);
+  }, [
+    active,
+    place,
+    reducedMotion,
+    left,
+    right,
+    restWidth,
+    restHeight,
+    restTop,
+    tilt,
+    tiltTrip,
+    motion.tabs,
+  ]);
 
   const bubble = useAnimatedStyle(() => {
     const width = Math.max(right.get() - left.get(), BUBBLE_MIN_SIZE);

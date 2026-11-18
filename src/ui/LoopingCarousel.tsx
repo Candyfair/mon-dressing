@@ -20,7 +20,7 @@ import Animated, {
 import { scheduleOnRN } from 'react-native-worklets';
 
 import { loopIndex, rubberBand, swipeStep } from './loopIndex';
-import { motion } from './motion';
+import { useMotion } from './motionStore';
 
 // Horizontal travel before the carousel takes the gesture, and vertical travel
 // that hands it over (to a scroll view, a sheet): a row only catches its own
@@ -86,6 +86,7 @@ export function LoopingCarousel<T>({
   onExtraAction,
   style,
 }: LoopingCarouselProps<T>) {
+  const motion = useMotion();
   const { t } = useTranslation();
   const reducedMotion = useReducedMotion();
   const count = items.length;
