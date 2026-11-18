@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { db } from '../../db/client';
@@ -10,9 +10,12 @@ import { garmentThumbnails } from '../../db/repositories/garments';
 import { getActiveWardrobe } from '../../db/repositories/wardrobes';
 import { type RowSlot, rowOf } from '../../domain/engine';
 import { referenceWardrobe } from '../../domain/engine/__fixtures__/wardrobe';
+import { Glass } from '../../ui/Glass';
+import { DEFAULT_GLASS_MODE, type GlassMode } from '../../ui/glassContext';
+import { GlassStage } from '../../ui/GlassStage';
 import { LoopingCarousel } from '../../ui/LoopingCarousel';
 import { useTheme } from '../../ui/theme';
-import { fontFamilies, opacity, size, spacing } from '../../ui/tokens';
+import { fontFamilies, opacity, radius, size, spacing } from '../../ui/tokens';
 import { photoUri } from '../add/photos/photoStore';
 
 interface Piece {
@@ -28,6 +31,7 @@ const ROW_STEP = 115;
 const LANE_WIDTH = 210;
 const SHEET_STEP = 190;
 const SHEET_NEIGHBOUR_SCALE = 150 / size.garmentSheet;
+const GLASS_BAR_HEIGHT = 64;
 
 /**
  * Development screen (S6): the shared looping carousel on the real
@@ -39,6 +43,7 @@ export function DevGesturesScreen() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const [swiping, setSwiping] = useState(false);
+  const [glassMode, setGlassMode] = useState<GlassMode>(DEFAULT_GLASS_MODE);
 
   const rows = useMemo(() => {
     const wardrobe = getActiveWardrobe(db);
@@ -81,70 +86,95 @@ export function DevGesturesScreen() {
     };
 
   return (
-    <ScrollView
-      style={{ backgroundColor: colors.ground }}
-      contentContainerStyle={{
-        paddingTop: insets.top + spacing.space16,
-        paddingBottom: insets.bottom + spacing.space40,
-        gap: spacing.space24,
-      }}
+    <GlassStage
+      mode={glassMode}
+      behind={
+        <ScrollView
+          style={{ backgroundColor: colors.ground }}
+          contentContainerStyle={{
+            paddingTop: insets.top + spacing.space16,
+            paddingBottom: insets.bottom + GLASS_BAR_HEIGHT + spacing.space40,
+            gap: spacing.space24,
+          }}
+        >
+          <Text style={[styles.status, { color: colors.inkSecondary }]}>
+            {t(swiping ? 'dev.gestures.swiping' : 'dev.gestures.idle')}
+          </Text>
+
+          <Section title={t('dev.gestures.oneColumn')}>
+            {(['top', 'bottom', 'shoes'] as const).map((row) => (
+              <Row
+                key={row}
+                pieces={rows[row]}
+                renderItem={renderPiece(row === 'shoes' ? 96 : ROW_PIECE)}
+                step={ROW_STEP}
+                height={row === 'shoes' ? 100 : ROW_PIECE}
+                label={t(`dev.gestures.rows.${row}`)}
+                onSwipeActiveChange={setSwiping}
+              />
+            ))}
+          </Section>
+
+          <Section title={t('dev.gestures.lane')}>
+            <View style={styles.twoColumns}>
+              <View style={[styles.layers, { borderColor: colors.divider }]}>
+                <Text style={{ color: colors.inkSecondary }}>
+                  {t('dev.gestures.rows.midLayer')}
+                </Text>
+              </View>
+              <View style={{ width: LANE_WIDTH }}>
+                <Row
+                  pieces={rows.top}
+                  renderItem={renderPiece(ROW_PIECE)}
+                  step={ROW_STEP}
+                  height={ROW_PIECE}
+                  label={t('dev.gestures.rows.top')}
+                  edgeFade
+                />
+                <Row
+                  pieces={rows.bottom}
+                  renderItem={renderPiece(ROW_PIECE)}
+                  step={ROW_STEP}
+                  height={ROW_PIECE}
+                  label={t('dev.gestures.rows.bottom')}
+                  edgeFade
+                />
+              </View>
+            </View>
+          </Section>
+
+          <Section title={t('dev.gestures.sheet')}>
+            <Row
+              pieces={[...rows.midLayer, ...rows.outerLayer]}
+              renderItem={renderPiece(size.garmentSheet)}
+              step={SHEET_STEP}
+              height={size.garmentSheet}
+              label={t('dev.gestures.rows.midLayer')}
+              neighbourOpacity={opacity.neighbourOpacity}
+              neighbourScale={SHEET_NEIGHBOUR_SCALE}
+            />
+          </Section>
+        </ScrollView>
+      }
     >
-      <Text style={[styles.status, { color: colors.inkSecondary }]}>
-        {t(swiping ? 'dev.gestures.swiping' : 'dev.gestures.idle')}
-      </Text>
-
-      <Section title={t('dev.gestures.oneColumn')}>
-        {(['top', 'bottom', 'shoes'] as const).map((row) => (
-          <Row
-            key={row}
-            pieces={rows[row]}
-            renderItem={renderPiece(row === 'shoes' ? 96 : ROW_PIECE)}
-            step={ROW_STEP}
-            height={row === 'shoes' ? 100 : ROW_PIECE}
-            label={t(`dev.gestures.rows.${row}`)}
-            onSwipeActiveChange={setSwiping}
-          />
-        ))}
-      </Section>
-
-      <Section title={t('dev.gestures.lane')}>
-        <View style={styles.twoColumns}>
-          <View style={[styles.layers, { borderColor: colors.divider }]}>
-            <Text style={{ color: colors.inkSecondary }}>{t('dev.gestures.rows.midLayer')}</Text>
-          </View>
-          <View style={{ width: LANE_WIDTH }}>
-            <Row
-              pieces={rows.top}
-              renderItem={renderPiece(ROW_PIECE)}
-              step={ROW_STEP}
-              height={ROW_PIECE}
-              label={t('dev.gestures.rows.top')}
-              edgeFade
-            />
-            <Row
-              pieces={rows.bottom}
-              renderItem={renderPiece(ROW_PIECE)}
-              step={ROW_STEP}
-              height={ROW_PIECE}
-              label={t('dev.gestures.rows.bottom')}
-              edgeFade
-            />
-          </View>
-        </View>
-      </Section>
-
-      <Section title={t('dev.gestures.sheet')}>
-        <Row
-          pieces={[...rows.midLayer, ...rows.outerLayer]}
-          renderItem={renderPiece(size.garmentSheet)}
-          step={SHEET_STEP}
-          height={size.garmentSheet}
-          label={t('dev.gestures.rows.midLayer')}
-          neighbourOpacity={opacity.neighbourOpacity}
-          neighbourScale={SHEET_NEIGHBOUR_SCALE}
-        />
-      </Section>
-    </ScrollView>
+      {/* Floating glass over moving content, like the tab bar: blur or tint. */}
+      <Glass
+        kind="surface"
+        tint={colors.tabbarGlass}
+        style={[styles.glassBar, { bottom: insets.bottom + spacing.space24 }]}
+      >
+        <Pressable
+          accessibilityRole="switch"
+          accessibilityState={{ checked: glassMode === 'blur' }}
+          onPress={() => setGlassMode((mode) => (mode === 'blur' ? 'tint' : 'blur'))}
+          style={styles.glassToggle}
+        >
+          <Text style={[styles.title, { color: colors.tabInk }]}>
+            {t(glassMode === 'blur' ? 'dev.gestures.glassBlur' : 'dev.gestures.glassTint')}
+          </Text>
+        </Pressable>
+      </Glass>
+    </GlassStage>
   );
 }
 
@@ -227,6 +257,18 @@ const styles = StyleSheet.create({
   status: { fontFamily: fontFamilies.text, fontSize: 13, paddingHorizontal: spacing.space16 },
   caption: { fontFamily: fontFamilies.text, fontSize: 12, textAlign: 'center' },
   twoColumns: { flexDirection: 'row', justifyContent: 'center', gap: spacing.space10 },
+  glassBar: {
+    position: 'absolute',
+    alignSelf: 'center',
+    height: GLASS_BAR_HEIGHT,
+    borderRadius: radius.radiusTabbar,
+  },
+  glassToggle: {
+    flex: 1,
+    paddingHorizontal: spacing.space24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   tile: {
     borderWidth: 1,
     borderRadius: 12,
