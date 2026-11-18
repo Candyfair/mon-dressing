@@ -190,7 +190,9 @@
         "midLayer": "Couche 1",
         "outerLayer": "Couche 2",
         "shoes": "Chaussures"
-      }
+      },
+      "glassBlur": "Verre : flou",
+      "glassTint": "Verre : teinte sans flou"
     }
   }
 }
