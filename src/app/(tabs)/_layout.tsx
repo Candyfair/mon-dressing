@@ -2,6 +2,7 @@ import { type Href, router, Tabs, usePathname } from 'expo-router';
 
 import { useDayWeather } from '../../features/today/useDayWeather';
 import { GlassStage } from '../../ui/GlassStage';
+import { motion } from '../../ui/motion';
 import { TabBar, type TabName } from '../../ui/TabBar';
 
 const HREF = {
@@ -27,7 +28,17 @@ export default function TabsLayout() {
   return (
     <GlassStage
       behind={
-        <Tabs tabBar={noTabBar} screenOptions={{ headerShown: false }}>
+        <Tabs
+          tabBar={noTabBar}
+          screenOptions={{
+            headerShown: false,
+            animation: 'fade',
+            transitionSpec: {
+              animation: 'timing',
+              config: { duration: motion.tabs.screenFade },
+            },
+          }}
+        >
           <Tabs.Screen name="index" />
           <Tabs.Screen name="laundry" />
           <Tabs.Screen name="wardrobe" />
