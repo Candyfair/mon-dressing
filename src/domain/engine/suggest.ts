@@ -11,7 +11,7 @@ import {
   type SuggestInput,
   type Suggestion,
 } from './types';
-import { matchUsages } from './usageFilter';
+import { matchUsages, weatherDistance } from './usageFilter';
 
 /**
  * The suggestion engine (SPEC §7). Pure and deterministic: everything comes
@@ -30,25 +30,44 @@ export function suggest(input: SuggestInput): Suggestion {
     outerLayer: [],
     shoes: [],
   };
+  // Left out by the weather alone, for "Voir les autres ?".
+  const nearby: Record<RowSlot, (RankedGarment & { distance: number })[]> = {
+    top: [],
+    bottom: [],
+    midLayer: [],
+    outerLayer: [],
+    shoes: [],
+  };
   for (const garment of garments) {
     // Step 1: eligible garments. The caller passes the active wardrobe only.
     if (!isAvailable(garment, date, timeZone, settings) || !isWithinWearLimit(garment)) continue;
     // Step 2: usage filter.
     const match = matchUsages(garment.usages, context, conditions);
-    if (!match.passes) continue;
-    ranked[rowOf(garment)].push({
+    const entry: RankedGarment = {
       garment,
       contextMatches: match.contextMatches,
       weatherMatch: match.weatherMatch,
       wornYesterday: wasWornYesterday(garment, date, timeZone, yesterdayIds),
       score: rotationScore(garment, date, timeZone, settings.rotationPace),
-    });
+    };
+    if (match.passes) {
+      ranked[rowOf(garment)].push(entry);
+    } else if (weather && matchUsages(garment.usages, context, null).passes) {
+      nearby[rowOf(garment)].push({
+        ...entry,
+        distance: weatherDistance(garment.usages, weather.category),
+      });
+    }
   }
 
   // Step 4: rotation order.
   const rows = {} as Record<RowSlot, readonly string[]>;
+  const closest = {} as Record<RowSlot, readonly string[]>;
   for (const slot of ROW_SLOTS) {
     rows[slot] = ranked[slot].sort(compareRanked).map((entry) => entry.garment.id);
+    closest[slot] = nearby[slot]
+      .sort((a, b) => (a.distance === b.distance ? compareRanked(a, b) : a.distance - b.distance))
+      .map((entry) => entry.garment.id);
   }
 
   // Steps 3 and 5: layers and shoes, then the default outfit.
@@ -66,7 +85,7 @@ export function suggest(input: SuggestInput): Suggestion {
     proposedRows,
     yesterday,
   });
-  return { rows, proposedRows, outfit, coordinationBroken };
+  return { rows, closest, proposedRows, outfit, coordinationBroken };
 }
 
 /** More than one statement piece in an outfit: the discreet indicator (SPEC §4.5). */

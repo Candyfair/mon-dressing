@@ -1,5 +1,13 @@
 import { parseUsage } from '../catalogue/usageGroups';
-import type { Activity, CommuteMode, DayContext, Occasion, Usage, WeatherUsage } from '../types';
+import type {
+  Activity,
+  CommuteMode,
+  DayContext,
+  FeltCategory,
+  Occasion,
+  Usage,
+  WeatherUsage,
+} from '../types';
 
 export interface UsageMatch {
   passes: boolean;
@@ -42,6 +50,22 @@ function groupUsages(usages: readonly Usage[]): GroupedUsages {
     }
   }
   return grouped;
+}
+
+// Felt categories from the warmest to the coldest.
+const FELT_SCALE: readonly FeltCategory[] = ['hot', 'mild', 'cool', 'cold'];
+
+/**
+ * Steps between the day's felt category and the nearest one among the
+ * garment's Weather usages. Infinity without any (a Rain-only garment).
+ */
+export function weatherDistance(usages: readonly Usage[], category: FeltCategory): number {
+  const today = FELT_SCALE.indexOf(category);
+  return Math.min(
+    ...groupUsages(usages).weather.flatMap((value) =>
+      value === 'rain' ? [] : [Math.abs(FELT_SCALE.indexOf(value) - today)],
+    ),
+  );
 }
 
 // One group's verdict: no usage in the group = every case of the group.

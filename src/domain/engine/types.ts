@@ -64,6 +64,9 @@ export type LayerSlot = 'midLayer' | 'outerLayer';
 export interface Suggestion {
   // Eligible garment ids per row, best first. Nothing eligible is hidden.
   rows: Record<RowSlot, readonly string[]>;
+  // Available garments left out by the Weather usages alone, nearest weather
+  // first: what "Voir les autres ?" offers for a row with nothing eligible.
+  closest: Record<RowSlot, readonly string[]>;
   // Rows the default outfit fills (SPEC §6.3, §7 step 3): top and bottom
   // always; layers as the weather calls for them; shoes unless the day is
   // spent indoors. The user can still add any other row.
