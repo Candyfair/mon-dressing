@@ -45,6 +45,9 @@ interface LoopingCarouselProps<T> {
   neighbourScale?: number;
   // Fades a piece as it leaves the centre (two-column lane, no hard cut).
   edgeFade?: boolean;
+  // Unwrapped position of the carousel, for what follows the swipe elsewhere
+  // on the screen. Starts at `index`.
+  position?: SharedValue<number>;
   // Drag started or ended, to fade out "Ajouter une couche" meanwhile.
   onSwipeActiveChange?: (active: boolean) => void;
   // Tap: see the piece large / open it.
@@ -72,6 +75,7 @@ export function LoopingCarousel<T>({
   neighbourOpacity = 0,
   neighbourScale = 1,
   edgeFade = false,
+  position: sharedPosition,
   onSwipeActiveChange,
   onPress,
   accessibilityLabel,
@@ -84,7 +88,8 @@ export function LoopingCarousel<T>({
   // Absolute (unwrapped) index of the current piece: slots keep their key
   // while the carousel goes round, so nothing jumps when it settles.
   const [base, setBase] = useState(index);
-  const position = useSharedValue(index);
+  const ownPosition = useSharedValue(index);
+  const position = sharedPosition ?? ownPosition;
   const dragStart = useSharedValue(index);
   // 1 while dragging: shows the hidden neighbours.
   const revealed = useSharedValue(0);

@@ -515,6 +515,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-18 | Two columns: layers 150 pt (`garment-layer`), right column 194 pt (`garment-two-col`) | Two columns of equal width (171.5 pt): a layer has the size of the top, and the layers sit level with the top and the bottom | Layers looked too small next to the top (Candice, S6) |
 | 2026-11-18 | While swiping, the next piece arrives close and overlaps | 16 pt of empty space between two pieces of a carousel (outfit and layer sheet); in two columns, the right column's pieces slide under the layers | Pieces looked piled up (Candice, S6) |
 | 2026-11-18 | Bottoms centred in their frame | Bottoms aligned on the top of their frame, so a skirt's waist sits level with trousers | Skirts looked too low (Candice, S6) |
+| 2026-11-18 | One-piece centred on the top and bottom places | In one column, a one-piece starts level with the tops; still centred in two columns | Candice, S6 |
 
 ---
 

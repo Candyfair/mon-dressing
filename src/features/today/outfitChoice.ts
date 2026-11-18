@@ -69,6 +69,20 @@ export function wearsOnePiece(
   return top !== null && slots.get(top)?.slot === 'onePiece';
 }
 
+/**
+ * How much of a one-piece a looping row shows at a position between two
+ * pieces, from 0 to 1: the bottom fades out as a dress arrives. Worklet.
+ */
+export function onePieceShare(position: number, onePieces: readonly boolean[]): number {
+  'worklet';
+  const count = onePieces.length;
+  if (count === 0) return 0;
+  const at = (index: number) => (onePieces[((index % count) + count) % count] ? 1 : 0);
+  const before = Math.floor(position);
+  const progress = position - before;
+  return at(before) * (1 - progress) + at(before + 1) * progress;
+}
+
 /** The garment of a row as part of the outfit: none for a bottom under a dress. */
 export function chosenGarment(
   choice: OutfitChoice,
