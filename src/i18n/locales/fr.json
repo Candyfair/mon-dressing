@@ -72,7 +72,6 @@
     },
     "occasion": {
       "everyday": "Quotidien",
-      "evening": "Soirée",
       "festive": "Festif",
       "ceremony": "Cérémonie",
       "jobInterview": "Entretien professionnel"

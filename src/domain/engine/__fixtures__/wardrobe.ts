@@ -24,7 +24,7 @@ const PIECES: Piece[] = [
     id: 'blouseSilk',
     slot: 'top',
     statement: true,
-    usages: ['occasion.evening', 'occasion.festive'],
+    usages: ['occasion.festive'],
   },
   { id: 'woolTop', slot: 'top', usages: ['weather.cool', 'weather.cold'] },
   { id: 'sportTop', slot: 'top', usages: ['activity.sport'] },
@@ -34,7 +34,7 @@ const PIECES: Piece[] = [
     id: 'blackDress',
     slot: 'onePiece',
     statement: true,
-    usages: ['occasion.evening', 'occasion.festive', 'occasion.ceremony'],
+    usages: ['occasion.festive', 'occasion.ceremony'],
   },
   { id: 'dungarees', slot: 'onePiece', usages: ['activity.remote', 'activity.relax'] },
   // Bottoms

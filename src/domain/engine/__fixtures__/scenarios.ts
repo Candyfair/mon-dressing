@@ -116,11 +116,11 @@ export const SCENARIOS: readonly Scenario[] = [
     { activity: 'sport', commuteModes: [], occasion: 'everyday' },
     { felt: 18, weatherCode: WMO.mainlyClear },
   ),
-  // 8. Office day ending with an evening out.
+  // 8. Office day ending with a festive evening.
   scenario(
     'officeEvening',
     '2026-11-23',
-    { activity: 'office', commuteModes: ['walking'], occasion: 'evening' },
+    { activity: 'office', commuteModes: ['walking'], occasion: 'festive' },
     { felt: 14, weatherCode: WMO.partlyCloudy },
   ),
   // 9. Statement pieces at the head of two rows.

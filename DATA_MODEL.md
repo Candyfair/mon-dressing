@@ -25,7 +25,7 @@ type Location = 'stored' | 'airing' | 'onDryingRack' | 'dirty' | 'drying';
 type CutoutStatus = 'pending' | 'done' | 'failed';
 type Activity = 'office' | 'remote' | 'relax' | 'sport';
 type CommuteMode = 'walking' | 'bike' | 'scooter' | 'publicTransport' | 'car' | 'motorbike';
-type Occasion = 'everyday' | 'evening' | 'festive' | 'ceremony' | 'jobInterview';
+type Occasion = 'everyday' | 'festive' | 'ceremony' | 'jobInterview';
 type WeatherUsage = 'hot' | 'mild' | 'cool' | 'cold' | 'rain';
 type Usage =                                    // SPEC §4.3, stored as "<group>.<value>"
   | `weather.${WeatherUsage}`
