@@ -1,6 +1,5 @@
-// Animation durations and curves, in one place (SPEC §14.1). Starting values,
-// to be tuned on the Galaxy A06 and the iPhone 12 mini in the S6 prototype,
-// then frozen. The design handoff has no motion tokens.
+// Animation durations and curves, in one place. Frozen after the S6 prototype
+// (SPEC §14.2). The design handoff has no motion tokens.
 
 import { Easing } from 'react-native-reanimated';
 

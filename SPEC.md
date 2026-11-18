@@ -464,8 +464,6 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | Item | Resolved when |
 |---|---|
 | Today without shoes (indoor day, §6.3) and "Rotation des tenues" setting (§9.8): not designed | Before S7 / S9 |
-| Glass blur vs semi-opaque on Android (design: blur, semi-opaque fallback on low-end Android) | S6 |
-| Animation durations and curves (swipe, fade, bounce, end of sort) | S6 prototype |
 | Ironing carousel (not designed) | Before S8 |
 | Demo wardrobe content | S10 |
 | "Missing photo" state on cards (Android restore without photos, §11.4) | Before S11 |
@@ -517,6 +515,8 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-18 | Bottoms centred in their frame | Bottoms aligned on the top of their frame, so a skirt's waist sits level with trousers | Skirts looked too low (Candice, S6) |
 | 2026-11-18 | One-piece centred on the top and bottom places | In one column, a one-piece starts level with the tops; still centred in two columns | Candice, S6 |
 | 2026-11-18 | Next temperature at `temperature-range` size (26 pt) | 18 pt in the Today header, and each weather line limited to 2 lines | On a 375 pt wide iPhone the lines ran over the program chip and settings (Candice, S6) |
+| 2026-11-18 | Glass on Android: blur, semi-opaque fallback on low-end devices (open) | Blur on every Android device, Galaxy A06 included; no fallback in use | A06 measures with blur and with tint: blur adds 4 late frames out of about 2,200 on the development build, and release shows at most 1 late frame per scenario (Candice, S6) |
+| 2026-11-18 | Animation durations and curves (open) | Frozen in `src/ui/motion.ts`: swipe settles in 220 ms, neighbours fade out in 180 ms and in within 90 ms, reduced-motion cross-fade 120 ms each way, spring bounce on a single piece, tab screens fade in 150 ms, radial long press 100 ms. The end-of-sort animation is not built yet and gets its values with the evening sort | Values tried on the Galaxy A06 and the iPhone 12 mini (Candice, S6) |
 
 ---
 

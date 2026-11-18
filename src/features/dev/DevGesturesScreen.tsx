@@ -18,7 +18,6 @@ import { LoopingCarousel } from '../../ui/LoopingCarousel';
 import { useTheme } from '../../ui/theme';
 import { fontFamilies, opacity, radius, size, spacing } from '../../ui/tokens';
 import { photoUri } from '../add/photos/photoStore';
-import { DevMotionPanel } from './DevMotionPanel';
 import { DevRadialPieces } from './DevRadialPieces';
 
 interface Piece {
@@ -111,10 +110,6 @@ export function DevGesturesScreen() {
               renderTile={renderPiece(RADIAL_TILE)}
               renderLarge={renderPiece(ROW_PIECE)}
             />
-          </Section>
-
-          <Section title={t('dev.gestures.motion.title')}>
-            <DevMotionPanel />
           </Section>
 
           <Section title={t('dev.gestures.oneColumn')}>

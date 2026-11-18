@@ -288,22 +288,7 @@
       "radialChosen": "Action choisie : {{action}}",
       "radialPiece": "Pièce de test {{number}}",
       "glassBlur": "Verre : flou",
-      "glassTint": "Verre : teinte sans flou",
-      "frameMeter": "{{fps}} i/s · mini {{low}} · pire {{worst}} ms",
-      "motion": {
-        "title": "Réglages des animations",
-        "meter": "Compteur d’images",
-        "reset": "Réinitialiser",
-        "changed": "Valeurs modifiées : {{count}}",
-        "carousel": "Carrousels",
-        "tabs": "Barre d’onglets",
-        "radial": "Menu radial",
-        "initial": "départ : {{value}}",
-        "less": "−",
-        "more": "+",
-        "lessLabel": "Diminuer {{name}}",
-        "moreLabel": "Augmenter {{name}}"
-      }
+      "glassTint": "Verre : teinte sans flou"
     },
     "open": "Écrans de dev",
     "today": {
