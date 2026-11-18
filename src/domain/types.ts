@@ -29,7 +29,7 @@ export const COMMUTE_MODES = [
 ] as const;
 export type CommuteMode = (typeof COMMUTE_MODES)[number];
 
-export const OCCASIONS = ['everyday', 'evening', 'festive', 'ceremony', 'jobInterview'] as const;
+export const OCCASIONS = ['everyday', 'festive', 'ceremony', 'jobInterview'] as const;
 export type Occasion = (typeof OCCASIONS)[number];
 
 export const WEATHER_USAGES = ['hot', 'mild', 'cool', 'cold', 'rain'] as const;

@@ -115,7 +115,7 @@ Usages are **tags the user gives a garment**, in four groups. The app never dedu
 | Weather ("Météo") | Hot, Mild, Cool, Cold, Rain (Chaud, Doux, Frais, Froid, Pluie) |
 | Activity ("Activité") | Office, Remote, Relax, Sport (Bureau, Télétravail, Détente, Sport) |
 | Commute ("Déplacement") | Walking, Bike, Scooter, Public transport, Car, Motorbike (À pied, Vélo, Trottinette, Transports en commun, Voiture, Moto) |
-| Occasion | Everyday, Evening, Festive, Ceremony, Job interview (Quotidien, Soirée, Festif, Cérémonie, Entretien professionnel) |
+| Occasion | Everyday, Festive, Ceremony, Job interview (Quotidien, Festif, Cérémonie, Entretien professionnel) |
 
 - **No usage in a group = proposed in every case of that group.** Choosing usages restricts the garment to those cases. Help text: see `design/specs/07-ajout-en-rafale.md`.
 - **"Tous usages"** comes first, above the groups: it is on when no usage is chosen, and choosing it clears them all (nothing stored, same meaning as no usage).
@@ -141,7 +141,7 @@ Usages are **tags the user gives a garment**, in four groups. The app never dedu
 ### §5.1 Three axes
 - **Activity — exactly one per day:** office, remote, relax, sport (fixed list, matches the Activity usages).
 - **Commute modes — one or more:** walking, bike, scooter, public transport, car, motorbike. Set once at onboarding ("Trajet") and in Settings ("Trajet du bureau"); used on days that have a commute.
-- **Occasion — exactly one per day:** everyday by default; evening, festive, ceremony, job interview set for the day through the override (§5.3).
+- **Occasion — exactly one per day:** everyday by default; festive, ceremony, job interview set for the day through the override (§5.3).
 
 ### §5.2 Weekly program
 - Set at onboarding **day by day** (Office / Remote / Relax for each weekday), then editable in Settings ("Semaine type").
@@ -508,6 +508,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-15 | Indoor days: "indoor comfort, no outer layer" | Category from the active day, layer 1 by the weather, never layer 2 nor Rain, no shoes in the default outfit | Candice's decisions, S4 |
 | 2026-11-16 | Final weather mascot and onboarding illustration (open) | Seven hand-drawn frog states in `assets/mascot/` (welcome + six weathers), 116 pt at @1x/@2x/@3x, same images in both themes | Drawn by Candice; one square frame with a shared baseline so states swap without layout shift |
 | 2026-11-18 | Usages only by group; a row with nothing eligible not designed; "Ajouter une couche" only in one column; tab "Linge" | "Tous usages" first in the usage tags; empty row = dashed silhouette, « Des pièces existent, mais aucune ne convient aujourd’hui » and « Voir les autres ? » (closest pieces, §7); the add button stays in two columns for layer 2; the bottom piece overlaps the shoes; tab renamed "Buanderie" (trial) | Candice's decisions, S6 device tests |
+| 2026-11-18 | Occasions: everyday, evening, festive, ceremony, job interview | "Soirée" removed and merged into "Festif" (migration `0002` moves garments, day overrides and outfits) | The two overlapped (Candice, S6) |
 
 ---
 

@@ -127,7 +127,7 @@ describe('matchUsages', () => {
 
   it('filters on the activity and the occasion, and counts explicit matches', () => {
     expect(matchUsages(['activity.sport'], OFFICE_BIKE, ['mild']).passes).toBe(false);
-    expect(matchUsages(['occasion.evening'], OFFICE_BIKE, ['mild']).passes).toBe(false);
+    expect(matchUsages(['occasion.festive'], OFFICE_BIKE, ['mild']).passes).toBe(false);
     expect(
       matchUsages(['activity.office', 'occasion.everyday', 'commute.bike'], OFFICE_BIKE, ['mild']),
     ).toEqual({ passes: true, contextMatches: 3, weatherMatch: false });
@@ -181,10 +181,10 @@ describe('resolveDayContext', () => {
 
   it('lets the override win, field by field', () => {
     expect(
-      resolveDayContext('office', { activity: 'remote', commuteModes: null, occasion: 'evening' }, [
+      resolveDayContext('office', { activity: 'remote', commuteModes: null, occasion: 'festive' }, [
         'bike',
       ]),
-    ).toEqual({ activity: 'remote', commuteModes: [], occasion: 'evening' });
+    ).toEqual({ activity: 'remote', commuteModes: [], occasion: 'festive' });
     expect(
       resolveDayContext('remote', { activity: null, commuteModes: ['car'], occasion: null }, []),
     ).toEqual({ activity: 'remote', commuteModes: ['car'], occasion: 'everyday' });
