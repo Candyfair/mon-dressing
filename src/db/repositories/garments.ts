@@ -94,14 +94,15 @@ export function setGarmentDetails(
   });
 }
 
-/** Photo and type of each garment of a wardrobe, for thumbnails. */
+/** Photo, type and name of each garment of a wardrobe, for thumbnails. */
 export function garmentThumbnails(
   db: SyncDatabase,
   wardrobeId: string,
-): { id: string; subtype: SubtypeKey; photoPath: string }[] {
+): { id: string; name: string | null; subtype: SubtypeKey; photoPath: string }[] {
   return db
     .select({
       id: garments.id,
+      name: garments.name,
       subtype: garments.subtype,
       original: garments.photoOriginalPath,
       cutout: garments.photoCutoutPath,
@@ -109,5 +110,10 @@ export function garmentThumbnails(
     .from(garments)
     .where(eq(garments.wardrobeId, wardrobeId))
     .all()
-    .map(({ id, subtype, original, cutout }) => ({ id, subtype, photoPath: cutout ?? original }));
+    .map(({ id, name, subtype, original, cutout }) => ({
+      id,
+      name,
+      subtype,
+      photoPath: cutout ?? original,
+    }));
 }

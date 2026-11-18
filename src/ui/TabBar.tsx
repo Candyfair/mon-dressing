@@ -42,6 +42,13 @@ const SIDE_TABS = {
   wardrobe: { icon: 'wardrobe', centre: size.tabbarWidth - SIDE_CENTRE },
 } as const satisfies Record<Exclude<TabName, 'today'>, { icon: IconName; centre: number }>;
 
+/** Distance from the screen bottom to the menu, for screens laying out above it. */
+export function tabBarBottom(bottomInset: number): number {
+  return Platform.OS === 'android'
+    ? Math.max(spacing.space24, bottomInset + ANDROID_NAV_GAP)
+    : spacing.space24;
+}
+
 interface TabBarProps {
   active: TabName;
   onSelect: (tab: TabName) => void;
@@ -59,10 +66,7 @@ export function TabBar({ active, onSelect, ambience }: TabBarProps) {
   const { colors, shadows } = useTheme();
   const insets = useSafeAreaInsets();
   const { blur, fill } = useGlassFill(menuTint(colors, ambience));
-  const bottom =
-    Platform.OS === 'android'
-      ? Math.max(spacing.space24, insets.bottom + ANDROID_NAV_GAP)
-      : spacing.space24;
+  const bottom = tabBarBottom(insets.bottom);
 
   return (
     <View

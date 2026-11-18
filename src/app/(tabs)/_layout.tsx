@@ -1,5 +1,6 @@
 import { type Href, router, Tabs, usePathname } from 'expo-router';
 
+import { useDayWeather } from '../../features/today/useDayWeather';
 import { GlassStage } from '../../ui/GlassStage';
 import { TabBar, type TabName } from '../../ui/TabBar';
 
@@ -21,6 +22,8 @@ const noTabBar = () => null;
 
 export default function TabsLayout() {
   const pathname = usePathname();
+  // The menu takes the day's weather tint in the dark theme.
+  const { weather } = useDayWeather();
   return (
     <GlassStage
       behind={
@@ -31,11 +34,10 @@ export default function TabsLayout() {
         </Tabs>
       }
     >
-      {/* Ambience wired with the Today screen (S6, next step). */}
       <TabBar
         active={tabOf(pathname)}
         onSelect={(tab) => router.navigate(HREF[tab])}
-        ambience={null}
+        ambience={weather.ambience}
       />
     </GlassStage>
   );

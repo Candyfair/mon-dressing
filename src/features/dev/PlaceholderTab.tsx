@@ -9,10 +9,10 @@ import { useTheme } from '../../ui/theme';
 import { fontFamilies, spacing } from '../../ui/tokens';
 
 /**
- * Provisional tab content (not designed): the tab's name, and on Today the
- * way to the development screens. Replaced as each screen is built.
+ * Provisional tab content (not designed): the tab's name and the way to the
+ * development screens. Replaced as each screen is built.
  */
-export function PlaceholderTab({ tab }: { tab: TabName }) {
+export function PlaceholderTab({ tab }: { tab: Exclude<TabName, 'today'> }) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -26,9 +26,7 @@ export function PlaceholderTab({ tab }: { tab: TabName }) {
       <Text accessibilityRole="header" style={[styles.title, { color: colors.ink }]}>
         {t(`tabs.${tab}`)}
       </Text>
-      {tab === 'today' ? (
-        <Button label={t('dev.open')} variant="outline" onPress={() => router.push('/dev')} />
-      ) : null}
+      <Button label={t('dev.open')} variant="outline" onPress={() => router.push('/dev')} />
     </View>
   );
 }

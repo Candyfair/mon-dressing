@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { SUBTYPES, type SubtypeKey } from '../../domain/catalogue/subtypes';
-import { USAGE_GROUPS } from '../../domain/catalogue/usageGroups';
 import type { Usage } from '../../domain/types';
 import { Button } from '../../ui/Button';
 import { Icon } from '../../ui/Icon';
@@ -12,8 +11,8 @@ import { useTheme } from '../../ui/theme';
 import { ToggleOption } from '../../ui/ToggleOption';
 import { fontFamilies, spacing } from '../../ui/tokens';
 import { TypeTile } from '../../ui/TypeTile';
-import { UsageOption } from '../../ui/UsageOption';
 import type { GarmentChoice } from './useBurstSession';
+import { UsagePicker } from './UsagePicker';
 
 const TILES_PER_ROW = 4;
 
@@ -53,15 +52,6 @@ export function TypeSheet({ recentSubtypes, isBusy, onSave }: TypeSheetProps) {
     setSubtype(key);
     setIsChoosingType(false);
   };
-
-  const toggleUsage = (usage: Usage) =>
-    setUsages((current) => {
-      const next = new Set(current);
-      if (!next.delete(usage)) {
-        next.add(usage);
-      }
-      return next;
-    });
 
   const save = () => {
     if (subtype && !isBusy) {
@@ -162,23 +152,7 @@ export function TypeSheet({ recentSubtypes, isBusy, onSave }: TypeSheetProps) {
         {areDetailsOpen ? (
           <View>
             <Text style={[styles.help, { color: colors.inkSecondary }]}>{t('add.usageHelp')}</Text>
-            {USAGE_GROUPS.map(({ group, usages: groupUsages }) => (
-              <View key={group} style={styles.group}>
-                <Text accessibilityRole="header" style={[sectionLabel, styles.groupTitle]}>
-                  {t(`usages.groups.${group}`)}
-                </Text>
-                <View style={styles.usages}>
-                  {groupUsages.map((usage) => (
-                    <UsageOption
-                      key={usage}
-                      label={t(`usages.${usage}`)}
-                      selected={usages.has(usage)}
-                      onToggle={() => toggleUsage(usage)}
-                    />
-                  ))}
-                </View>
-              </View>
-            ))}
+            <UsagePicker usages={usages} onChange={setUsages} titleStyle={sectionLabel} />
           </View>
         ) : null}
       </ScrollView>
@@ -242,8 +216,5 @@ const styles = StyleSheet.create({
   optional: { fontWeight: '400' },
   chevronOpen: { transform: [{ rotate: '180deg' }] },
   help: { fontFamily: fontFamilies.text, fontSize: 13, lineHeight: 18 },
-  group: { marginTop: 12 },
-  groupTitle: { marginTop: 0, marginBottom: 7 },
-  usages: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.space6 },
   footer: { paddingTop: spacing.space10 },
 });
