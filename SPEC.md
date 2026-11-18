@@ -118,6 +118,7 @@ Usages are **tags the user gives a garment**, in four groups. The app never dedu
 | Occasion | Everyday, Evening, Festive, Ceremony, Job interview (Quotidien, Soirée, Festif, Cérémonie, Entretien professionnel) |
 
 - **No usage in a group = proposed in every case of that group.** Choosing usages restricts the garment to those cases. Help text: see `design/specs/07-ajout-en-rafale.md`.
+- **"Tous usages"** comes first, above the groups: it is on when no usage is chosen, and choosing it clears them all (nothing stored, same meaning as no usage).
 - Matching rules: §7.
 - The Wardrobe "Sport" filter shows garments with the Sport activity usage.
 
@@ -208,7 +209,7 @@ Usages are **tags the user gives a garment**, in four groups. The app never dedu
      - stable tie-break: creation date, then id — no randomness.
      Cap and bonus follow the **"Rotation des tenues"** setting (`settings.rotationPace`): long (default) = 14 days, favourite +3 days; short = 10 days, +2 days. Ordering only: nothing is hidden or advised against, every eligible garment stays one swipe away.
   5. Default outfit = first garment of each row, respecting the coordination rule (§4.5: when a later row only has statement pieces, the earlier statement piece hands over to a plain one of its row; if impossible the outfit is flagged) and **avoiding exactly yesterday's outfit** when another choice exists; one-pieces compete in the top row (§4.1); no shoes on an indoor day (§6.3).
-  6. Output: default outfit + **ranked alternatives per row**.
+  6. Output: default outfit + **ranked alternatives per row** + the **closest pieces** of each row: available garments left out by their Weather usages alone (other groups still apply), nearest felt category first. Offered only on request ("Voir les autres ?") when a row has nothing eligible.
 - Swiping a row **never changes other rows** (the only exception: a one-piece hides the bottom row, §4.1). If the user's choice breaks a rule (two statement pieces), a discreet indicator shows it; nothing is corrected automatically.
 - Once the outfit is validated ("Je porte cette tenue"), it is **frozen for the day** (no recomputation on later opens, even if the forecast changes).
 - Tier 2: 2–3 variants, selected through tabs near the header (never by swipe).
@@ -506,6 +507,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-15 | Rotation weights incl. a small fit bonus (open) | Explicit matches lead the row (context, then weather); recency cap and favourite bonus set by a "Rotation des tenues" setting: long 14 d / +3 d (default), short 10 d / +2 d | Candice hesitated between a personal and a general rhythm; she wants "Télétravail" pieces to come first, then the weather |
 | 2026-11-15 | Indoor days: "indoor comfort, no outer layer" | Category from the active day, layer 1 by the weather, never layer 2 nor Rain, no shoes in the default outfit | Candice's decisions, S4 |
 | 2026-11-16 | Final weather mascot and onboarding illustration (open) | Seven hand-drawn frog states in `assets/mascot/` (welcome + six weathers), 116 pt at @1x/@2x/@3x, same images in both themes | Drawn by Candice; one square frame with a shared baseline so states swap without layout shift |
+| 2026-11-18 | Usages only by group; a row with nothing eligible not designed; "Ajouter une couche" only in one column; tab "Linge" | "Tous usages" first in the usage tags; empty row = dashed silhouette, « Des pièces existent, mais aucune ne convient aujourd’hui » and « Voir les autres ? » (closest pieces, §7); the add button stays in two columns for layer 2; the bottom piece overlaps the shoes; tab renamed "Buanderie" (trial) | Candice's decisions, S6 device tests |
 
 ---
 

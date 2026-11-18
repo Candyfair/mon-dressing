@@ -251,6 +251,46 @@ describe('suggest — rows', () => {
   });
 });
 
+describe('suggest — closest pieces', () => {
+  const top = (id: string, usages: EngineGarment['usages']) =>
+    makeGarment({ id, slot: 'top', usages });
+
+  it('offers what only the weather leaves out, nearest weather first', () => {
+    const result = suggest(
+      input(
+        [
+          top('hot', ['weather.hot']),
+          top('rainOnly', ['weather.rain']),
+          top('cool', ['weather.cool']),
+          top('mildOrHot', ['weather.hot', 'weather.mild']),
+        ],
+        { weather: weather('cold') },
+      ),
+    );
+    expect(result.rows.top).toEqual([]);
+    expect(result.closest.top).toEqual(['cool', 'mildOrHot', 'hot', 'rainOnly']);
+  });
+
+  it('still respects the other usage groups and availability', () => {
+    const result = suggest(
+      input(
+        [
+          top('wrongActivity', ['weather.hot', 'activity.sport']),
+          makeGarment({ id: 'dirty', slot: 'top', usages: ['weather.hot'], location: 'dirty' }),
+        ],
+        { weather: weather('cold') },
+      ),
+    );
+    expect(result.closest.top).toEqual([]);
+  });
+
+  it('leaves out nothing eligible, and has nothing to offer without weather', () => {
+    const garments = [top('cool', ['weather.cool']), top('cold', ['weather.cold'])];
+    expect(suggest(input(garments, { weather: weather('cold') })).rows.top).toEqual(['cold']);
+    expect(suggest(input(garments, { weather: null })).closest.top).toEqual([]);
+  });
+});
+
 describe('suggest — default outfit', () => {
   const basics = [
     makeGarment({ id: 'tee', slot: 'top' }),
