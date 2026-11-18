@@ -159,6 +159,25 @@ const ICONS = {
       <Path key="c" d="M8.5 4.8v3.2M15.5 4.8v3.2" />,
     ],
   },
+  // Radial menu (05-dressing mockups).
+  toDry: {
+    strokeWidth: 1.8,
+    shapes: [
+      <Path
+        key="a"
+        d="M8.5 3L4 5.5l1.6 3 1.9-1V14h9V7.5l1.9 1 1.6-3L15.5 3c-.8 1-2 1.5-3.5 1.5S9.3 4 8.5 3z"
+      />,
+      <Path key="b" d="M12 16.5s-1.8 2.1-1.8 3.4a1.8 1.8 0 0 0 3.6 0c0-1.3-1.8-3.4-1.8-3.4z" />,
+    ],
+  },
+  ironSteam: {
+    strokeWidth: 1.8,
+    shapes: [
+      <Path key="a" d="M2 18h19.5v-5a4 4 0 0 0-4-4H9.5C6 9 3.4 12.2 2 18z" />,
+      <Path key="b" d="M10 9V7.5A1.5 1.5 0 0 1 11.5 6h6.5a1.5 1.5 0 0 1 1.5 1.5v2" />,
+      <Path key="c" d="M6 15h.01M9 15h.01M12 15h.01" />,
+    ],
+  },
   // Not in the mockups (rotate button added 2026-11-13): provisional.
   rotate: {
     strokeWidth: 2,
@@ -174,17 +193,19 @@ interface IconProps {
   color: string;
   // Some mockups draw the same icon thinner at a larger size.
   strokeWidth?: number;
+  // Fills the shape with its colour (an active favourite).
+  filled?: boolean;
 }
 
 /** Decorative: the control that holds it carries the accessible name. */
-export function Icon({ name, size, color, strokeWidth }: IconProps) {
+export function Icon({ name, size, color, strokeWidth, filled = false }: IconProps) {
   const icon = ICONS[name];
   return (
     <Svg
       width={size}
       height={size}
       viewBox="0 0 24 24"
-      fill="none"
+      fill={filled ? color : 'none'}
       stroke={color}
       strokeWidth={strokeWidth ?? icon.strokeWidth}
       strokeLinecap="round"

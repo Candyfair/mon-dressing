@@ -1,7 +1,8 @@
 import { Image } from 'expo-image';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { db } from '../../db/client';
@@ -17,6 +18,7 @@ import { LoopingCarousel } from '../../ui/LoopingCarousel';
 import { useTheme } from '../../ui/theme';
 import { fontFamilies, opacity, radius, size, spacing } from '../../ui/tokens';
 import { photoUri } from '../add/photos/photoStore';
+import { DevRadialPieces } from './DevRadialPieces';
 
 interface Piece {
   id: string;
@@ -27,6 +29,7 @@ interface Piece {
 
 // Today's rows (one column), a two-column lane and the layer sheet carousel.
 const ROW_PIECE = 150;
+const RADIAL_TILE = 100;
 const ROW_STEP = 115;
 const LANE_WIDTH = 210;
 const SHEET_STEP = 190;
@@ -100,6 +103,14 @@ export function DevGesturesScreen() {
           <Text style={[styles.status, { color: colors.inkSecondary }]}>
             {t(swiping ? 'dev.gestures.swiping' : 'dev.gestures.idle')}
           </Text>
+
+          <Section title={t('dev.gestures.radial')}>
+            <DevRadialPieces
+              pieces={rows.top}
+              renderTile={renderPiece(RADIAL_TILE)}
+              renderLarge={renderPiece(ROW_PIECE)}
+            />
+          </Section>
 
           <Section title={t('dev.gestures.oneColumn')}>
             {(['top', 'bottom', 'shoes'] as const).map((row) => (

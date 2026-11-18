@@ -6,6 +6,17 @@
     "next": "Pièce suivante",
     "previous": "Pièce précédente"
   },
+  "garmentActions": {
+    "favorite": "Favori",
+    "air": "Aérer sur le balcon",
+    "airShort": "Aérer",
+    "dirty": "Au sale",
+    "putAway": "Ranger",
+    "toDry": "À sécher",
+    "onRack": "Sur l’étendoir",
+    "toIron": "À repasser",
+    "recommended": "Conseillé : {{action}}"
+  },
   "tabs": {
     "nav": "Navigation principale",
     "laundry": "Buanderie",
@@ -272,6 +283,10 @@
         "outerLayer": "Couche 2",
         "shoes": "Chaussures"
       },
+      "radial": "Menu radial : appui long sur une pièce",
+      "radialIdle": "Aucune action choisie",
+      "radialChosen": "Action choisie : {{action}}",
+      "radialPiece": "Pièce de test {{number}}",
       "glassBlur": "Verre : flou",
       "glassTint": "Verre : teinte sans flou"
     },

@@ -55,6 +55,9 @@ interface LoopingCarouselProps<T> {
   // The carousel is one accessible element named after its current piece;
   // swiping is exposed as "Pièce suivante" / "Pièce précédente" actions.
   accessibilityLabel: string;
+  // More actions on the current piece (those of its radial menu).
+  extraActions?: readonly { name: string; label: string }[];
+  onExtraAction?: (name: string) => void;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -79,6 +82,8 @@ export function LoopingCarousel<T>({
   onSwipeActiveChange,
   onPress,
   accessibilityLabel,
+  extraActions = [],
+  onExtraAction,
   style,
 }: LoopingCarouselProps<T>) {
   const { t } = useTranslation();
@@ -193,6 +198,8 @@ export function LoopingCarousel<T>({
       case 'activate':
         onPress?.();
         break;
+      default:
+        onExtraAction?.(event.nativeEvent.actionName);
     }
   };
 
@@ -208,6 +215,7 @@ export function LoopingCarousel<T>({
           { name: 'next', label: t('carousel.next') },
           { name: 'previous', label: t('carousel.previous') },
           ...(onPress ? [{ name: 'activate' }] : [{ name: 'increment' }, { name: 'decrement' }]),
+          ...extraActions,
         ]}
         onAccessibilityAction={onAccessibilityAction}
         style={[styles.row, { height }, style]}
