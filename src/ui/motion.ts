@@ -31,4 +31,15 @@ export const motion = {
     // Fade between the screens of two tabs.
     screenFade: 150,
   },
+  radial: {
+    // How long a piece is held before the fan opens.
+    longPress: 100,
+    // The discs leave the finger for their places.
+    open: { stiffness: 260, damping: 22, mass: 0.8 },
+    // Reduced motion: the menu only fades in.
+    fade: { duration: 120, easing: Easing.out(Easing.quad) },
+    close: { duration: 120, easing: Easing.out(Easing.quad) },
+    // The disc under the finger grows.
+    hover: { duration: 90, easing: Easing.out(Easing.quad) },
+  },
 } as const;

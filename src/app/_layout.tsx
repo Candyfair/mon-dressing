@@ -8,6 +8,7 @@ import { DatabaseProvider } from '../db/DatabaseProvider';
 import { useResumePendingCutouts } from '../features/add/cutout';
 import { queryClient } from '../features/weather/queryClient';
 import '../i18n';
+import { RadialMenuProvider } from '../ui/RadialMenuProvider';
 
 // The tabs sit under the modal routes (add) and the development screens.
 export const unstable_settings = { anchor: '(tabs)' };
@@ -28,12 +29,12 @@ export default function RootLayout() {
 function AppShell() {
   useResumePendingCutouts();
   return (
-    <>
+    <RadialMenuProvider>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="add" options={{ presentation: 'fullScreenModal' }} />
       </Stack>
       <StatusBar style="auto" />
-    </>
+    </RadialMenuProvider>
   );
 }
 
