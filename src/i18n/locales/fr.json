@@ -271,8 +271,8 @@
     },
     "open": "Écrans de dev",
     "today": {
-      "add": "Ajouter une pièce",
-      "theme": "Clair / sombre"
+      "add": "+ Pièce",
+      "theme": "Thème"
     }
   }
 }

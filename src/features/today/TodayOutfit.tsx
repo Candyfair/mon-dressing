@@ -55,6 +55,10 @@ const TWO_COLUMN: Record<OutfitRow, RowPlace> = {
 };
 const LAYER = { left: 13, firstTop: 23, step: 139 };
 
+// A one-piece replaces the top and the bottom: the top's width, 320 pt high
+// for a 200 pt frame (AP4 mockup), centred on the two places (Candice, S6).
+const ONE_PIECE_HEIGHT_RATIO = 1.6;
+
 // The right column's distance between two pieces: the next one arrives
 // close, as in the AP2 mockup (out at −70, in at +58 for 194 pt).
 const STEP_RATIO = 0.66;
@@ -148,10 +152,15 @@ export function TodayOutfit({
       {rows.map((row) => {
         const place = places[row];
         const frame = place.frame * scale;
-        const [bandTop, bandBottom] = place.band;
+        const [bandTop] = place.band;
+        // Under a one-piece, the top row also swipes over the bottom's area.
+        const bandBottom = row === 'top' && underDress ? places.bottom.band[1] : place.band[1];
         const bandHeight = (bandBottom - bandTop) * scale;
-        // The frame centre, relative to the band centre.
-        const offsetY = (place.frameTop + place.frame / 2 - (bandTop + bandBottom) / 2) * scale;
+        // The band centres its content: pieces are moved from there.
+        const bandCentre = (bandTop + bandBottom) / 2;
+        const frameCentre = place.frameTop + place.frame / 2;
+        const onePieceCentre =
+          (places.top.frameTop + places.bottom.frameTop + places.bottom.frame) / 2;
         return (
           <Animated.View
             key={row}
@@ -160,7 +169,7 @@ export function TodayOutfit({
             style={[
               styles.absolute,
               { left: columnLeft, top: bandTop * scale, width: columnWidth },
-              row === 'bottom' && styles.overShoes,
+              (row === 'bottom' || (row === 'top' && underDress)) && styles.overShoes,
             ]}
           >
             <LoopingCarousel
@@ -169,11 +178,15 @@ export function TodayOutfit({
               onIndexChange={(index) => onChoiceChange((current) => moveTo(current, row, index))}
               renderItem={(id) => {
                 const piece = pieces.get(id);
-                return piece ? (
-                  <View style={{ transform: [{ translateY: offsetY }] }}>
-                    <OutfitPiece piece={piece} frame={frame} />
+                if (!piece) return null;
+                const onePiece = piece.slot === 'onePiece';
+                const height = (onePiece ? ONE_PIECE_HEIGHT_RATIO : 1) * frame;
+                const centre = onePiece ? onePieceCentre : frameCentre;
+                return (
+                  <View style={{ transform: [{ translateY: (centre - bandCentre) * scale }] }}>
+                    <OutfitPiece piece={piece} frame={frame} height={height} />
                   </View>
-                ) : null;
+                );
               }}
               step={place.frame * STEP_RATIO * scale}
               height={bandHeight}
@@ -227,6 +240,6 @@ export function TodayOutfit({
 
 const styles = StyleSheet.create({
   absolute: { position: 'absolute' },
-  // Trousers run down over the shoes, not under them.
+  // Trousers and dresses run down over the shoes, not under them.
   overShoes: { zIndex: 1 },
 });
