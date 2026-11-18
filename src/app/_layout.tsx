@@ -9,6 +9,9 @@ import { useResumePendingCutouts } from '../features/add/cutout';
 import { queryClient } from '../features/weather/queryClient';
 import '../i18n';
 
+// The tabs sit under the modal routes (add) and the development screens.
+export const unstable_settings = { anchor: '(tabs)' };
+
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={styles.root}>
