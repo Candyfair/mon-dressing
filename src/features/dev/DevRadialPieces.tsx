@@ -62,9 +62,9 @@ export function DevRadialPieces<Piece extends { id: string }>({
   // Evening sort, in the order of the X2 mockup: nothing active yet.
   const evening = useMemo<RadialAction[]>(
     () => [
-      { id: 'favorite', label: t('garmentActions.favorite'), icon: 'favorite' },
-      { id: 'air', label: t('garmentActions.airShort'), icon: 'airing' },
-      { id: 'dirty', label: t('garmentActions.dirty'), icon: 'washingMachine' },
+      { id: 'favorite', label: t('garmentActions.favorite'), icon: 'favorite', status: 'Favori' },
+      { id: 'air', label: t('garmentActions.airShort'), icon: 'airing', status: 'Balcon' },
+      { id: 'dirty', label: t('garmentActions.dirty'), icon: 'washingMachine', status: 'Sale' },
       { id: 'putAway', label: t('garmentActions.putAway'), icon: 'wardrobe' },
     ],
     [t],

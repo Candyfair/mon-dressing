@@ -15,6 +15,7 @@ export function RadialMenuProvider({ children }: { children: ReactNode }) {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const hovered = useSharedValue(-1);
+  const finger = useSharedValue({ x: 0, y: 0 });
   const [request, setRequest] = useState<RadialMenuRequest | null>(null);
   const [open, setOpen] = useState(false);
 
@@ -34,17 +35,25 @@ export function RadialMenuProvider({ children }: { children: ReactNode }) {
         bottom: height - insets.bottom,
       },
       hovered,
+      finger,
       show,
       hide,
     }),
-    [width, height, insets, hovered, show, hide],
+    [width, height, insets, hovered, finger, show, hide],
   );
 
   return (
     <RadialMenuContext.Provider value={controls}>
       {children}
       {request ? (
-        <RadialMenu request={request} open={open} hovered={hovered} onClosed={onClosed} />
+        <RadialMenu
+          request={request}
+          bounds={controls.bounds}
+          open={open}
+          hovered={hovered}
+          finger={finger}
+          onClosed={onClosed}
+        />
       ) : null}
     </RadialMenuContext.Provider>
   );

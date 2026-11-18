@@ -36,7 +36,7 @@ export function RadialMenuTarget({
   piece = children,
   style,
 }: RadialMenuTargetProps) {
-  const { bounds, hovered, show, hide } = useRadialMenu();
+  const { bounds, hovered, finger, show, hide } = useRadialMenu();
   const [pieceSize, setPieceSize] = useState({ width: 0, height: 0 });
   const discs = useSharedValue<RadialPoint[]>([]);
   const isOpen = useSharedValue(false);
@@ -65,12 +65,15 @@ export function RadialMenuTarget({
       const layout = radialLayout(anchor, count, bounds);
       discs.set(layout.discs);
       isOpen.set(true);
+      finger.set(anchor);
       hovered.set(-1);
       // The touch gives the piece's place in the coordinates of the overlay.
       scheduleOnRN(open, anchor, anchor.x - event.x, anchor.y - event.y, layout);
     })
     .onUpdate((event) => {
-      const item = radialItemAt(discs.get(), { x: event.absoluteX, y: event.absoluteY });
+      const point = { x: event.absoluteX, y: event.absoluteY };
+      finger.set(point);
+      const item = radialItemAt(discs.get(), point);
       if (item !== hovered.get()) hovered.set(item);
     })
     .onEnd((_event, success) => {

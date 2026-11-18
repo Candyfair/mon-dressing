@@ -14,6 +14,10 @@ jest.mock(
 const controls: RadialMenuControls = {
   bounds: { left: 0, top: 0, right: 375, bottom: 812 },
   hovered: { get: () => -1, set: () => undefined } as unknown as RadialMenuControls['hovered'],
+  finger: {
+    get: () => ({ x: 0, y: 0 }),
+    set: () => undefined,
+  } as unknown as RadialMenuControls['finger'],
   show: () => undefined,
   hide: () => undefined,
 };
