@@ -26,7 +26,8 @@ const HEADER_GAP = spacing.space6;
 const HEADER_HEIGHT = 132;
 const OUTFIT_GAP_TOP = 12;
 const OUTFIT_GAP_BOTTOM = spacing.space16;
-const INDICATOR_TOP = spacing.space6;
+// The note sits at the bottom left, on the line of the confirm button.
+const INDICATOR_LINE = 16;
 const INDICATOR_ICON = 16;
 // Room taken from the outfit zone by the two-line "Voir les autres ?" hint.
 const HINT_HEIGHT = 44;
@@ -98,7 +99,7 @@ export function TodayScreen() {
           entering={FadeIn.duration(motion.carousel.crossFade.duration)}
           exiting={FadeOut.duration(motion.carousel.crossFade.duration)}
           accessibilityLiveRegion="polite"
-          style={[styles.indicator, { top: outfitTop + INDICATOR_TOP }]}
+          style={[styles.indicator, { top: outfitBottom - INDICATOR_LINE / 2 }]}
         >
           <Icon name="statementPiece" size={INDICATOR_ICON} color={colors.inkSecondary} />
           <Text style={[styles.indicatorText, { color: colors.inkSecondary }]}>
@@ -113,7 +114,12 @@ export function TodayScreen() {
       </View>
 
       {__DEV__ ? (
-        <View style={[styles.devTools, { top: outfitBottom - DEV_TOOLS_HEIGHT / 2 }]}>
+        <View
+          style={[
+            styles.devTools,
+            { top: outfitBottom - INDICATOR_LINE / 2 - spacing.space6 - DEV_TOOLS_HEIGHT },
+          ]}
+        >
           <DevTodayTools />
         </View>
       ) : null}
@@ -127,7 +133,7 @@ const styles = StyleSheet.create({
   indicator: {
     position: 'absolute',
     left: spacing.space16,
-    right: spacing.space16,
+    right: spacing.space40 + size.sizeCta + spacing.space8,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.space6,

@@ -510,6 +510,8 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-16 | Final weather mascot and onboarding illustration (open) | Seven hand-drawn frog states in `assets/mascot/` (welcome + six weathers), 116 pt at @1x/@2x/@3x, same images in both themes | Drawn by Candice; one square frame with a shared baseline so states swap without layout shift |
 | 2026-11-18 | Usages only by group; a row with nothing eligible not designed; "Ajouter une couche" only in one column; tab "Linge" | "Tous usages" first in the usage tags, "Tous temps" / "Tous types" / "Toutes" first in their groups, Chaud and Froid mutually exclusive; empty row = dashed silhouette, « Des pièces existent, mais aucune ne convient aujourd’hui » and « Voir les autres ? » (closest pieces, §7); the add button stays in two columns for layer 2; the bottom piece overlaps the shoes; tab renamed "Buanderie" (trial) | Candice's decisions, S6 device tests |
 | 2026-11-18 | Occasions: everyday, evening, festive, ceremony, job interview | "Soirée" removed and merged into "Festif" (migration `0002` moves garments, day overrides and outfits) | The two overlapped (Candice, S6) |
+| 2026-11-18 | One-piece aligned on the top of the outfit (design system) | One-piece 1.6 times as high as wide, centred on the top and bottom places | Looked too high on device (Candice, S6) |
+| 2026-11-18 | Statement pieces marked only in the note under the header | Each statement piece of the outfit always carries a star badge (favourite colours until designed), stacked under the location badge; the "2 pièces fortes" note moves to the bottom left | Candice, S6 device tests |
 
 ---
 

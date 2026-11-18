@@ -5,7 +5,7 @@ import Svg, { Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
 import { splitAlpha } from '../../ui/color';
 import { Icon } from '../../ui/Icon';
 import { useTheme } from '../../ui/theme';
-import { size } from '../../ui/tokens';
+import { size, spacing } from '../../ui/tokens';
 import { photoUri } from '../add/photos/photoStore';
 import type { TodayPiece } from './useToday';
 
@@ -14,7 +14,10 @@ import type { TodayPiece } from './useToday';
 const SHADOW_HEIGHT = 12;
 const SHADOW_WIDTH = 0.55;
 const SHADOW_TOP = 0.88;
+// A one-piece fills its taller frame: the shadow sits right under it (AP4).
+const TALL_SHADOW_TOP = 0.965;
 const BADGE_ICON = 15;
+// The statement piece badge borrows the favourite colours until it is designed.
 // Placeholder tile of the reference wardrobe (development only).
 const PLACEHOLDER = 0.7;
 
@@ -22,6 +25,8 @@ interface OutfitPieceProps {
   piece: TodayPiece;
   // Side of the invisible square frame (garment-* sizes, scaled).
   frame: number;
+  // Taller than wide for a one-piece, which spans the top and the bottom.
+  height?: number;
   // The location badge sits against the right shoulder.
   showBadge?: boolean;
 }
@@ -31,7 +36,7 @@ interface OutfitPieceProps {
  * (design-system OutfitPiece). Decorative: the row or button holding it
  * carries the accessible name.
  */
-export function OutfitPiece({ piece, frame, showBadge = true }: OutfitPieceProps) {
+export function OutfitPiece({ piece, frame, height = frame, showBadge = true }: OutfitPieceProps) {
   const { colors } = useTheme();
   const shadowWidth = frame * SHADOW_WIDTH;
   const shadow = splitAlpha(colors.contactShadow);
@@ -42,11 +47,17 @@ export function OutfitPiece({ piece, frame, showBadge = true }: OutfitPieceProps
         ? 'dryingRack'
         : null;
   return (
-    <View style={{ width: frame, height: frame }}>
+    <View style={{ width: frame, height }}>
       <Svg
         width={shadowWidth}
         height={SHADOW_HEIGHT}
-        style={[styles.shadow, { left: (frame - shadowWidth) / 2, top: frame * SHADOW_TOP }]}
+        style={[
+          styles.shadow,
+          {
+            left: (frame - shadowWidth) / 2,
+            top: height * (height > frame ? TALL_SHADOW_TOP : SHADOW_TOP),
+          },
+        ]}
       >
         <Defs>
           <RadialGradient id="contact" cx="50%" cy="50%" rx="50%" ry="50%">
@@ -69,7 +80,8 @@ export function OutfitPiece({ piece, frame, showBadge = true }: OutfitPieceProps
             {
               width: frame * PLACEHOLDER,
               height: frame * PLACEHOLDER,
-              margin: (frame * (1 - PLACEHOLDER)) / 2,
+              marginHorizontal: (frame * (1 - PLACEHOLDER)) / 2,
+              marginVertical: (height - frame * PLACEHOLDER) / 2,
               backgroundColor: colors.tileFill,
               borderColor: colors.tileEdge,
             },
@@ -85,9 +97,18 @@ export function OutfitPiece({ piece, frame, showBadge = true }: OutfitPieceProps
           accessible={false}
         />
       )}
-      {showBadge && badge !== null ? (
-        <View style={[styles.badge, { backgroundColor: colors.locationTint }]}>
-          <Icon name={badge} size={BADGE_ICON} color={colors.locationInk} />
+      {(showBadge && badge !== null) || piece.statementPiece ? (
+        <View style={styles.badges}>
+          {showBadge && badge !== null ? (
+            <View style={[styles.badge, { backgroundColor: colors.locationTint }]}>
+              <Icon name={badge} size={BADGE_ICON} color={colors.locationInk} />
+            </View>
+          ) : null}
+          {piece.statementPiece ? (
+            <View style={[styles.badge, { backgroundColor: colors.statusFavoriBg }]}>
+              <Icon name="statementPiece" size={BADGE_ICON} color={colors.statusFavori} />
+            </View>
+          ) : null}
         </View>
       ) : null}
     </View>
@@ -102,10 +123,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // Against the right shoulder, one under the other.
+  badges: { position: 'absolute', right: -1, top: spacing.space6, gap: spacing.space6 },
   badge: {
-    position: 'absolute',
-    right: -1,
-    top: 6,
     width: size.sizeBadge,
     height: size.sizeBadge,
     borderRadius: size.sizeBadge / 2,
