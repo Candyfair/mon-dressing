@@ -12,6 +12,12 @@ export interface RadialBounds {
   bottom: number;
 }
 
+export interface RadialFan {
+  discs: readonly RadialPoint[];
+  anchor: RadialPoint;
+  bounds: RadialBounds;
+}
+
 export interface RadialLayout {
   discs: RadialPoint[];
   // Centre of the label's width, and its top.
@@ -28,17 +34,27 @@ const ROTATION_STEP = 15;
 const UP = 90;
 // Distance between two neighbours of the mockups' fan of 7 (30° apart).
 const MIN_DISC_DISTANCE = 63;
-// Sizes of the mockups for the recommended and the hovered disc.
+// Size of the mockups for the recommended disc.
 export const RECOMMENDED_DISC = 56;
-export const HOVERED_DISC = 62;
-// A hovered disc must fit too.
-const DISC_REACH = HOVERED_DISC / 2 + 4;
+// The disc under the finger jumps out of the fan (Candice, S6): much larger,
+// moved away from the fingertip, its neighbours making room.
+export const HOVERED_DISC = 84;
+const HOVER_LIFT = 10;
+// By distance in the fan: the push fades so that no two resting discs touch.
+const NEIGHBOUR_PUSH = [0, 14, 7];
+// The hovered disc leans towards the finger, up to a few points.
+const FINGER_PULL = 0.2;
+const FINGER_PULL_MAX = 6;
+const EDGE_MARGIN = 4;
+// Room kept around a resting disc; near an edge, a hovered one moves inwards.
+const DISC_REACH = 35;
 // The finger may land a little off a disc, but not near the press point.
 const HIT_RADIUS = 44;
 const LABEL_HEIGHT = 28;
-// From the top of the label to the top of the highest resting disc (mockups).
-const LABEL_RISE = 38;
-const LABEL_GAP = LABEL_RISE - LABEL_HEIGHT;
+// Space between the label and a hovered disc (mockups).
+const LABEL_GAP = 10 + HOVERED_DISC / 2 + HOVER_LIFT - size.sizeRadial / 2;
+// From the top of the label to the top of the highest resting disc.
+const LABEL_RISE = LABEL_HEIGHT + LABEL_GAP;
 export const RADIAL_LABEL_WIDTH = 220;
 
 function clamp(value: number, low: number, high: number): number {
@@ -129,6 +145,47 @@ export function radialLayout(
       ),
       y: above >= bounds.top ? above : below,
     },
+  };
+}
+
+function away(from: RadialPoint, to: RadialPoint, distance: number): RadialPoint {
+  'worklet';
+  const length = Math.hypot(to.x - from.x, to.y - from.y) || 1;
+  return {
+    x: ((to.x - from.x) / length) * distance,
+    y: ((to.y - from.y) / length) * distance,
+  };
+}
+
+/**
+ * How far a disc leaves its place while `hovered` is under the finger: the
+ * hovered one moves away from the press point and leans towards the finger,
+ * its neighbours move away from it. Each stays on screen at its size.
+ */
+export function radialHoverOffset(
+  { discs, anchor, bounds }: RadialFan,
+  index: number,
+  hovered: number,
+  finger: RadialPoint,
+): RadialPoint {
+  'worklet';
+  const disc = discs[index];
+  const target = discs[hovered];
+  if (!disc || !target) return { x: 0, y: 0 };
+  const isHovered = index === hovered;
+  const push = NEIGHBOUR_PUSH[Math.abs(index - hovered)] ?? 0;
+  if (!isHovered && push === 0) return { x: 0, y: 0 };
+  let shift = away(target, disc, push);
+  if (isHovered) {
+    const lift = away(anchor, disc, HOVER_LIFT);
+    const reachToFinger = Math.hypot(finger.x - disc.x, finger.y - disc.y);
+    const pull = away(disc, finger, Math.min(reachToFinger * FINGER_PULL, FINGER_PULL_MAX));
+    shift = { x: lift.x + pull.x, y: lift.y + pull.y };
+  }
+  const reach = (isHovered ? HOVERED_DISC : size.sizeRadial) / 2 + EDGE_MARGIN;
+  return {
+    x: clamp(disc.x + shift.x, bounds.left + reach, bounds.right - reach) - disc.x,
+    y: clamp(disc.y + shift.y, bounds.top + reach, bounds.bottom - reach) - disc.y,
   };
 }
 

@@ -1,4 +1,11 @@
-import { type RadialBounds, type RadialPoint, radialItemAt, radialLayout } from './radialLayout';
+import {
+  HOVERED_DISC,
+  type RadialBounds,
+  radialHoverOffset,
+  radialItemAt,
+  radialLayout,
+  type RadialPoint,
+} from './radialLayout';
 import { size } from './tokens';
 
 const SCREEN: RadialBounds = { left: 0, top: 24, right: 375, bottom: 812 };
@@ -25,7 +32,7 @@ describe('radialLayout', () => {
     expect(discs[3]?.y).toBeCloseTo(248);
     expect(discs[6]?.x).toBeCloseTo(309.5);
     expect(label.x).toBeCloseTo(187.5);
-    expect(label.y).toBeCloseTo(184);
+    expect(label.y).toBeCloseTo(158);
   });
 
   it.each([
@@ -93,5 +100,60 @@ describe('radialItemAt', () => {
   it('finds nothing at the press point or far from the fan', () => {
     expect(radialItemAt(discs, { x: 187.5, y: 370 })).toBe(-1);
     expect(radialItemAt(discs, { x: 187.5, y: 100 })).toBe(-1);
+  });
+});
+
+describe('radialHoverOffset', () => {
+  const anchor = { x: 187.5, y: 370 };
+  const { discs } = radialLayout(anchor, 7, SCREEN);
+  const fan = { discs, anchor, bounds: SCREEN };
+  const centre = discs[3] as RadialPoint;
+
+  it('moves the hovered disc away from the press point', () => {
+    const offset = radialHoverOffset(fan, 3, 3, centre);
+    expect(offset.x).toBeCloseTo(0);
+    expect(offset.y).toBeCloseTo(-10);
+  });
+
+  it('leans the hovered disc towards the finger, within a limit', () => {
+    const near = radialHoverOffset(fan, 3, 3, { x: centre.x + 10, y: centre.y });
+    expect(near.x).toBeCloseTo(2);
+    const far = radialHoverOffset(fan, 3, 3, { x: centre.x + 40, y: centre.y });
+    expect(far.x).toBeCloseTo(6);
+  });
+
+  it('moves the nearest discs away from the hovered one, without touching', () => {
+    const hovered = discs[3] as RadialPoint;
+    const moved = discs.map((disc, index) => {
+      const offset = radialHoverOffset(fan, index, 3, centre);
+      return { x: disc.x + offset.x, y: disc.y + offset.y };
+    });
+    for (const index of [1, 2, 4, 5]) {
+      const disc = discs[index] as RadialPoint;
+      expect(distance(moved[index] as RadialPoint, hovered)).toBeGreaterThan(
+        distance(disc, hovered),
+      );
+    }
+    for (const index of [0, 1, 4, 5]) {
+      expect(
+        distance(moved[index] as RadialPoint, moved[index + 1] as RadialPoint),
+      ).toBeGreaterThanOrEqual(size.sizeRadial);
+    }
+  });
+
+  it('keeps a hovered disc on screen near an edge', () => {
+    const corner = { x: 30, y: 60 };
+    const cornerDiscs = radialLayout(corner, 7, SCREEN).discs;
+    const cornerFan = { discs: cornerDiscs, anchor: corner, bounds: SCREEN };
+    cornerDiscs.forEach((disc, index) => {
+      const offset = radialHoverOffset(cornerFan, index, index, disc);
+      expect(disc.x + offset.x - HOVERED_DISC / 2).toBeGreaterThanOrEqual(SCREEN.left);
+      expect(disc.y + offset.y - HOVERED_DISC / 2).toBeGreaterThanOrEqual(SCREEN.top);
+    });
+  });
+
+  it('leaves the other discs in place, and all of them when nothing is hovered', () => {
+    expect(radialHoverOffset(fan, 0, 3, centre)).toEqual({ x: 0, y: 0 });
+    expect(radialHoverOffset(fan, 3, -1, centre)).toEqual({ x: 0, y: 0 });
   });
 });

@@ -37,6 +37,8 @@ export interface RadialMenuControls {
   bounds: RadialBounds;
   // Index of the disc under the finger, -1 for none (UI thread).
   hovered: SharedValue<number>;
+  // Where the finger is, in the overlay's coordinates (UI thread).
+  finger: SharedValue<RadialPoint>;
   show: (request: RadialMenuRequest) => void;
   hide: () => void;
 }

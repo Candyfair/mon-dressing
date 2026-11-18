@@ -39,7 +39,18 @@ export const motion = {
     // Reduced motion: the menu only fades in.
     fade: { duration: 120, easing: Easing.out(Easing.quad) },
     close: { duration: 120, easing: Easing.out(Easing.quad) },
-    // The disc under the finger grows.
-    hover: { duration: 90, easing: Easing.out(Easing.quad) },
+    // The disc under the finger swells softly, a little past its size...
+    hover: { stiffness: 170, damping: 13, mass: 0.9 },
+    // ...and sinks back without bouncing.
+    hoverOut: { stiffness: 140, damping: 20, mass: 0.9 },
+    // Its colour answers at once, ahead of the movement.
+    hoverTone: { duration: 110, easing: Easing.out(Easing.quad) },
+    // The discs drift apart like a wave: the further, the later.
+    driftHovered: { stiffness: 150, damping: 14, mass: 0.9 },
+    driftNear: { stiffness: 110, damping: 12, mass: 1 },
+    driftFar: { stiffness: 80, damping: 11, mass: 1 },
+    // While hovered, the discs float slowly around their place.
+    float: { duration: 3200, easing: Easing.linear },
+    floatFade: { duration: 320, easing: Easing.inOut(Easing.quad) },
   },
 } as const;

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import Animated, {
+  cancelAnimation,
   type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useReducedMotion,
   useSharedValue,
+  withRepeat,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
@@ -18,6 +20,9 @@ import { motion } from './motion';
 import {
   HOVERED_DISC,
   RADIAL_LABEL_WIDTH,
+  type RadialFan,
+  radialHoverOffset,
+  type RadialBounds,
   type RadialPoint,
   RECOMMENDED_DISC,
 } from './radialLayout';
@@ -36,7 +41,18 @@ const LIFT_SHADOW = { offsetX: 0, offsetY: 10, standardDeviation: 5 };
 const DISC_START_SCALE = 0.6;
 const ICON_RATIO = 0.5;
 const ICON_STROKE = 1.8;
-const HOVER_BORDER = 1.5;
+// The hovered disc turns to its action's colour, with a cream ring and a halo
+// that stand out on the dark scrim (Candice, S6).
+const HOVER_RING = 3;
+const HOVER_GLOW_ALPHA = '99';
+// The slow drift of the discs while one is hovered, in points; the discs next
+// to the hovered one follow it at a smaller scale.
+const FLOAT_X = 2;
+const FLOAT_Y = 3;
+const FLOAT_SCALE = 0.015;
+const FLOAT_NEIGHBOUR = 0.4;
+const FLOAT_NEIGHBOURS = 2;
+const FULL_TURN = 2 * Math.PI;
 const RECOMMEND_RING = 3;
 // `recommend` at 55 %, in hexadecimal alpha.
 const RECOMMEND_GLOW_ALPHA = '8C';
@@ -48,8 +64,10 @@ const LABEL_DOT = 8;
 
 interface RadialMenuProps {
   request: RadialMenuRequest;
+  bounds: RadialBounds;
   open: boolean;
   hovered: SharedValue<number>;
+  finger: SharedValue<RadialPoint>;
   onClosed: () => void;
 }
 
@@ -58,10 +76,11 @@ interface RadialMenuProps {
  * the finger stays with the touched piece's gesture, so nothing here takes
  * touches. Hidden from screen readers, which get accessibility actions.
  */
-export function RadialMenu({ request, open, hovered, onClosed }: RadialMenuProps) {
+export function RadialMenu({ request, bounds, open, hovered, finger, onClosed }: RadialMenuProps) {
   const { colors } = useTheme();
   const reducedMotion = useReducedMotion();
   const progress = useSharedValue(0);
+  const floatPhase = useSharedValue(0);
   const [hoveredIndex, setHoveredIndex] = useState(-1);
   const { actions, anchor, layout, piece, pieceFrame, recommendation } = request;
 
@@ -79,6 +98,12 @@ export function RadialMenu({ request, open, hovered, onClosed }: RadialMenuProps
     }
   }, [open, reducedMotion, progress, onClosed]);
 
+  useEffect(() => {
+    if (reducedMotion) return undefined;
+    floatPhase.set(withRepeat(withTiming(FULL_TURN, motion.radial.float), -1));
+    return () => cancelAnimation(floatPhase);
+  }, [reducedMotion, floatPhase]);
+
   useAnimatedReaction(
     () => hovered.get(),
     (index, previous) => {
@@ -95,6 +120,7 @@ export function RadialMenu({ request, open, hovered, onClosed }: RadialMenuProps
   const hoveredAction = actions[hoveredIndex];
   const recommended = actions.find((action) => action.id === recommendation?.actionId);
   const label = hoveredAction?.label ?? (recommended ? recommendation?.label : undefined);
+  const fan: RadialFan = { discs: layout.discs, anchor, bounds };
   const pressRingLeft = anchor.x - size.sizeRadial / 2;
   const pressRingTop = anchor.y - size.sizeRadial / 2;
 
@@ -145,10 +171,13 @@ export function RadialMenu({ request, open, hovered, onClosed }: RadialMenuProps
             action={action}
             index={index}
             place={place}
+            fan={fan}
             anchor={anchor}
             recommended={action.id === recommended?.id}
             progress={progress}
             hovered={hovered}
+            finger={finger}
+            floatPhase={floatPhase}
             reducedMotion={reducedMotion}
           />
         );
@@ -181,10 +210,13 @@ interface RadialDiscProps {
   action: RadialAction;
   index: number;
   place: RadialPoint;
+  fan: RadialFan;
   anchor: RadialPoint;
   recommended: boolean;
   progress: SharedValue<number>;
   hovered: SharedValue<number>;
+  finger: SharedValue<RadialPoint>;
+  floatPhase: SharedValue<number>;
   reducedMotion: boolean;
 }
 
@@ -192,40 +224,102 @@ function RadialDisc({
   action,
   index,
   place,
+  fan,
   anchor,
   recommended,
   progress,
   hovered,
+  finger,
+  floatPhase,
   reducedMotion,
 }: RadialDiscProps) {
   const dimension = recommended ? RECOMMENDED_DISC : size.sizeRadial;
   const hoverScale = HOVERED_DISC / dimension;
-  const hover = useDerivedValue(() =>
-    reducedMotion
-      ? Number(hovered.get() === index)
-      : withTiming(hovered.get() === index ? 1 : 0, motion.radial.hover),
+  const hover = useDerivedValue(() => {
+    const isHovered = hovered.get() === index;
+    if (reducedMotion) return Number(isHovered);
+    return withSpring(isHovered ? 1 : 0, isHovered ? motion.radial.hover : motion.radial.hoverOut);
+  });
+  const tone = useDerivedValue(() => {
+    const isHovered = hovered.get() === index;
+    return reducedMotion
+      ? Number(isHovered)
+      : withTiming(Number(isHovered), motion.radial.hoverTone);
+  });
+  const shift = useDerivedValue(() =>
+    radialHoverOffset(fan, index, hovered.get(), reducedMotion ? place : finger.get()),
   );
+  const drift = useDerivedValue(() => {
+    const current = hovered.get();
+    if (current === index) return motion.radial.driftHovered;
+    return current >= 0 && Math.abs(current - index) === 1
+      ? motion.radial.driftNear
+      : motion.radial.driftFar;
+  });
+  const shiftX = useDerivedValue(() =>
+    reducedMotion ? shift.get().x : withSpring(shift.get().x, drift.get()),
+  );
+  const shiftY = useDerivedValue(() =>
+    reducedMotion ? shift.get().y : withSpring(shift.get().y, drift.get()),
+  );
+  const floating = useDerivedValue(() => {
+    const current = hovered.get();
+    const distance = Math.abs(current - index);
+    const amount =
+      current < 0 || reducedMotion
+        ? 0
+        : distance === 0
+          ? 1
+          : distance <= FLOAT_NEIGHBOURS
+            ? FLOAT_NEIGHBOUR
+            : 0;
+    return withTiming(amount, motion.radial.floatFade);
+  });
 
   const placed = useAnimatedStyle(() => {
     const shown = progress.get();
     const travel = reducedMotion ? 0 : 1 - shown;
     const startScale = reducedMotion ? 1 : DISC_START_SCALE + (1 - DISC_START_SCALE) * shown;
+    // Each disc has its own moment in the drift, so they never move as one.
+    const phase = floatPhase.get() + index;
+    const float = floating.get();
     return {
       opacity: Math.min(shown, 1),
+      zIndex: hover.get() > 0.01 ? 1 : 0,
       transform: [
-        { translateX: (anchor.x - place.x) * travel },
-        { translateY: (anchor.y - place.y) * travel },
-        { scale: startScale * (1 + (hoverScale - 1) * hover.get()) },
+        {
+          translateX:
+            (anchor.x - place.x) * travel + shiftX.get() + Math.cos(phase) * FLOAT_X * float,
+        },
+        {
+          translateY:
+            (anchor.y - place.y) * travel + shiftY.get() + Math.sin(2 * phase) * FLOAT_Y * float,
+        },
+        {
+          scale:
+            startScale *
+            (1 + (hoverScale - 1) * hover.get()) *
+            (1 + Math.sin(phase) * FLOAT_SCALE * float),
+        },
       ],
     };
   });
-  const hoverRing = useAnimatedStyle(() => ({ opacity: hover.get() }));
+  const hoverFill = useAnimatedStyle(() => ({ opacity: tone.get() }));
 
   const active = action.active === true;
   const tint = active && action.status ? DISC_COLORS[`status${action.status}Bg`] : undefined;
   const ink =
     active && action.status ? DISC_COLORS[`status${action.status}`] : DISC_COLORS.inkSecondary;
+  const hoverColor = action.status ? DISC_COLORS[`status${action.status}`] : DISC_COLORS.action;
+  const hoverRing = (HOVER_RING * dimension) / HOVERED_DISC;
   const ringShadow = `0 0 0 ${RECOMMEND_RING}px ${DISC_COLORS.recommend}, 0 0 20px 4px ${DISC_COLORS.recommend}${RECOMMEND_GLOW_ALPHA}, `;
+
+  const iconProps = {
+    name: action.icon,
+    size: dimension * ICON_RATIO,
+    strokeWidth: ICON_STROKE,
+    filled: active && action.fillWhenActive === true,
+  };
 
   return (
     <Animated.View
@@ -243,21 +337,20 @@ function RadialDisc({
       ]}
     >
       {tint ? <View style={[styles.discFill, { backgroundColor: tint }]} /> : null}
-      <Icon
-        name={action.icon}
-        size={dimension * ICON_RATIO}
-        color={ink}
-        strokeWidth={ICON_STROKE}
-        filled={active && action.fillWhenActive === true}
-      />
+      <Icon {...iconProps} color={ink} />
       <Animated.View
         style={[
           styles.discFill,
-          { borderWidth: (HOVER_BORDER * dimension) / HOVERED_DISC },
-          styles.hoverRing,
-          hoverRing,
+          styles.hoverFill,
+          {
+            backgroundColor: hoverColor,
+            boxShadow: `0 0 0 ${hoverRing}px ${DISC_COLORS.linen}, 0 0 18px 6px ${hoverColor}${HOVER_GLOW_ALPHA}`,
+          },
+          hoverFill,
         ]}
-      />
+      >
+        <Icon {...iconProps} color={DISC_COLORS.linen} />
+      </Animated.View>
     </Animated.View>
   );
 }
@@ -290,7 +383,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   discFill: { ...StyleSheet.absoluteFill, borderRadius: RECOMMENDED_DISC },
-  hoverRing: { borderColor: DISC_COLORS.mossDeep },
+  hoverFill: { alignItems: 'center', justifyContent: 'center' },
   labelPlace: { width: RADIAL_LABEL_WIDTH, alignItems: 'center' },
   label: {
     height: LABEL_HEIGHT,
