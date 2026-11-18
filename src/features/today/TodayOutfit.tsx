@@ -46,14 +46,21 @@ const ONE_COLUMN: Record<OutfitRow, RowPlace> = {
 };
 const ADD_LAYER = { left: 18, top: 95 };
 
-// Two columns: layers on the left, the right column swipes in its lane.
-const LANE = { left: 151, width: size.garmentTwoCol };
+// Two columns of equal width (Candice, S6): layers on the left, the right
+// column swipes in its lane. A layer has the size of the top and sits level
+// with the top, then with the bottom.
+const COLUMN = OUTFIT_WIDTH / 2;
+const LANE = { left: COLUMN, width: COLUMN };
 const TWO_COLUMN: Record<OutfitRow, RowPlace> = {
-  top: { frame: size.garmentTwoCol, frameTop: -1.5, band: [-1.5, 185] },
-  bottom: { frame: size.garmentTwoCol, frameTop: 177.5, band: [185, 360] },
-  shoes: { frame: size.garmentShoes, frameTop: 348, band: [360, 464] },
+  top: { frame: COLUMN, frameTop: 20, band: [20, 185] },
+  bottom: { frame: COLUMN, frameTop: 178.5, band: [185, 338] },
+  shoes: { frame: size.garmentShoes, frameTop: 326.5, band: [338, 442.5] },
 };
-const LAYER = { left: 13, firstTop: 23, step: 139 };
+const LAYER = {
+  left: 0,
+  firstTop: TWO_COLUMN.top.frameTop,
+  step: TWO_COLUMN.bottom.frameTop - TWO_COLUMN.top.frameTop,
+};
 
 // A one-piece replaces the top and the bottom: the top's width, 320 pt high
 // for a 200 pt frame (AP4 mockup), centred on the two places (Candice, S6).
@@ -116,8 +123,8 @@ export function TodayOutfit({
   const hasTop = chosenGarment(choice, suggestion, pieces, 'top') !== null;
   const addLayerPlace = twoColumns
     ? {
-        left: LAYER.left + (size.garmentLayer - size.sizeTap) / 2,
-        top: LAYER.firstTop + layers.length * LAYER.step + (size.garmentLayer - size.sizeTap) / 2,
+        left: LAYER.left + (COLUMN - size.sizeTap) / 2,
+        top: LAYER.firstTop + layers.length * LAYER.step + (COLUMN - size.sizeTap) / 2,
       }
     : ADD_LAYER;
 
@@ -129,7 +136,7 @@ export function TodayOutfit({
       {layers.map((row, position) => {
         const piece = currentPiece(row);
         if (!piece) return null;
-        const frame = size.garmentLayer * scale;
+        const frame = COLUMN * scale;
         return (
           <Pressable
             key={row}
