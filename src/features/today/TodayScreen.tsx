@@ -74,8 +74,6 @@ export function TodayScreen() {
           emptyRows={today.emptyRows}
           onAddPiece={() => router.push('/add')}
           scale={scale}
-          // The layer sheet comes in the next step.
-          onLayerPress={() => undefined}
         />
       </View>
 

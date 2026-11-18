@@ -62,6 +62,12 @@
       "worn": "porté {{count}} fois sur {{max}}"
     },
     "addLayer": "Ajouter une couche",
+    "layerSheet": {
+      "title": "{{layer}}, choisir parmi les couches compatibles",
+      "piece": "{{description}}, {{position}} sur {{count}}",
+      "position": "Couche {{position}} sur {{count}}",
+      "remove": "Retirer cette couche"
+    },
     "confirm": "Je porte cette tenue",
     "confirmMissing": {
       "top": "Je porte cette tenue, indisponible : il manque un haut",

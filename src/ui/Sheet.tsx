@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   SlideInDown,
@@ -18,6 +18,8 @@ import { radius, size, spacing } from './tokens';
 // Library default springs: durations and curves are set in the S6 prototype (SPEC §14.1).
 const CLOSE_DISTANCE = 80;
 const CLOSE_VELOCITY = 800;
+// Android draws its navigation under the app: the content stays clear of it.
+const ANDROID_NAV_GAP = spacing.space16;
 
 interface SheetProps {
   accessibilityLabel: string;
@@ -40,6 +42,10 @@ export function Sheet({ accessibilityLabel, onClose, children }: SheetProps) {
   const { colors, shadows } = useTheme();
   const insets = useSafeAreaInsets();
   const offset = useSharedValue(0);
+  const paddingBottom =
+    Platform.OS === 'android'
+      ? Math.max(spacing.space24, insets.bottom + ANDROID_NAV_GAP)
+      : Math.max(insets.bottom, spacing.space24);
 
   const swipe = Gesture.Pan()
     .enabled(onClose !== undefined)
@@ -76,7 +82,7 @@ export function Sheet({ accessibilityLabel, onClose, children }: SheetProps) {
             backgroundColor: colors.sheet,
             borderColor: colors.sheetEdge,
             boxShadow: shadows.shadowSheet,
-            paddingBottom: Math.max(insets.bottom, spacing.space24),
+            paddingBottom,
           },
           followFinger,
         ]}
