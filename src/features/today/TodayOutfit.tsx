@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { type ComponentRef, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { AccessibilityInfo, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
-import type { RowSlot, Suggestion } from '../../domain/engine';
+import type { LayerSlot, RowSlot, Suggestion } from '../../domain/engine';
 import { LoopingCarousel } from '../../ui/LoopingCarousel';
 import { motion } from '../../ui/motion';
-import { size } from '../../ui/tokens';
+import { size, spacing } from '../../ui/tokens';
 import { AddLayerButton } from './AddLayerButton';
 import { EmptySlot } from './EmptySlot';
+import { LayerSheet } from './LayerSheet';
 import {
   addLayer,
   chosenGarment,
@@ -17,6 +18,7 @@ import {
   type OutfitChoice,
   type OutfitRow,
   rowGarments,
+  showRow,
   shownLayers,
   wearsOnePiece,
 } from './outfitChoice';
@@ -66,9 +68,11 @@ const LAYER = {
 // for a 200 pt frame (AP4 mockup), centred on the two places (Candice, S6).
 const ONE_PIECE_HEIGHT_RATIO = 1.6;
 
-// The right column's distance between two pieces: the next one arrives
-// close, as in the AP2 mockup (out at −70, in at +58 for 194 pt).
-const STEP_RATIO = 0.66;
+// Empty space between two pieces of a row while swiping (Candice, S6).
+const PIECE_GAP = spacing.space16;
+
+// Leaves the modal time to go before the focus returns to the touched layer.
+const FOCUS_RETURN_DELAY = 150;
 
 interface TodayOutfitProps {
   suggestion: Suggestion;
@@ -80,7 +84,6 @@ interface TodayOutfitProps {
   onAddPiece: () => void;
   // Outfit zone scale: 1 on the 375 × 812 pt reference screen.
   scale: number;
-  onLayerPress: (row: 'midLayer' | 'outerLayer') => void;
 }
 
 /** The outfit of the day: one column, or layers on the left and a lane. */
@@ -92,10 +95,11 @@ export function TodayOutfit({
   emptyRows,
   onAddPiece,
   scale,
-  onLayerPress,
 }: TodayOutfitProps) {
   const { t } = useTranslation();
   const [swiping, setSwiping] = useState(false);
+  const [openLayer, setOpenLayer] = useState<LayerSlot | null>(null);
+  const layerButtons = useRef<Partial<Record<LayerSlot, ComponentRef<typeof View> | null>>>({});
   const layers = shownLayers(choice);
   const twoColumns = layers.length > 0;
   const places = twoColumns ? TWO_COLUMN : ONE_COLUMN;
@@ -110,6 +114,17 @@ export function TodayOutfit({
     const piece = currentPiece(row);
     return piece ? t('today.piece', { slot, description: pieceDescription(piece, t) }) : slot;
   };
+
+  // A removed layer has no button left: the focus then stays where it falls.
+  const closeLayerSheet = (layer: LayerSlot) => {
+    setOpenLayer(null);
+    setTimeout(() => {
+      const button = layerButtons.current[layer];
+      if (button) AccessibilityInfo.sendAccessibilityEvent(button, 'focus');
+    }, FOCUS_RETURN_DELAY);
+  };
+  const sheetLayer = openLayer !== null && layers.includes(openLayer) ? openLayer : null;
+  const sheetGarments = sheetLayer ? rowGarments(choice, suggestion, sheetLayer) : [];
 
   const rows = (['top', 'bottom', 'shoes'] as const).filter(
     (row) =>
@@ -140,14 +155,18 @@ export function TodayOutfit({
         return (
           <Pressable
             key={row}
+            ref={(button) => {
+              layerButtons.current[row] = button;
+            }}
             accessibilityRole="button"
             accessibilityLabel={t('today.piece', {
               slot: t('today.slots.layer', { number: position + 1 }),
               description: pieceDescription(piece, t),
             })}
-            onPress={() => onLayerPress(row)}
+            onPress={() => setOpenLayer(row)}
             style={[
               styles.absolute,
+              styles.overPieces,
               { left: LAYER.left * scale, top: (LAYER.firstTop + position * LAYER.step) * scale },
             ]}
           >
@@ -191,11 +210,16 @@ export function TodayOutfit({
                 const centre = onePiece ? onePieceCentre : frameCentre;
                 return (
                   <View style={{ transform: [{ translateY: (centre - bandCentre) * scale }] }}>
-                    <OutfitPiece piece={piece} frame={frame} height={height} />
+                    <OutfitPiece
+                      piece={piece}
+                      frame={frame}
+                      height={height}
+                      alignTop={row === 'bottom'}
+                    />
                   </View>
                 );
               }}
-              step={place.frame * STEP_RATIO * scale}
+              step={(place.frame + PIECE_GAP) * scale}
               height={bandHeight}
               edgeFade={twoColumns}
               onSwipeActiveChange={setSwiping}
@@ -229,6 +253,7 @@ export function TodayOutfit({
         <View
           style={[
             styles.absolute,
+            styles.overPieces,
             {
               left: addLayerPlace.left * scale,
               top: addLayerPlace.top * scale,
@@ -241,6 +266,21 @@ export function TodayOutfit({
           />
         </View>
       ) : null}
+
+      {sheetLayer && sheetGarments.length > 0 ? (
+        <LayerSheet
+          layerNumber={layers.indexOf(sheetLayer) + 1}
+          garments={sheetGarments}
+          pieces={pieces}
+          index={choice.index[sheetLayer] % sheetGarments.length}
+          onIndexChange={(index) => onChoiceChange((current) => moveTo(current, sheetLayer, index))}
+          onRemove={() => {
+            onChoiceChange((current) => showRow(current, sheetLayer, false));
+            closeLayerSheet(sheetLayer);
+          }}
+          onClose={() => closeLayerSheet(sheetLayer)}
+        />
+      ) : null}
     </View>
   );
 }
@@ -249,4 +289,7 @@ const styles = StyleSheet.create({
   absolute: { position: 'absolute' },
   // Trousers and dresses run down over the shoes, not under them.
   overShoes: { zIndex: 1 },
+  // Layers and the add button: the right column's pieces slide under them,
+  // and a dress's swipe area leaves the button touchable.
+  overPieces: { zIndex: 2 },
 });

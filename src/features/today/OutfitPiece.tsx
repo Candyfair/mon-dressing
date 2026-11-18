@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
 
@@ -29,6 +30,9 @@ interface OutfitPieceProps {
   height?: number;
   // The location badge sits against the right shoulder.
   showBadge?: boolean;
+  // Bottoms hang from the top of the frame: a skirt's waist sits level with
+  // a pair of trousers' (photos are cropped to the garment).
+  alignTop?: boolean;
 }
 
 /**
@@ -36,10 +40,23 @@ interface OutfitPieceProps {
  * (design-system OutfitPiece). Decorative: the row or button holding it
  * carries the accessible name.
  */
-export function OutfitPiece({ piece, frame, height = frame, showBadge = true }: OutfitPieceProps) {
+export function OutfitPiece({
+  piece,
+  frame,
+  height = frame,
+  showBadge = true,
+  alignTop = false,
+}: OutfitPieceProps) {
   const { colors } = useTheme();
+  // Height / width of the photo, known once it is loaded.
+  const [photoRatio, setPhotoRatio] = useState<number | null>(null);
   const shadowWidth = frame * SHADOW_WIDTH;
   const shadow = splitAlpha(colors.contactShadow);
+  // A short piece at the top of its frame keeps the shadow right under it.
+  const shadowTop =
+    alignTop && photoRatio !== null && photoRatio < 1
+      ? frame * photoRatio - SHADOW_HEIGHT / 2
+      : height * (height > frame ? TALL_SHADOW_TOP : SHADOW_TOP);
   const badge =
     piece.location === 'airing'
       ? 'airing'
@@ -55,7 +72,7 @@ export function OutfitPiece({ piece, frame, height = frame, showBadge = true }: 
           styles.shadow,
           {
             left: (frame - shadowWidth) / 2,
-            top: height * (height > frame ? TALL_SHADOW_TOP : SHADOW_TOP),
+            top: shadowTop,
           },
         ]}
       >
@@ -94,6 +111,8 @@ export function OutfitPiece({ piece, frame, height = frame, showBadge = true }: 
           source={{ uri: photoUri(piece.photo) }}
           style={StyleSheet.absoluteFill}
           contentFit="contain"
+          contentPosition={alignTop ? 'top center' : 'center'}
+          onLoad={({ source }) => setPhotoRatio(source.height / source.width)}
           accessible={false}
         />
       )}

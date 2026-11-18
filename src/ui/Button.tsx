@@ -5,7 +5,7 @@ import { fontFamilies, radius, size } from './tokens';
 
 // Variants used so far (design-system/components/Button). Text styles from
 // design-system/components/bundle.css (.md-button, .md-link).
-export type ButtonVariant = 'primary' | 'outline' | 'link';
+export type ButtonVariant = 'primary' | 'outline' | 'secondary' | 'link';
 
 interface ButtonProps {
   label: string;
@@ -39,6 +39,11 @@ export function Button({
           container: { borderWidth: 1, borderColor: colors.outlineEdge },
           text: colors.controlInk,
         };
+      case 'secondary':
+        return {
+          container: [styles.secondary, { borderColor: colors.secondaryEdge }],
+          text: colors.secondary,
+        };
       case 'link':
         return { container: styles.link, text: colors.controlInk };
       default: {
@@ -61,7 +66,13 @@ export function Button({
         pressed && styles.pressed,
       ]}
     >
-      <Text style={[variant === 'link' ? styles.linkText : styles.text, { color: look.text }]}>
+      <Text
+        style={[
+          variant === 'link' ? styles.linkText : styles.text,
+          variant === 'secondary' && styles.secondaryText,
+          { color: look.text },
+        ]}
+      >
         {label}
       </Text>
     </Pressable>
@@ -77,6 +88,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   fullWidth: { alignSelf: 'stretch' },
+  secondary: { minHeight: size.sizeTap, paddingHorizontal: 18, borderWidth: 1 },
   link: { minHeight: size.sizeTap, paddingHorizontal: 4, justifyContent: 'center' },
   pressed: { opacity: 0.8 },
   // Wraps on two lines at 200 % text size rather than truncating (Button README).
@@ -86,6 +98,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: 'center',
   },
+  secondaryText: { fontSize: 14.5 },
   linkText: {
     fontFamily: fontFamilies.text,
     fontWeight: '600',

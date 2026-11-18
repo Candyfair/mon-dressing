@@ -2,7 +2,6 @@ import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   type AccessibilityActionEvent,
-  type LayoutChangeEvent,
   type StyleProp,
   StyleSheet,
   View,
@@ -11,8 +10,6 @@ import {
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
-  Extrapolation,
-  interpolate,
   type SharedValue,
   useAnimatedStyle,
   useReducedMotion,
@@ -30,9 +27,6 @@ import { motion } from './motion';
 // horizontal swipe.
 const ACTIVE_OFFSET_X = 12;
 const FAIL_OFFSET_Y = 12;
-// Lane edges faded like `md-swap-lane`: transparent at the edge, opaque from
-// 22 % to 80 % of the width.
-const EDGE_FADE = [0, 0.22, 0.8, 1];
 
 interface LoopingCarouselProps<T> {
   items: readonly T[];
@@ -41,7 +35,7 @@ interface LoopingCarouselProps<T> {
   index: number;
   onIndexChange: (index: number) => void;
   renderItem: (item: T) => ReactNode;
-  // Distance between the centres of two pieces: the next one arrives close.
+  // Distance between the centres of two pieces.
   step: number;
   height: number;
   // Neighbours at rest: 0 hides them (Today's rows), and they show only while
@@ -49,7 +43,7 @@ interface LoopingCarouselProps<T> {
   neighbourOpacity?: number;
   // Neighbour size relative to the current piece.
   neighbourScale?: number;
-  // Fades the pieces near the edges (two-column lane, without a hard cut).
+  // Fades a piece as it leaves the centre (two-column lane, no hard cut).
   edgeFade?: boolean;
   // Drag started or ended, to fade out "Ajouter une couche" meanwhile.
   onSwipeActiveChange?: (active: boolean) => void;
@@ -96,7 +90,6 @@ export function LoopingCarousel<T>({
   const revealed = useSharedValue(0);
   // Reduced motion cross-fade of the current piece.
   const fade = useSharedValue(1);
-  const width = useSharedValue(0);
 
   const commit = (target: number) => {
     setBase(target);
@@ -212,9 +205,6 @@ export function LoopingCarousel<T>({
           ...(onPress ? [{ name: 'activate' }] : [{ name: 'increment' }, { name: 'decrement' }]),
         ]}
         onAccessibilityAction={onAccessibilityAction}
-        onLayout={(event: LayoutChangeEvent) => {
-          width.set(event.nativeEvent.layout.width);
-        }}
         style={[styles.row, { height }, style]}
       >
         {offsets.map((offset) => {
@@ -227,7 +217,6 @@ export function LoopingCarousel<T>({
               position={position}
               revealed={revealed}
               fade={fade}
-              width={width}
               step={step}
               neighbourOpacity={neighbourOpacity}
               neighbourScale={neighbourScale}
@@ -247,7 +236,6 @@ interface CarouselSlotProps {
   position: SharedValue<number>;
   revealed: SharedValue<number>;
   fade: SharedValue<number>;
-  width: SharedValue<number>;
   step: number;
   neighbourOpacity: number;
   neighbourScale: number;
@@ -260,7 +248,6 @@ function CarouselSlot({
   position,
   revealed,
   fade,
-  width,
   step,
   neighbourOpacity,
   neighbourScale,
@@ -273,15 +260,8 @@ function CarouselSlot({
     const centred = Math.max(0, 1 - Math.abs(distance));
     const restNeighbour = neighbourOpacity > 0 ? neighbourOpacity : revealed.get();
     let opacity = centred * fade.get() + (1 - centred) * restNeighbour;
-    if (edgeFade && width.get() > 0) {
-      const w = width.get();
-      const centreX = w / 2 + distance * step;
-      opacity *= interpolate(
-        centreX,
-        EDGE_FADE.map((stop) => stop * w),
-        [0, 1, 1, 0],
-        Extrapolation.CLAMP,
-      );
+    if (edgeFade) {
+      opacity *= centred;
     }
     return {
       opacity,
