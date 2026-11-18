@@ -4,7 +4,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
-import { motion } from './motion';
+import { useMotion } from './motionStore';
 import { type RadialLayout, radialItemAt, radialLayout, type RadialPoint } from './radialLayout';
 import { type RadialAction, type RadialRecommendation, useRadialMenu } from './radialMenuContext';
 
@@ -36,6 +36,7 @@ export function RadialMenuTarget({
   piece = children,
   style,
 }: RadialMenuTargetProps) {
+  const motion = useMotion();
   const { bounds, hovered, finger, show, hide } = useRadialMenu();
   const [pieceSize, setPieceSize] = useState({ width: 0, height: 0 });
   const discs = useSharedValue<RadialPoint[]>([]);
