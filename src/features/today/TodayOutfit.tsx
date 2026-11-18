@@ -10,7 +10,7 @@ import Animated, {
 
 import type { LayerSlot, RowSlot, Suggestion } from '../../domain/engine';
 import { LoopingCarousel } from '../../ui/LoopingCarousel';
-import { useMotion } from '../../ui/motionStore';
+import { motion } from '../../ui/motion';
 import { size, spacing } from '../../ui/tokens';
 import { AddLayerButton } from './AddLayerButton';
 import { EmptySlot } from './EmptySlot';
@@ -103,7 +103,6 @@ export function TodayOutfit({
   onAddPiece,
   scale,
 }: TodayOutfitProps) {
-  const motion = useMotion();
   const { t } = useTranslation();
   const [swiping, setSwiping] = useState(false);
   const [openLayer, setOpenLayer] = useState<LayerSlot | null>(null);

@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DevTodayTools } from '../dev/DevTodayTools';
 import { GlassStage } from '../../ui/GlassStage';
 import { Icon } from '../../ui/Icon';
-import { useMotion } from '../../ui/motionStore';
+import { motion } from '../../ui/motion';
 import { tabBarBottom } from '../../ui/TabBar';
 import { useTheme } from '../../ui/theme';
 import { fontFamilies, size, spacing } from '../../ui/tokens';
@@ -35,7 +35,6 @@ const DEV_TOOLS_HEIGHT = 34;
 
 /** Today (design specs 01 and 02): the day's weather and the outfit to wear. */
 export function TodayScreen() {
-  const motion = useMotion();
   const { t } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();

@@ -2,7 +2,7 @@ import { type Href, router, Tabs, usePathname } from 'expo-router';
 
 import { useDayWeather } from '../../features/today/useDayWeather';
 import { GlassStage } from '../../ui/GlassStage';
-import { useMotion } from '../../ui/motionStore';
+import { motion } from '../../ui/motion';
 import { TabBar, type TabName } from '../../ui/TabBar';
 
 const HREF = {
@@ -22,7 +22,6 @@ function tabOf(pathname: string): TabName {
 const noTabBar = () => null;
 
 export default function TabsLayout() {
-  const motion = useMotion();
   const pathname = usePathname();
   // The menu takes the day's weather tint in the dark theme.
   const { weather } = useDayWeather();

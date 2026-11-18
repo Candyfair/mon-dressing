@@ -6,7 +6,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { DatabaseProvider } from '../db/DatabaseProvider';
 import { useResumePendingCutouts } from '../features/add/cutout';
-import { DevFrameMeter } from '../features/dev/DevFrameMeter';
 import { queryClient } from '../features/weather/queryClient';
 import '../i18n';
 import { RadialMenuProvider } from '../ui/RadialMenuProvider';
@@ -30,15 +29,12 @@ export default function RootLayout() {
 function AppShell() {
   useResumePendingCutouts();
   return (
-    <>
-      <RadialMenuProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="add" options={{ presentation: 'fullScreenModal' }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </RadialMenuProvider>
-      <DevFrameMeter />
-    </>
+    <RadialMenuProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="add" options={{ presentation: 'fullScreenModal' }} />
+      </Stack>
+      <StatusBar style="auto" />
+    </RadialMenuProvider>
   );
 }
 

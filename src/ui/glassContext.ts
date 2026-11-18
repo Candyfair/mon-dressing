@@ -4,12 +4,11 @@ import type { View } from 'react-native';
 /**
  * How glass surfaces are drawn (design-system "Verre dépoli"):
  * - `blur`: frosted, the content behind is blurred under the tint;
- * - `tint`: the low-end Android fallback, the same tint more opaque, no blur.
- * Decided per platform after the S6 measures on the Galaxy A06 (SPEC §14.1).
+ * - `tint`: the same tint more opaque, no blur; only compared on the Gestures
+ *   screen. The Galaxy A06 keeps up with blur (S6 measures, SPEC §14.2).
  */
 export type GlassMode = 'blur' | 'tint';
 
-// Blur everywhere until the A06 measures say otherwise.
 export const DEFAULT_GLASS_MODE: GlassMode = 'blur';
 
 export interface GlassSettings {

@@ -16,7 +16,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 
 import { withMinAlpha } from './color';
 import { Icon } from './Icon';
-import { useMotion } from './motionStore';
+import { motion } from './motion';
 import {
   HOVERED_DISC,
   RADIAL_LABEL_WIDTH,
@@ -77,7 +77,6 @@ interface RadialMenuProps {
  * touches. Hidden from screen readers, which get accessibility actions.
  */
 export function RadialMenu({ request, bounds, open, hovered, finger, onClosed }: RadialMenuProps) {
-  const motion = useMotion();
   const { colors } = useTheme();
   const reducedMotion = useReducedMotion();
   const progress = useSharedValue(0);
@@ -97,13 +96,13 @@ export function RadialMenu({ request, bounds, open, hovered, finger, onClosed }:
         }),
       );
     }
-  }, [open, reducedMotion, progress, onClosed, motion]);
+  }, [open, reducedMotion, progress, onClosed]);
 
   useEffect(() => {
     if (reducedMotion) return undefined;
     floatPhase.set(withRepeat(withTiming(FULL_TURN, motion.radial.float), -1));
     return () => cancelAnimation(floatPhase);
-  }, [reducedMotion, floatPhase, motion]);
+  }, [reducedMotion, floatPhase]);
 
   useAnimatedReaction(
     () => hovered.get(),
@@ -234,7 +233,6 @@ function RadialDisc({
   floatPhase,
   reducedMotion,
 }: RadialDiscProps) {
-  const motion = useMotion();
   const dimension = recommended ? RECOMMENDED_DISC : size.sizeRadial;
   const hoverScale = HOVERED_DISC / dimension;
   const hover = useDerivedValue(() => {

@@ -40,7 +40,7 @@ SwapCarousel, Sheet, Dots, Button (secondaire), AddLayerButton. Voir `design-sys
 
 ### Mise en œuvre suggérée
 - `react-native-reanimated-carousel` (prop `loop`) ou `Gesture.Pan` (react-native-gesture-handler) + Reanimated 4 ; opacité interpolée sur la position.
-- Durées d’animation à régler sur le prototype.
+- Durées et courbes d’animation : figées dans `src/ui/motion.ts` (S6).
 
 ## Accessibilité
 
@@ -51,7 +51,7 @@ SwapCarousel, Sheet, Dots, Button (secondaire), AddLayerButton. Voir `design-sys
 
 ## Questions ouvertes
 
-- Durées et courbes des animations (glissement, fondu, rebond).
+Aucune.
 
 ## Écrans validés
 
