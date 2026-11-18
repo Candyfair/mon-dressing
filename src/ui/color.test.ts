@@ -1,4 +1,4 @@
-import { withMinAlpha } from './color';
+import { splitAlpha, withMinAlpha } from './color';
 
 describe('withMinAlpha', () => {
   it('raises the alpha of a more transparent colour', () => {
@@ -16,5 +16,15 @@ describe('withMinAlpha', () => {
 
   it('refuses a colour it cannot read', () => {
     expect(() => withMinAlpha('forest', 0.5)).toThrow('Unsupported colour');
+  });
+});
+
+describe('splitAlpha', () => {
+  it('separates the alpha of an rgba colour', () => {
+    expect(splitAlpha('rgba(30,49,32,0.30)')).toEqual({ color: 'rgb(30,49,32)', opacity: 0.3 });
+  });
+
+  it('leaves an opaque colour fully opaque', () => {
+    expect(splitAlpha('#1E3120')).toEqual({ color: '#1E3120', opacity: 1 });
   });
 });

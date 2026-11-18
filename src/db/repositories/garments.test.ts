@@ -163,8 +163,8 @@ describe('garmentThumbnails', () => {
     add(db, 'c', { status: 'pending' }, T0, 'tshirt', 'x');
     expect(garmentThumbnails(db, 'w')).toEqual(
       expect.arrayContaining([
-        { id: 'a', subtype: 'tshirt', photoPath: 'photos/a/cutout.png' },
-        { id: 'b', subtype: 'tshirt', photoPath: 'photos/b/original.jpg' },
+        { id: 'a', name: null, subtype: 'tshirt', photoPath: 'photos/a/cutout.png' },
+        { id: 'b', name: null, subtype: 'tshirt', photoPath: 'photos/b/original.jpg' },
       ]),
     );
     expect(garmentThumbnails(db, 'w')).toHaveLength(2);

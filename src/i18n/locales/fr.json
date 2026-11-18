@@ -8,9 +8,73 @@
   },
   "tabs": {
     "nav": "Navigation principale",
-    "laundry": "Linge",
+    "laundry": "Buanderie",
     "today": "Aujourd’hui",
     "wardrobe": "Dressing"
+  },
+  "today": {
+    "date": "{{weekday}} {{day}} {{month}}",
+    "weekdays": {
+      "1": "Lun.",
+      "2": "Mar.",
+      "3": "Mer.",
+      "4": "Jeu.",
+      "5": "Ven.",
+      "6": "Sam.",
+      "7": "Dim."
+    },
+    "months": {
+      "1": "janv.",
+      "2": "févr.",
+      "3": "mars",
+      "4": "avr.",
+      "5": "mai",
+      "6": "juin",
+      "7": "juil.",
+      "8": "août",
+      "9": "sept.",
+      "10": "oct.",
+      "11": "nov.",
+      "12": "déc."
+    },
+    "maxTemperature": "→ {{value}}",
+    "settings": "Réglages",
+    "commute": {
+      "walking": "à pied",
+      "bike": "à vélo",
+      "scooter": "en trottinette",
+      "publicTransport": "en transports en commun",
+      "car": "en voiture",
+      "motorbike": "à moto"
+    },
+    "outfit": "Tenue du jour",
+    "slots": {
+      "top": "Haut",
+      "bottom": "Bas",
+      "shoes": "Chaussures",
+      "layer": "Couche {{number}}"
+    },
+    "piece": "{{slot}} : {{description}}",
+    "state": {
+      "statementPiece": "pièce forte",
+      "airing": "au balcon",
+      "onDryingRack": "sur l’étendoir",
+      "worn": "porté {{count}} fois sur {{max}}"
+    },
+    "addLayer": "Ajouter une couche",
+    "confirm": "Je porte cette tenue",
+    "confirmMissing": {
+      "top": "Je porte cette tenue, indisponible : il manque un haut",
+      "bottom": "Je porte cette tenue, indisponible : il manque un bas"
+    },
+    "twoStatements": "2 pièces fortes dans la tenue",
+    "noneToday": "Des pièces existent, mais aucune ne convient aujourd’hui",
+    "seeOthers": "Voir les autres ?",
+    "addPiece": {
+      "top": "Ajouter un haut",
+      "bottom": "Ajouter un bas",
+      "shoes": "Ajouter des chaussures"
+    }
   },
   "add": {
     "title": "Ajout en rafale",
@@ -40,6 +104,12 @@
       "title": "L’appareil photo est désactivé",
       "text": "Frog-à-porter en a besoin pour photographier vos vêtements. Vous pouvez l’autoriser dans les réglages du téléphone.",
       "openSettings": "Ouvrir les réglages"
+    },
+    "allUsages": "Tous usages",
+    "allInGroup": {
+      "weather": "Tous temps",
+      "commute": "Tous types",
+      "occasion": "Toutes"
     }
   },
   "usages": {
@@ -199,6 +269,10 @@
       "glassBlur": "Verre : flou",
       "glassTint": "Verre : teinte sans flou"
     },
-    "open": "Écrans de dev"
+    "open": "Écrans de dev",
+    "today": {
+      "add": "Ajouter une pièce",
+      "theme": "Clair / sombre"
+    }
   }
 }

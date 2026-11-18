@@ -4,14 +4,13 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { db } from '../../db/client';
 import { getGarmentDetails, setGarmentDetails } from '../../db/repositories/garments';
-import { USAGE_GROUPS } from '../../domain/catalogue/usageGroups';
 import type { Usage } from '../../domain/types';
 import { Button } from '../../ui/Button';
 import { Sheet } from '../../ui/Sheet';
 import { useTheme } from '../../ui/theme';
 import { ToggleOption } from '../../ui/ToggleOption';
 import { fontFamilies, spacing } from '../../ui/tokens';
-import { UsageOption } from '../../ui/UsageOption';
+import { UsagePicker } from '../add/UsagePicker';
 
 interface DevGarmentDetailsSheetProps {
   garmentId: string;
@@ -37,17 +36,6 @@ export function DevGarmentDetailsSheet({
   const [isFavorite, setIsFavorite] = useState(initial.isFavorite);
   const [statementPiece, setStatementPiece] = useState(initial.statementPiece);
   const [usages, setUsages] = useState<ReadonlySet<Usage>>(() => new Set(initial.usages));
-
-  const toggleUsage = (usage: Usage) =>
-    setUsages((current) => {
-      const next = new Set(current);
-      if (next.has(usage)) {
-        next.delete(usage);
-      } else {
-        next.add(usage);
-      }
-      return next;
-    });
 
   const save = () => {
     setGarmentDetails(
@@ -79,23 +67,11 @@ export function DevGarmentDetailsSheet({
             onToggle={() => setStatementPiece((value) => !value)}
           />
         </View>
-        {USAGE_GROUPS.map(({ group, usages: groupUsages }) => (
-          <View key={group} style={styles.group}>
-            <Text accessibilityRole="header" style={[styles.groupTitle, { color: colors.ink }]}>
-              {t(`usages.groups.${group}`)}
-            </Text>
-            <View style={styles.usages}>
-              {groupUsages.map((usage) => (
-                <UsageOption
-                  key={usage}
-                  label={t(`usages.${usage}`)}
-                  selected={usages.has(usage)}
-                  onToggle={() => toggleUsage(usage)}
-                />
-              ))}
-            </View>
-          </View>
-        ))}
+        <UsagePicker
+          usages={usages}
+          onChange={setUsages}
+          titleStyle={[styles.groupTitle, { color: colors.ink }]}
+        />
       </ScrollView>
       <View style={styles.footer}>
         <Button label={t('add.save')} onPress={save} fullWidth />
@@ -113,8 +89,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: spacing.space6,
   },
-  group: { marginTop: spacing.space14, gap: spacing.space8 },
   groupTitle: { fontFamily: fontFamilies.text, fontWeight: '600', fontSize: 13 },
-  usages: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.space6 },
   footer: { paddingVertical: spacing.space10 },
 });

@@ -15,3 +15,14 @@ export function withMinAlpha(color: string, alpha: number): string {
   }
   throw new Error(`Unsupported colour: ${color}`);
 }
+
+/**
+ * A colour and its opacity apart: SVG gradient stops ignore the alpha of an
+ * `rgba` colour and take it from `stopOpacity`.
+ */
+export function splitAlpha(color: string): { color: string; opacity: number } {
+  const rgba = /^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)$/i.exec(color);
+  return rgba
+    ? { color: `rgb(${rgba[1]},${rgba[2]},${rgba[3]})`, opacity: Number(rgba[4]) }
+    : { color, opacity: 1 };
+}

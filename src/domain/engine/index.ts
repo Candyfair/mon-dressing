@@ -13,6 +13,7 @@ export { statementConflict, suggest } from './suggest';
 export {
   ROW_SLOTS,
   rowOf,
+  slotInRow,
   type EngineGarment,
   type EngineSettings,
   type LayerSlot,

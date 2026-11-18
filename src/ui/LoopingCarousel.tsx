@@ -215,7 +215,7 @@ export function LoopingCarousel<T>({
         onLayout={(event: LayoutChangeEvent) => {
           width.set(event.nativeEvent.layout.width);
         }}
-        style={[styles.row, { height }, edgeFade && styles.lane, style]}
+        style={[styles.row, { height }, style]}
       >
         {offsets.map((offset) => {
           const absolute = base + offset;
@@ -306,7 +306,6 @@ function CarouselSlot({
 
 const styles = StyleSheet.create({
   row: { width: '100%' },
-  lane: { overflow: 'hidden' },
   slot: {
     position: 'absolute',
     top: 0,
