@@ -516,6 +516,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-18 | While swiping, the next piece arrives close and overlaps | 16 pt of empty space between two pieces of a carousel (outfit and layer sheet); in two columns, the right column's pieces slide under the layers | Pieces looked piled up (Candice, S6) |
 | 2026-11-18 | Bottoms centred in their frame | Bottoms aligned on the top of their frame, so a skirt's waist sits level with trousers | Skirts looked too low (Candice, S6) |
 | 2026-11-18 | One-piece centred on the top and bottom places | In one column, a one-piece starts level with the tops; still centred in two columns | Candice, S6 |
+| 2026-11-18 | Next temperature at `temperature-range` size (26 pt) | 18 pt in the Today header, and each weather line limited to 2 lines | On a 375 pt wide iPhone the lines ran over the program chip and settings (Candice, S6) |
 
 ---
 

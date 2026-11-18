@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import type { DayContext } from '../../domain/types';
 import type { AdviceLine, HeaderTemperatures, SkyLine, WeatherLines } from '../../domain/weather';
@@ -15,6 +15,15 @@ const TOP_ROW = 44;
 const WEATHER_ROW = 70;
 const LINE_ICON = 16;
 const RULE = 2;
+// Smaller than `temperature-range`: on a narrow screen the weather lines need
+// the room (Candice, S6).
+const RANGE_FONT_SIZE = 18;
+// iOS crops what rises above the tight line height of `temperature`: this
+// room above the line lets the digits show, without moving them.
+const TEMPERATURE_HEADROOM = 24;
+// iOS sets a tight line higher than Android: same distance to the rule.
+const TEMPERATURE_DROP = Platform.OS === 'ios' ? 12 : 0;
+const MAX_LINES_PER_TEXT = 2;
 
 // Icon of each line (design-system "Iconographie", météo).
 function skyIcon(sky: SkyLine): IconName {
@@ -90,11 +99,11 @@ export function WeatherHeader({ date, context, temperatures, lines }: WeatherHea
       </View>
       <View style={styles.weatherRow}>
         {temperatures ? (
-          <View style={styles.temperatures}>
-            <Text style={[typography.temperature, { color: colors.ink }]}>
+          <View style={styles.temperatures} pointerEvents="none">
+            <Text style={[typography.temperature, styles.temperature, { color: colors.ink }]}>
               {formatDegrees(temperatures.current)}
             </Text>
-            <Text style={[typography.temperatureRange, { color: colors.inkAccent }]}>
+            <Text style={[typography.temperatureRange, styles.range, { color: colors.inkAccent }]}>
               {t('today.maxTemperature', { value: formatDegrees(temperatures.max) })}
             </Text>
           </View>
@@ -104,6 +113,7 @@ export function WeatherHeader({ date, context, temperatures, lines }: WeatherHea
             <View key={line.icon + line.text} style={styles.line}>
               <Icon name={line.icon} size={LINE_ICON} color={colors.inkSecondary} />
               <Text
+                numberOfLines={MAX_LINES_PER_TEXT}
                 style={[typography.weatherLine, styles.lineText, { color: colors.inkSecondary }]}
               >
                 {line.text}
@@ -127,7 +137,14 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     gap: spacing.space14,
   },
-  temperatures: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.space6 },
+  temperatures: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: spacing.space6,
+    marginBottom: -TEMPERATURE_DROP,
+  },
+  temperature: { paddingTop: TEMPERATURE_HEADROOM, marginTop: -TEMPERATURE_HEADROOM },
+  range: { fontSize: RANGE_FONT_SIZE, lineHeight: RANGE_FONT_SIZE },
   lines: { flex: 1, minWidth: 0, gap: spacing.space6, paddingBottom: spacing.space2 },
   line: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.space6 },
   lineText: { flex: 1 },
