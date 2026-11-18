@@ -1,7 +1,12 @@
 import { type ComponentRef, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AccessibilityInfo, Pressable, StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 import type { LayerSlot, RowSlot, Suggestion } from '../../domain/engine';
 import { LoopingCarousel } from '../../ui/LoopingCarousel';
@@ -15,6 +20,7 @@ import {
   chosenGarment,
   moveTo,
   nextLayer,
+  onePieceShare,
   type OutfitChoice,
   type OutfitRow,
   rowGarments,
@@ -65,7 +71,8 @@ const LAYER = {
 };
 
 // A one-piece replaces the top and the bottom: the top's width, 320 pt high
-// for a 200 pt frame (AP4 mockup), centred on the two places (Candice, S6).
+// for a 200 pt frame (AP4 mockup). In one column it starts level with the
+// tops; in two columns it is centred on the two places (Candice, S6).
 const ONE_PIECE_HEIGHT_RATIO = 1.6;
 
 // Empty space between two pieces of a row while swiping (Candice, S6).
@@ -126,11 +133,18 @@ export function TodayOutfit({
   const sheetLayer = openLayer !== null && layers.includes(openLayer) ? openLayer : null;
   const sheetGarments = sheetLayer ? rowGarments(choice, suggestion, sheetLayer) : [];
 
+  // The bottom stays mounted under a dress: it fades with the top row's swipe
+  // and comes back the same way.
+  const topPosition = useSharedValue(choice.index.top);
+  const topOnePieces = choice.shown.top
+    ? rowGarments(choice, suggestion, 'top').map((id) => pieces.get(id)?.slot === 'onePiece')
+    : [];
+  const bottomFade = useAnimatedStyle(() => ({
+    opacity: 1 - onePieceShare(topPosition.get(), topOnePieces),
+  }));
+
   const rows = (['top', 'bottom', 'shoes'] as const).filter(
-    (row) =>
-      choice.shown[row] &&
-      !(row === 'bottom' && underDress) &&
-      rowGarments(choice, suggestion, row).length > 0,
+    (row) => choice.shown[row] && rowGarments(choice, suggestion, row).length > 0,
   );
   const columnLeft = twoColumns ? LANE.left * scale : 0;
   const columnWidth = (twoColumns ? LANE.width : OUTFIT_WIDTH) * scale;
@@ -180,13 +194,15 @@ export function TodayOutfit({
         const frame = place.frame * scale;
         const [bandTop] = place.band;
         // Under a one-piece, the top row also swipes over the bottom's area.
+        const hiddenByDress = row === 'bottom' && underDress;
         const bandBottom = row === 'top' && underDress ? places.bottom.band[1] : place.band[1];
         const bandHeight = (bandBottom - bandTop) * scale;
         // The band centres its content: pieces are moved from there.
         const bandCentre = (bandTop + bandBottom) / 2;
         const frameCentre = place.frameTop + place.frame / 2;
-        const onePieceCentre =
-          (places.top.frameTop + places.bottom.frameTop + places.bottom.frame) / 2;
+        const onePieceCentre = twoColumns
+          ? (places.top.frameTop + places.bottom.frameTop + places.bottom.frame) / 2
+          : place.frameTop + (place.frame * ONE_PIECE_HEIGHT_RATIO) / 2;
         return (
           <Animated.View
             key={row}
@@ -198,33 +214,41 @@ export function TodayOutfit({
               (row === 'bottom' || (row === 'top' && underDress)) && styles.overShoes,
             ]}
           >
-            <LoopingCarousel
-              items={rowGarments(choice, suggestion, row)}
-              index={choice.index[row]}
-              onIndexChange={(index) => onChoiceChange((current) => moveTo(current, row, index))}
-              renderItem={(id) => {
-                const piece = pieces.get(id);
-                if (!piece) return null;
-                const onePiece = piece.slot === 'onePiece';
-                const height = (onePiece ? ONE_PIECE_HEIGHT_RATIO : 1) * frame;
-                const centre = onePiece ? onePieceCentre : frameCentre;
-                return (
-                  <View style={{ transform: [{ translateY: (centre - bandCentre) * scale }] }}>
-                    <OutfitPiece
-                      piece={piece}
-                      frame={frame}
-                      height={height}
-                      alignTop={row === 'bottom'}
-                    />
-                  </View>
-                );
-              }}
-              step={(place.frame + PIECE_GAP) * scale}
-              height={bandHeight}
-              edgeFade={twoColumns}
-              onSwipeActiveChange={setSwiping}
-              accessibilityLabel={describe(row, t(`today.slots.${row}`))}
-            />
+            <Animated.View
+              style={row === 'bottom' ? bottomFade : undefined}
+              pointerEvents={hiddenByDress ? 'none' : 'auto'}
+              accessibilityElementsHidden={hiddenByDress}
+              importantForAccessibility={hiddenByDress ? 'no-hide-descendants' : 'auto'}
+            >
+              <LoopingCarousel
+                items={rowGarments(choice, suggestion, row)}
+                index={choice.index[row]}
+                onIndexChange={(index) => onChoiceChange((current) => moveTo(current, row, index))}
+                renderItem={(id) => {
+                  const piece = pieces.get(id);
+                  if (!piece) return null;
+                  const onePiece = piece.slot === 'onePiece';
+                  const height = (onePiece ? ONE_PIECE_HEIGHT_RATIO : 1) * frame;
+                  const centre = onePiece ? onePieceCentre : frameCentre;
+                  return (
+                    <View style={{ transform: [{ translateY: (centre - bandCentre) * scale }] }}>
+                      <OutfitPiece
+                        piece={piece}
+                        frame={frame}
+                        height={height}
+                        alignTop={row === 'bottom' || (onePiece && !twoColumns)}
+                      />
+                    </View>
+                  );
+                }}
+                step={(place.frame + PIECE_GAP) * scale}
+                position={row === 'top' ? topPosition : undefined}
+                height={bandHeight}
+                edgeFade={twoColumns}
+                onSwipeActiveChange={setSwiping}
+                accessibilityLabel={describe(row, t(`today.slots.${row}`))}
+              />
+            </Animated.View>
           </Animated.View>
         );
       })}

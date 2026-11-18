@@ -30,7 +30,7 @@ interface OutfitPieceProps {
   height?: number;
   // The location badge sits against the right shoulder.
   showBadge?: boolean;
-  // Bottoms hang from the top of the frame: a skirt's waist sits level with
+  // The piece starts at the top of its frame: a skirt's waist sits level with
   // a pair of trousers' (photos are cropped to the garment).
   alignTop?: boolean;
 }
@@ -53,9 +53,10 @@ export function OutfitPiece({
   const shadowWidth = frame * SHADOW_WIDTH;
   const shadow = splitAlpha(colors.contactShadow);
   // A short piece at the top of its frame keeps the shadow right under it.
+  const visibleHeight = photoRatio === null ? height : Math.min(height, frame * photoRatio);
   const shadowTop =
-    alignTop && photoRatio !== null && photoRatio < 1
-      ? frame * photoRatio - SHADOW_HEIGHT / 2
+    alignTop && visibleHeight < height
+      ? visibleHeight - SHADOW_HEIGHT / 2
       : height * (height > frame ? TALL_SHADOW_TOP : SHADOW_TOP);
   const badge =
     piece.location === 'airing'

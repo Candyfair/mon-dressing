@@ -8,6 +8,7 @@ import {
   missingPiece,
   moveTo,
   nextLayer,
+  onePieceShare,
   showRow,
   shownLayers,
   wearsOnePiece,
@@ -148,5 +149,16 @@ describe('outfit choice', () => {
     expect(shownLayers(both)).toEqual(['midLayer', 'outerLayer']);
     expect(chosenOutfit(both, engine, slots).midLayer).toBe('jumper');
     expect(nextLayer(both, engine)).toBeNull();
+  });
+
+  it('follows the swipe between a top and a one-piece, around the loop', () => {
+    const onePieces = [false, true, false];
+    expect(onePieceShare(0, onePieces)).toBe(0);
+    expect(onePieceShare(0.25, onePieces)).toBe(0.25);
+    expect(onePieceShare(1, onePieces)).toBe(1);
+    expect(onePieceShare(1.5, onePieces)).toBe(0.5);
+    expect(onePieceShare(-2, onePieces)).toBe(1);
+    expect(onePieceShare(4, onePieces)).toBe(1);
+    expect(onePieceShare(1, [])).toBe(0);
   });
 });
