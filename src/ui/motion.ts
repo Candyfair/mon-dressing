@@ -17,4 +17,18 @@ export const motion = {
     // Reduced motion: cross-fade instead of the slide, each half.
     crossFade: { duration: 120, easing: Easing.inOut(Easing.quad) },
   },
+  tabs: {
+    // The hanger changes between its two looks.
+    select: { duration: 200, easing: Easing.inOut(Easing.quad) },
+    // The selection is a soft bubble: its front edge pulls ahead, its back
+    // edge catches up, and both overshoot a little on arrival.
+    bubbleFront: { stiffness: 150, damping: 15, mass: 1 },
+    bubbleBack: { stiffness: 90, damping: 11, mass: 1 },
+    // Halfway between the two: the pace of the bubble's centre.
+    bubbleCentre: { stiffness: 120, damping: 13, mass: 1 },
+    // Back to the shape of a side tab, without bouncing.
+    bubbleSettle: { stiffness: 120, damping: 22, mass: 1 },
+    // Fade between the screens of two tabs.
+    screenFade: 150,
+  },
 } as const;
