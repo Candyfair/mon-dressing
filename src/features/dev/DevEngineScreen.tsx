@@ -17,7 +17,7 @@ import {
   planWeather,
   ROW_SLOTS,
   type RowSlot,
-  suggest,
+  suggestDay,
 } from '../../domain/engine';
 import {
   runScenario,
@@ -131,22 +131,23 @@ export function DevEngineScreen() {
     });
     return {
       ...weatherPlan,
-      suggestion: suggest({
-        date: addDays(today, history.length),
-        timeZone: wardrobe.timeZone,
-        garments: simulateWorn(
-          useReference ? referenceWardrobe() : realGarments,
-          history,
-          today,
-          wardrobe.timeZone,
-        ),
-        context,
-        weather: weatherPlan.weather,
-        indoorDay: weatherPlan.indoorDay,
-        settings: { ...rotation, rotationPace: pace },
-        yesterday:
-          history.at(-1) ?? (useReference ? null : yesterdayOutfit(db, wardrobe.id, today)),
-      }),
+      suggestion: suggestDay(
+        {
+          date: addDays(today, history.length),
+          timeZone: wardrobe.timeZone,
+          garments: simulateWorn(
+            useReference ? referenceWardrobe() : realGarments,
+            history,
+            today,
+            wardrobe.timeZone,
+          ),
+          context,
+          settings: { ...rotation, rotationPace: pace },
+          yesterday:
+            history.at(-1) ?? (useReference ? null : yesterdayOutfit(db, wardrobe.id, today)),
+        },
+        weatherPlan,
+      ),
     };
   }, [
     source,

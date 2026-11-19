@@ -3,9 +3,11 @@ export { sameOutfit } from './defaultOutfit';
 export {
   planDay,
   planWeather,
+  suggestDay,
   type DayPlan,
   type PlanDayInput,
   type PlanDaySettings,
+  type SuggestDayInput,
   type WeatherPlan,
 } from './planDay';
 export { ROTATION_PRESETS } from './rotation';

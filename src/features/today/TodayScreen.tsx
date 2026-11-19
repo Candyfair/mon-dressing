@@ -67,7 +67,7 @@ export function TodayScreen() {
 
       <View style={[styles.outfit, { top: outfitTop }]}>
         <TodayOutfit
-          suggestion={today.plan.suggestion}
+          suggestion={today.suggestion}
           pieces={today.pieces}
           choice={today.choice}
           onChoiceChange={today.setChoice}

@@ -9,8 +9,8 @@ import { useTheme } from '../../ui/theme';
 import { fontFamilies, spacing } from '../../ui/tokens';
 
 /**
- * Provisional tab content (not designed): the tab's name and the way to the
- * development screens. Replaced as each screen is built.
+ * Provisional tab content (not designed): the tab's name and, in development
+ * builds, the way to the development screens. Replaced as each screen is built.
  */
 export function PlaceholderTab({ tab }: { tab: Exclude<TabName, 'today'> }) {
   const { t } = useTranslation();
@@ -26,7 +26,9 @@ export function PlaceholderTab({ tab }: { tab: Exclude<TabName, 'today'> }) {
       <Text accessibilityRole="header" style={[styles.title, { color: colors.ink }]}>
         {t(`tabs.${tab}`)}
       </Text>
-      <Button label={t('dev.open')} variant="outline" onPress={() => router.push('/dev')} />
+      {__DEV__ ? (
+        <Button label={t('dev.open')} variant="outline" onPress={() => router.push('/dev')} />
+      ) : null}
     </View>
   );
 }

@@ -9,6 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import type { LayerSlot, RowSlot, Suggestion } from '../../domain/engine';
+import { loopIndex } from '../../ui/loopIndex';
 import { LoopingCarousel } from '../../ui/LoopingCarousel';
 import { motion } from '../../ui/motion';
 import { size, spacing } from '../../ui/tokens';
@@ -18,6 +19,7 @@ import { LayerSheet } from './LayerSheet';
 import {
   addLayer,
   chosenGarment,
+  currentGarment,
   moveTo,
   nextLayer,
   onePieceShare,
@@ -114,8 +116,7 @@ export function TodayOutfit({
   const layerToAdd = nextLayer(choice, suggestion);
 
   const currentPiece = (row: RowSlot) => {
-    const ids = rowGarments(choice, suggestion, row);
-    return pieces.get(ids[choice.index[row] % ids.length] ?? '');
+    return pieces.get(currentGarment(choice, suggestion, row) ?? '');
   };
   const describe = (row: RowSlot, slot: string): string => {
     const piece = currentPiece(row);
@@ -130,6 +131,10 @@ export function TodayOutfit({
       if (button) AccessibilityInfo.sendAccessibilityEvent(button, 'focus');
     }, FOCUS_RETURN_DELAY);
   };
+  // A layer hidden by a new suggestion closes its sheet for good.
+  if (openLayer !== null && !layers.includes(openLayer)) {
+    setOpenLayer(null);
+  }
   const sheetLayer = openLayer !== null && layers.includes(openLayer) ? openLayer : null;
   const sheetGarments = sheetLayer ? rowGarments(choice, suggestion, sheetLayer) : [];
 
@@ -296,7 +301,7 @@ export function TodayOutfit({
           layerNumber={layers.indexOf(sheetLayer) + 1}
           garments={sheetGarments}
           pieces={pieces}
-          index={choice.index[sheetLayer] % sheetGarments.length}
+          index={loopIndex(choice.index[sheetLayer], sheetGarments.length)}
           onIndexChange={(index) => onChoiceChange((current) => moveTo(current, sheetLayer, index))}
           onRemove={() => {
             onChoiceChange((current) => showRow(current, sheetLayer, false));
