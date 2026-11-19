@@ -153,6 +153,34 @@ describe('useToday', () => {
     expect(today.current.suggestion.rows.top.length).toBeGreaterThan(1);
   });
 
+  it('keeps the bottom under a validated dress and brings it back after an undo', async () => {
+    const slotOf = new Map(garments.map((garment) => [garment.id, garment.slot]));
+    const today = await renderToday();
+    const { rows } = today.current.suggestion;
+    const dress = rows.top.findIndex((id) => slotOf.get(id) === 'onePiece');
+    const top = rows.top.findIndex((id) => slotOf.get(id) === 'top');
+    const bottom = rows.bottom[1];
+    expect([dress, top, bottom]).not.toContain(-1);
+    await act(async () =>
+      today.current.setChoice((choice) => moveTo(moveTo(choice, 'bottom', 1), 'top', dress)),
+    );
+
+    await act(async () => today.current.validate());
+
+    // The hidden bottom is drawn under the dress, but not worn.
+    expect(today.current.suggestion.rows.bottom).toEqual([bottom]);
+    expect(today.current.outfit.bottom).toBeUndefined();
+    expect(validateOutfit).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ selection: expect.not.objectContaining({ bottom }) }),
+      expect.anything(),
+    );
+
+    await act(async () => today.current.undo());
+    await act(async () => today.current.setChoice((choice) => moveTo(choice, 'top', top)));
+    expect(today.current.outfit.bottom).toBe(bottom);
+  });
+
   it('keeps the outfit shown when the app goes to the background, unless validated', async () => {
     const listeners: ((state: AppStateStatus) => void)[] = [];
     jest.spyOn(AppState, 'addEventListener').mockImplementation((_type, listener) => {

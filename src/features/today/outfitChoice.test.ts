@@ -6,6 +6,7 @@ import {
   chosenOutfit,
   emptyRows,
   frozenSuggestion,
+  hiddenBottom,
   initialChoice,
   missingPiece,
   moveTo,
@@ -167,7 +168,10 @@ describe('outfit choice', () => {
 
 describe('frozen outfit', () => {
   it('draws the validated outfit with one piece per row and nothing to add', () => {
-    const frozen = frozenSuggestion({ onePiece: 'dress', midLayer: 'jumper', shoes: 'boots' });
+    const frozen = frozenSuggestion({
+      selection: { onePiece: 'dress', midLayer: 'jumper', shoes: 'boots' },
+      hiddenBottom: null,
+    });
     const choice = initialChoice(frozen);
 
     expect(frozen.rows).toEqual({
@@ -188,9 +192,8 @@ describe('frozen outfit', () => {
 
   it('goes back to the validated pieces on the engine rows after an undo', () => {
     const choice = choiceFromSelection(suggestion(), {
-      top: 'shirt',
-      bottom: 'skirt',
-      midLayer: 'jumper',
+      selection: { top: 'shirt', bottom: 'skirt', midLayer: 'jumper' },
+      hiddenBottom: null,
     });
 
     expect(chosenOutfit(choice, suggestion(), slots)).toEqual({
@@ -202,9 +205,8 @@ describe('frozen outfit', () => {
 
   it('falls back to the engine where a validated piece is no longer offered', () => {
     const choice = choiceFromSelection(suggestion(), {
-      top: 'gone',
-      bottom: 'skirt',
-      shoes: 'boots',
+      selection: { top: 'gone', bottom: 'skirt', shoes: 'boots' },
+      hiddenBottom: null,
     });
 
     expect(chosenOutfit(choice, suggestion(), slots)).toEqual({
@@ -212,5 +214,37 @@ describe('frozen outfit', () => {
       bottom: 'skirt',
       shoes: 'boots',
     });
+  });
+
+  it('keeps the bottom under a validated dress, not worn, and brings it back after an undo', () => {
+    const engine = suggestion();
+    const underDress = moveTo(moveTo(initialChoice(engine), 'bottom', 1), 'top', 1);
+    const kept = {
+      selection: chosenOutfit(underDress, engine, slots),
+      hiddenBottom: hiddenBottom(underDress, engine, slots),
+    };
+    expect(kept).toEqual({
+      selection: { onePiece: 'dress', shoes: 'boots' },
+      hiddenBottom: 'skirt',
+    });
+
+    const frozen = frozenSuggestion(kept);
+    const frozenChoice = initialChoice(frozen);
+    expect(frozen.rows.bottom).toEqual(['skirt']);
+    expect(wearsOnePiece(frozenChoice, frozen, slots)).toBe(true);
+    expect(chosenOutfit(frozenChoice, frozen, slots)).toEqual(kept.selection);
+
+    // After the undo, swiping the dress away shows the skirt again.
+    const undone = moveTo(choiceFromSelection(engine, kept), 'top', 2);
+    expect(chosenOutfit(undone, engine, slots)).toEqual({
+      top: 'shirt',
+      bottom: 'skirt',
+      shoes: 'boots',
+    });
+  });
+
+  it('keeps no bottom when the outfit has no dress', () => {
+    const engine = suggestion();
+    expect(hiddenBottom(initialChoice(engine), engine, slots)).toBeNull();
   });
 });

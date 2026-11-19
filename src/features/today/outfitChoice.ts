@@ -44,43 +44,76 @@ export function initialChoice(suggestion: Suggestion): OutfitChoice {
   };
 }
 
-/** The garment a selection puts in a row: a one-piece sits in the top row. */
-function selectedIn(selection: OutfitSelection, row: RowSlot): string | undefined {
-  return row === 'top' ? (selection.top ?? selection.onePiece) : selection[row];
+/**
+ * A validated outfit as Today keeps it: what was worn, and the bottom a dress
+ * was hiding, which is not worn but comes back when the dress is swiped away.
+ */
+export interface KeptOutfit {
+  selection: OutfitSelection;
+  hiddenBottom: string | null;
+}
+
+/** The garment a kept outfit puts in a row: a one-piece sits in the top row. */
+function selectedIn({ selection, hiddenBottom }: KeptOutfit, row: RowSlot): string | undefined {
+  switch (row) {
+    case 'top':
+      return selection.top ?? selection.onePiece;
+    case 'bottom':
+      return (
+        selection.bottom ??
+        (selection.onePiece === undefined ? undefined : (hiddenBottom ?? undefined))
+      );
+    case 'midLayer':
+    case 'outerLayer':
+    case 'shoes':
+      return selection[row];
+    default: {
+      const never: never = row;
+      return never;
+    }
+  }
+}
+
+/** The bottom a dress hides in a choice, to keep under the validated dress. */
+export function hiddenBottom(
+  choice: OutfitChoice,
+  suggestion: Suggestion,
+  slots: GarmentSlots,
+): string | null {
+  return wearsOnePiece(choice, suggestion, slots) && choice.shown.bottom
+    ? currentGarment(choice, suggestion, 'bottom')
+    : null;
 }
 
 /**
  * The validated outfit as a suggestion of one piece per row: Today draws it
  * like any outfit, with nothing else to swipe to (SPEC §7, frozen for the day).
  */
-export function frozenSuggestion(selection: OutfitSelection): Suggestion {
+export function frozenSuggestion(kept: KeptOutfit): Suggestion {
   const rows = mapRows((row): readonly string[] => {
-    const id = selectedIn(selection, row);
+    const id = selectedIn(kept, row);
     return id === undefined ? [] : [id];
   });
   return {
     rows,
     closest: mapRows(() => []),
     proposedRows: mapRows((row) => rows[row].length > 0),
-    outfit: selection,
+    outfit: kept.selection,
     coordinationBroken: false,
   };
 }
 
 /**
- * A choice that shows `selection` on the engine's rows (after an undone
- * validation): each row goes to its selected piece when it still offers it,
- * else starts as the engine proposes.
+ * A choice that shows a kept outfit on the engine's rows (after an undone
+ * validation): each row goes to its piece when it still offers it, else
+ * starts as the engine proposes; the bottom a dress hid is back under it.
  */
-export function choiceFromSelection(
-  suggestion: Suggestion,
-  selection: OutfitSelection,
-): OutfitChoice {
+export function choiceFromSelection(suggestion: Suggestion, kept: KeptOutfit): OutfitChoice {
   const start = initialChoice(suggestion);
   const index = { ...start.index };
   const shown = { ...start.shown };
   for (const row of ROW_SLOTS) {
-    const id = selectedIn(selection, row);
+    const id = selectedIn(kept, row);
     const position = id === undefined ? -1 : suggestion.rows[row].indexOf(id);
     if (position >= 0) {
       index[row] = position;

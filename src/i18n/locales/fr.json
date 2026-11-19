@@ -87,6 +87,10 @@
     "confirmed": "Tenue validée, toucher pour annuler",
     "validatedAnnouncement": "Tenue validée pour aujourd’hui",
     "undoneAnnouncement": "Validation annulée",
+    "stamp": {
+      "title": "TENUE DU JOUR",
+      "validated": "VALIDÉE"
+    },
     "twoStatements": "2 pièces fortes dans la tenue",
     "noneToday": "Des pièces existent, mais aucune ne convient aujourd’hui",
     "seeOthers": "Voir les autres ?",

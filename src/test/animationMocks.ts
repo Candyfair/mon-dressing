@@ -31,11 +31,20 @@ export const reanimated = {
   __esModule: true,
   FadeIn: layoutAnimation,
   FadeOut: layoutAnimation,
-  default: { View },
-  Easing: { out: easing, in: easing, inOut: easing, cubic: identity, quad: identity },
+  default: { View, createAnimatedComponent: <C>(component: C) => component },
+  Easing: {
+    out: easing,
+    in: easing,
+    inOut: easing,
+    bezier: easing,
+    cubic: identity,
+    quad: identity,
+    linear: identity,
+  },
   Extrapolation: { CLAMP: 'clamp' },
   cancelAnimation: () => undefined,
   interpolate: () => 1,
+  useAnimatedProps: () => ({}),
   useAnimatedStyle: () => ({}),
   useReducedMotion: () => animationControls.reducedMotion,
   useSharedValue: function useSharedValue<T>(initial: T) {
@@ -50,6 +59,8 @@ export const reanimated = {
     });
     return shared;
   },
+  withDelay: <T>(_delay: number, value: T) => value,
+  withSequence: <T>(...values: T[]) => values[values.length - 1],
   withSpring: identity,
   withTiming: <T>(value: T, _config?: unknown, finish?: (finished: boolean) => void) => {
     if (finish) pendingTimings.push(finish);

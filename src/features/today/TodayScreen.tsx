@@ -1,7 +1,13 @@
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { DevTodayTools } from '../dev/DevTodayTools';
@@ -17,6 +23,7 @@ import { widenRows } from './outfitChoice';
 import { TodayBackground } from './TodayBackground';
 import { OUTFIT_HEIGHT, OUTFIT_WIDTH, TodayOutfit } from './TodayOutfit';
 import { useToday } from './useToday';
+import { ValidationStamp } from './ValidationStamp';
 import { WEATHER_HEADER_HEIGHT, WeatherHeader } from './WeatherHeader';
 
 // Vertical layout of the 375 × 812 pt reference (DESIGN-SYSTEM "L'écran
@@ -35,11 +42,29 @@ const DEV_TOOLS_HEIGHT = 34;
 
 /** Today (design specs 01 and 02): the day's weather and the outfit to wear. */
 export function TodayScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const today = useToday();
+  // Each validation plays the stamp once; an undo hides it.
+  const [validations, setValidations] = useState(0);
+  const [stamp, setStamp] = useState<number | null>(null);
+  // The outfit's shake at the stamp's impact: down, and half as much aside.
+  const shake = useSharedValue(0);
+  const shaken = useAnimatedStyle(() => ({
+    transform: [{ translateX: shake.get() / 2 }, { translateY: shake.get() }],
+  }));
+  const validate = () => {
+    if (today.validate()) {
+      setStamp(validations + 1);
+      setValidations(validations + 1);
+    }
+  };
+  const undo = () => {
+    setStamp(null);
+    today.undo();
+  };
 
   // The outfit zone keeps its proportions and shrinks on smaller screens.
   const headerTop = insets.top + HEADER_GAP;
@@ -66,7 +91,7 @@ export function TodayScreen() {
         />
       </View>
 
-      <View style={[styles.outfit, { top: outfitTop }]}>
+      <Animated.View style={[styles.outfit, { top: outfitTop }, shaken]}>
         <TodayOutfit
           suggestion={today.suggestion}
           pieces={today.pieces}
@@ -77,7 +102,7 @@ export function TodayScreen() {
           locked={today.frozen}
           scale={scale}
         />
-      </View>
+      </Animated.View>
 
       {hasHint ? (
         <Pressable
@@ -108,11 +133,17 @@ export function TodayScreen() {
         </Animated.View>
       ) : null}
 
+      <ValidationStamp
+        date={formatShortDate(today.date, t).toLocaleUpperCase(i18n.language)}
+        shake={shake}
+        play={stamp}
+      />
+
       <View style={[styles.confirm, { top: outfitBottom - size.sizeCta / 2 }]}>
         <ConfirmOutfitButton
           missing={today.missing}
           frozen={today.frozen}
-          onPress={today.frozen ? today.undo : today.validate}
+          onPress={today.frozen ? undo : validate}
         />
       </View>
 
