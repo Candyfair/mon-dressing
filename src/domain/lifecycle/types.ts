@@ -39,4 +39,6 @@ export type LifecycleEventDraft =
       outfitId: string | null;
     }
   | { type: 'ironingChanged'; source: EventSource; toIron: boolean; outfitId: string | null }
-  | { type: 'worn'; source: EventSource; outfitId: string };
+  | { type: 'worn'; source: EventSource; outfitId: string }
+  // Cancels the `worn` event of the same garment and outfit.
+  | { type: 'unworn'; source: EventSource; outfitId: string };

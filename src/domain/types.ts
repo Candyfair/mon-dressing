@@ -45,7 +45,7 @@ export type Usage =
 export const WARDROBE_KINDS = ['main', 'secondary'] as const;
 export type WardrobeKind = (typeof WARDROBE_KINDS)[number];
 
-export const GARMENT_EVENT_TYPES = ['locationChanged', 'ironingChanged', 'worn'] as const;
+export const GARMENT_EVENT_TYPES = ['locationChanged', 'ironingChanged', 'worn', 'unworn'] as const;
 export type GarmentEventType = (typeof GARMENT_EVENT_TYPES)[number];
 
 // `today` = outfit validated on Today (the `worn` events of that outfit).

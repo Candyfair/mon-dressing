@@ -9,6 +9,8 @@ export type SortDestination = 'airing' | 'dirty' | 'stored';
 export type LifecycleCommand =
   // Outfit validated on Today, or probable outfit sorted in the evening (SPEC §8.2, §8.5).
   | { type: 'wear'; outfitId: string; source: 'today' | 'eveningSort' }
+  // Validation cancelled on Today: takes back the wear of that outfit.
+  | { type: 'unwear'; outfitId: string }
   // Evening sort of a worn piece (SPEC §8.5).
   | { type: 'sort'; to: SortDestination; outfitId: string }
   // Laundry actions (SPEC §8.4, design/specs/06-linge.md).
