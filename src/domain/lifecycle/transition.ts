@@ -18,8 +18,8 @@ export type TransitionResult =
 interface Target {
   location: Location;
   toIron: boolean;
-  // Outfit the garment is worn in, for a wear; null otherwise.
-  wornIn: string | null;
+  // A wear recorded or taken back, with its outfit; null otherwise.
+  wear: { outfitId: string; event: 'worn' | 'unworn' } | null;
   // Starts a new period at the target location even when it is the current
   // one: airing a piece again after wearing it avoids another wash.
   renewsLocation: boolean;
@@ -46,7 +46,7 @@ export function transition(
     location: target.location,
     // Washing resets the counter and sets "to iron" for pieces that need it.
     toIron: entersDrying ? garment.needsIroning : target.toIron,
-    wearCount: entersDrying ? 0 : garment.wearCount + (target.wornIn === null ? 0 : 1),
+    wearCount: entersDrying ? 0 : Math.max(0, garment.wearCount + wearDelta(target)),
   };
 
   const source = sourceOf(command);
@@ -54,8 +54,8 @@ export function transition(
   const patch: Partial<LifecycleState> = {};
   const events: LifecycleEventDraft[] = [];
 
-  if (target.wornIn !== null) {
-    events.push({ type: 'worn', source, outfitId: target.wornIn });
+  if (target.wear !== null) {
+    events.push({ type: target.wear.event, source, outfitId: target.wear.outfitId });
   }
   if (next.location !== garment.location || target.renewsLocation) {
     patch.location = next.location;
@@ -76,7 +76,9 @@ export function transition(
     patch.wearCount = next.wearCount;
   }
 
-  if (Object.keys(patch).length === 0) {
+  // Taking back a wear is recorded even when the counter is already at 0, so
+  // that the `worn` event keeps its pair.
+  if (Object.keys(patch).length === 0 && events.length === 0) {
     return UNCHANGED;
   }
   return { ok: true, patch: brand(patch), events };
@@ -87,11 +89,16 @@ export function initialLifecycle(now: Date): InitialLifecycle {
   return brand({ location: 'stored', locationSince: now, toIron: false, wearCount: 0 });
 }
 
+function wearDelta(target: Target): number {
+  if (target.wear === null) return 0;
+  return target.wear.event === 'worn' ? 1 : -1;
+}
+
 function targetOf(garment: LifecycleGarment, command: LifecycleCommand): Target | null {
   const unchanged: Target = {
     location: garment.location,
     toIron: garment.toIron,
-    wornIn: null,
+    wear: null,
     renewsLocation: false,
   };
   const moveFrom = (from: Location, to: Location): Target | null =>
@@ -100,8 +107,11 @@ function targetOf(garment: LifecycleGarment, command: LifecycleCommand): Target 
   switch (command.type) {
     case 'wear':
       return WORN_FROM.includes(garment.location)
-        ? { ...unchanged, wornIn: command.outfitId }
+        ? { ...unchanged, wear: { outfitId: command.outfitId, event: 'worn' } }
         : null;
+    case 'unwear':
+      // Cancels a record, not a move: allowed wherever the garment is.
+      return { ...unchanged, wear: { outfitId: command.outfitId, event: 'unworn' } };
     case 'sort':
       return WORN_FROM.includes(garment.location)
         ? { ...unchanged, location: command.to, renewsLocation: command.to === 'airing' }
@@ -140,6 +150,8 @@ function sourceOf(command: LifecycleCommand): EventSource {
     case 'wear':
     case 'markDry':
       return command.source;
+    case 'unwear':
+      return 'today';
     case 'sort':
       return 'eveningSort';
     case 'washDone':
@@ -157,7 +169,23 @@ function sourceOf(command: LifecycleCommand): EventSource {
 }
 
 function outfitIdOf(command: LifecycleCommand): string | null {
-  return command.type === 'wear' || command.type === 'sort' ? command.outfitId : null;
+  switch (command.type) {
+    case 'wear':
+    case 'unwear':
+    case 'sort':
+      return command.outfitId;
+    case 'washDone':
+    case 'markDry':
+    case 'putAway':
+    case 'ironed':
+    case 'setStatus':
+    case 'clearStatus':
+      return null;
+    default: {
+      const unreachable: never = command;
+      return unreachable;
+    }
+  }
 }
 
 // The only place a LifecyclePatch is created.

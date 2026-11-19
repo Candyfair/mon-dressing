@@ -33,7 +33,7 @@ type Usage =                                    // SPEC §4.3, stored as "<group
   | `commute.${CommuteMode}`
   | `occasion.${Occasion}`;
 type WardrobeKind = 'main' | 'secondary';
-type GarmentEventType = 'locationChanged' | 'ironingChanged' | 'worn';
+type GarmentEventType = 'locationChanged' | 'ironingChanged' | 'worn' | 'unworn';
 type EventSource = 'today' | 'eveningSort' | 'laundry' | 'wardrobe' | 'automatic'; // today = outfit validated on Today
 type OutfitStatus = 'validated' | 'probable';
 type RotationPace = 'long' | 'short';       // SPEC §7 step 4
@@ -116,11 +116,11 @@ One-off changes for a given date (SPEC §5.3). Null = inherit.
 | `id` | text PK | UUID |
 | `wardrobeId` | text FK → wardrobes, cascade | |
 | `date` | text `YYYY-MM-DD` | |
-| `status` | text `OutfitStatus` | `probable` = outfit displayed when the app was last closed that day (evening safety net), upserted when Today goes to background |
+| `status` | text `OutfitStatus` | `validated` = « Je porte cette tenue »: one row per day, reused when the outfit is validated again after an undo; `probable` = outfit displayed when the app was last closed that day (evening safety net), upserted when Today goes to background |
 | `activity` | text `Activity` | Context snapshot |
 | `commuteModes` | text (JSON array) | Context snapshot |
 | `occasion` | text `Occasion` | Context snapshot |
-| `validatedAt` | integer ms, nullable | |
+| `validatedAt` | integer ms, nullable | Set on validation; back to null when the validation is undone on Today (the row and its items stay for the history). A `validated` row counts only while it is set |
 | `sortedAt` | integer ms, nullable | Evening sort done |
 | `createdAt` | integer ms | |
 
@@ -138,7 +138,7 @@ Unique per (wardrobeId, date, status).
 |---|---|---|
 | `id` | text PK | UUID |
 | `garmentId` | text FK → garments, cascade | |
-| `type` | text `GarmentEventType` | `worn` on validation (or when a probable outfit is sorted), `locationChanged` on every move (including airing → airing when a worn piece is aired again in the evening sort: a new airing period, `locationSince` reset), `ironingChanged` when `toIron` changes |
+| `type` | text `GarmentEventType` | `worn` on validation (or when a probable outfit is sorted), `unworn` when the validation is undone (cancels the `worn` of the same garment and outfit; written even if `wearCount` is already 0), `locationChanged` on every move (including airing → airing when a worn piece is aired again in the evening sort: a new airing period, `locationSince` reset), `ironingChanged` when `toIron` changes |
 | `source` | text `EventSource` | Where the change came from; the washes-avoided counter counts `locationChanged` → `airing` with source `eveningSort` in the current month |
 | `fromLocation`, `toLocation` | text `Location`, nullable | For `locationChanged` |
 | `toIron` | boolean, nullable | New value, for `ironingChanged` |

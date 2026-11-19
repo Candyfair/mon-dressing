@@ -29,6 +29,7 @@ interface Row {
   toIron?: boolean; // new flag value, before the drying rule
   requiresToIron?: boolean;
   wears?: true;
+  unwears?: true;
   renewsLocation?: true; // records the move even when the location stays the same
 }
 
@@ -41,6 +42,13 @@ const TABLE: Row[] = [
     from: WORN_FROM,
     to: 'same',
     wears: true,
+  },
+  {
+    label: 'unwear',
+    command: { type: 'unwear', outfitId: 'outfit-1' },
+    from: LOCATIONS,
+    to: 'same',
+    unwears: true,
   },
   ...(['airing', 'dirty', 'stored'] as const).map((to): Row => ({
     label: `sort → ${to}`,
@@ -126,9 +134,15 @@ function expectedOutcome({ row, start }: Case) {
   if (start.slot === 'shoes' && (location !== 'stored' || toIron)) {
     return 'notAllowed' as const;
   }
-  const wearCount = entersDrying ? 0 : start.wearCount + (row.wears ? 1 : 0);
+  const delta = row.wears ? 1 : row.unwears ? -1 : 0;
+  const wearCount = entersDrying ? 0 : Math.max(0, start.wearCount + delta);
   const moved = location !== start.location || row.renewsLocation === true;
-  const changed = moved || toIron !== start.toIron || wearCount !== start.wearCount;
+  const changed =
+    moved ||
+    toIron !== start.toIron ||
+    wearCount !== start.wearCount ||
+    row.wears === true ||
+    row.unwears === true;
   return changed ? { location, toIron, wearCount, moved } : ('unchanged' as const);
 }
 
@@ -159,6 +173,7 @@ describe('transition table', () => {
     expect(result.events.map((event) => event.type).sort()).toEqual(
       [
         ...(testCase.row.wears ? ['worn'] : []),
+        ...(testCase.row.unwears ? ['unworn'] : []),
         ...(moved ? ['locationChanged'] : []),
         ...(expected.toIron !== testCase.start.toIron ? ['ironingChanged'] : []),
       ].sort(),
@@ -178,6 +193,34 @@ describe('transition events', () => {
       ok: true,
       patch: { wearCount: 2 },
       events: [{ type: 'worn', source: 'today', outfitId: 'outfit-1' }],
+    });
+  });
+
+  it('takes back a wear with its outfit and the today source', () => {
+    const result = transition(
+      garment({ wearCount: 3 }),
+      { type: 'unwear', outfitId: 'outfit-1' },
+      NOW,
+    );
+
+    expect(result).toEqual({
+      ok: true,
+      patch: { wearCount: 2 },
+      events: [{ type: 'unworn', source: 'today', outfitId: 'outfit-1' }],
+    });
+  });
+
+  it('records a taken-back wear even when the counter is already at 0', () => {
+    const result = transition(
+      garment({ wearCount: 0 }),
+      { type: 'unwear', outfitId: 'outfit-1' },
+      NOW,
+    );
+
+    expect(result).toEqual({
+      ok: true,
+      patch: {},
+      events: [{ type: 'unworn', source: 'today', outfitId: 'outfit-1' }],
     });
   });
 
