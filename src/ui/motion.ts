@@ -52,4 +52,44 @@ export const motion = {
     float: { duration: 3200, easing: Easing.linear },
     floatFade: { duration: 320, easing: Easing.inOut(Easing.quad) },
   },
+  // Outfit validation (design/specs/01-aujourdhui.md « Validation de la tenue »).
+  validation: {
+    // « Je porte cette tenue »: squashed under the finger...
+    pressIn: { duration: 120, easing: Easing.out(Easing.quad) },
+    // ...then 0.9 → 1.18 → 1 on release (the peak at 45 %).
+    release: { duration: 340, peak: 0.45 },
+    // A ring leaves the button (and the stamp's frame, at the impact).
+    ring: { duration: 620, easing: Easing.out(Easing.quad) },
+    // Dots thrown around the button, slowed down like by friction.
+    burst: { duration: 570, count: 14 },
+    // The lock replaces the check while the stamp is still shown.
+    lockDelay: 1500,
+    checkOut: { duration: 160, easing: Easing.out(Easing.quad) },
+    lockIn: { duration: 320, easing: Easing.bezier(0.34, 1.56, 0.64, 1) },
+    // After an undo, the check draws itself again.
+    checkDraw: { duration: 300, delay: 160, easing: Easing.out(Easing.quad) },
+    // The outfit becomes complete: the fill grows from the centre, then a
+    // ring leaves and the button bounces (1 → 1.12 → 1).
+    activation: { duration: 380, easing: Easing.bezier(0.34, 1.56, 0.64, 1) },
+    activationRingDelay: 220,
+    activationBounce: 380,
+    // The stamp falls on the outfit (2.6 → 0.94 → 1, -14° → -8°)...
+    stampDrop: { duration: 320, easing: Easing.bezier(0.55, 0, 0.8, 0.2) },
+    // ...hits it (the pieces shake, a second frame leaves)...
+    impact: 200,
+    shake: { duration: 220 },
+    stampRing: { duration: 460, easing: Easing.out(Easing.quad) },
+    // ...stays readable about 2 s, then fades away.
+    stampHold: 2300,
+    stampOut: { duration: 400, easing: Easing.inOut(Easing.quad) },
+    veilIn: { duration: 220, easing: Easing.out(Easing.quad) },
+    veilOut: { duration: 360, easing: Easing.inOut(Easing.quad) },
+    // Reduced motion: the stamp only fades in and out.
+    stampFade: { duration: 260, easing: Easing.inOut(Easing.quad) },
+    // The hand-drawn outline around the locked outfit.
+    outlineDraw: { duration: 760, easing: Easing.bezier(0.5, 0.1, 0.3, 1) },
+    outlineSecondDelay: 120,
+    outlineErase: { duration: 300, easing: Easing.in(Easing.quad) },
+    outlineFade: { duration: 200, easing: Easing.inOut(Easing.quad) },
+  },
 } as const;

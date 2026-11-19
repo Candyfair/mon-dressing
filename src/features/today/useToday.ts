@@ -15,18 +15,15 @@ import {
   validateOutfit,
 } from '../../db/repositories/outfits';
 import type { SubtypeKey } from '../../domain/catalogue/subtypes';
-import {
-  type EngineGarment,
-  type OutfitSelection,
-  statementConflict,
-  suggestDay,
-} from '../../domain/engine';
+import { type EngineGarment, statementConflict, suggestDay } from '../../domain/engine';
 import {
   choiceFromSelection,
   chosenOutfit,
   emptyRows,
   frozenSuggestion,
+  hiddenBottom,
   initialChoice,
+  type KeptOutfit,
   missingPiece,
   type OutfitChoice,
   widenableRows,
@@ -153,19 +150,28 @@ export function useToday() {
     [date, wardrobe, garments, context, weather, settings],
   );
 
+  // The bottom a validated dress hides is not worn, so not stored: it is kept
+  // here for the day, until the app closes.
+  const [keptBottom, setKeptBottom] = useState<{ date: string; id: string | null }>({
+    date,
+    id: null,
+  });
+  const frozenBottom = keptBottom.date === date ? keptBottom.id : null;
+
   // A frozen outfit is drawn from what was validated, not from the engine.
   const frozenSelection = frozen.status === 'validated' ? frozen.selection : null;
-  const shown = useMemo(
-    () => (frozenSelection ? frozenSuggestion(frozenSelection) : suggestion),
-    [frozenSelection, suggestion],
+  const kept = useMemo<KeptOutfit | null>(
+    () => (frozenSelection ? { selection: frozenSelection, hiddenBottom: frozenBottom } : null),
+    [frozenSelection, frozenBottom],
   );
+  const shown = useMemo(() => (kept ? frozenSuggestion(kept) : suggestion), [kept, suggestion]);
 
   // A new suggestion (the forecast arrived) starts the choice again; after an
   // undo, it starts from the outfit that was validated.
   const [state, setState] = useState<{
     suggestion: typeof shown;
     choice: OutfitChoice;
-    carryOver: OutfitSelection | null;
+    carryOver: KeptOutfit | null;
   }>(() => ({ suggestion: shown, choice: initialChoice(shown), carryOver: null }));
   let { choice } = state;
   if (state.suggestion !== shown) {
@@ -183,22 +189,25 @@ export function useToday() {
   const isFrozen = frozenSelection !== null;
 
   const deps = () => ({ now: new Date(), newId: randomUUID });
-  const validate = () => {
-    if (reference || isFrozen || missing !== null) return;
+  /** Validates the outfit shown; true when it is now frozen. */
+  const validate = (): boolean => {
+    if (reference || isFrozen || missing !== null) return false;
     const result = validateOutfit(
       db,
       { wardrobeId: wardrobe.id, date, context, selection: outfit },
       deps(),
     );
-    if (!result.ok) return;
+    if (!result.ok) return false;
+    setKeptBottom({ date, id: hiddenBottom(choice, shown, pieces) });
     setFrozenState(readFrozen());
     reload();
     AccessibilityInfo.announceForAccessibility(t('today.validatedAnnouncement'));
+    return true;
   };
   const undo = () => {
-    if (reference || frozenSelection === null) return;
+    if (reference || kept === null) return;
     if (!undoValidation(db, wardrobe.id, date, deps()).ok) return;
-    setState((current) => ({ ...current, carryOver: frozenSelection }));
+    setState((current) => ({ ...current, carryOver: kept }));
     setFrozenState(readFrozen());
     reload();
     AccessibilityInfo.announceForAccessibility(t('today.undoneAnnouncement'));

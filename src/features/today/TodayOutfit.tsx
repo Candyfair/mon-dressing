@@ -16,6 +16,7 @@ import { size, spacing } from '../../ui/tokens';
 import { AddLayerButton } from './AddLayerButton';
 import { EmptySlot } from './EmptySlot';
 import { LayerSheet } from './LayerSheet';
+import { LockedOutline, type OutlineBounds } from './LockedOutline';
 import {
   addLayer,
   chosenGarment,
@@ -142,13 +143,18 @@ export function TodayOutfit({
   const sheetGarments = sheetLayer ? rowGarments(choice, suggestion, sheetLayer) : [];
 
   // The bottom stays mounted under a dress: it fades with the top row's swipe
-  // and comes back the same way.
+  // and comes back the same way. The top row's position is only followed
+  // once a swipe has started on this suggestion: after a new one (an undone
+  // validation), the carousel moves its pieces after the render, and reading
+  // the old position against the new row would flash the bottom.
   const topPosition = useSharedValue(choice.index.top);
+  const [swipedSuggestion, setSwipedSuggestion] = useState(suggestion);
+  const followsSwipe = swipedSuggestion === suggestion;
   const topOnePieces = choice.shown.top
     ? rowGarments(choice, suggestion, 'top').map((id) => pieces.get(id)?.slot === 'onePiece')
     : [];
   const bottomFade = useAnimatedStyle(() => ({
-    opacity: 1 - onePieceShare(topPosition.get(), topOnePieces),
+    opacity: followsSwipe ? 1 - onePieceShare(topPosition.get(), topOnePieces) : underDress ? 0 : 1,
   }));
 
   const rows = (['top', 'bottom', 'shoes'] as const).filter(
@@ -164,6 +170,14 @@ export function TodayOutfit({
         top: LAYER.firstTop + layers.length * LAYER.step + (COLUMN - size.sizeTap) / 2,
       }
     : ADD_LAYER;
+
+  // The outline goes around the pieces as they stand when the outfit locks,
+  // and keeps that place while it is erased.
+  const bounds = piecesBounds(rows, layers.length, places, twoColumns, underDress, scale);
+  const [outlineBounds, setOutlineBounds] = useState(bounds);
+  if (locked && !sameBounds(bounds, outlineBounds)) {
+    setOutlineBounds(bounds);
+  }
 
   return (
     <View
@@ -254,7 +268,10 @@ export function TodayOutfit({
                 height={bandHeight}
                 edgeFade={twoColumns}
                 locked={locked}
-                onSwipeActiveChange={setSwiping}
+                onSwipeActiveChange={(active) => {
+                  setSwiping(active);
+                  if (active && row === 'top') setSwipedSuggestion(suggestion);
+                }}
                 accessibilityLabel={describe(row, t(`today.slots.${row}`))}
               />
             </Animated.View>
@@ -300,6 +317,8 @@ export function TodayOutfit({
         </View>
       ) : null}
 
+      <LockedOutline bounds={locked ? bounds : outlineBounds} visible={locked} />
+
       {sheetLayer && sheetGarments.length > 0 ? (
         <LayerSheet
           layerNumber={layers.indexOf(sheetLayer) + 1}
@@ -316,6 +335,58 @@ export function TodayOutfit({
       ) : null}
     </View>
   );
+}
+
+/** The box of the pieces shown, in the outfit zone's points. */
+function piecesBounds(
+  rows: readonly OutfitRow[],
+  layerCount: number,
+  places: Record<OutfitRow, RowPlace>,
+  twoColumns: boolean,
+  underDress: boolean,
+  scale: number,
+): OutlineBounds {
+  const boxes = rows
+    .filter((row) => !(row === 'bottom' && underDress))
+    .map((row) => {
+      const place = places[row];
+      const left =
+        (twoColumns ? LANE.left : 0) + ((twoColumns ? LANE.width : OUTFIT_WIDTH) - place.frame) / 2;
+      if (row === 'top' && underDress) {
+        const height = place.frame * ONE_PIECE_HEIGHT_RATIO;
+        const top = twoColumns
+          ? (places.top.frameTop + places.bottom.frameTop + places.bottom.frame) / 2 - height / 2
+          : place.frameTop;
+        return { left, top, right: left + place.frame, bottom: top + height };
+      }
+      return {
+        left,
+        top: place.frameTop,
+        right: left + place.frame,
+        bottom: place.frameTop + place.frame,
+      };
+    });
+  for (let position = 0; position < layerCount; position++) {
+    const top = LAYER.firstTop + position * LAYER.step;
+    boxes.push({ left: LAYER.left, top, right: LAYER.left + COLUMN, bottom: top + COLUMN });
+  }
+  if (boxes.length === 0) {
+    return { x: 0, y: 0, width: OUTFIT_WIDTH * scale, height: OUTFIT_HEIGHT * scale };
+  }
+  const left = Math.min(...boxes.map((box) => box.left));
+  const top = Math.min(...boxes.map((box) => box.top));
+  const right = Math.max(...boxes.map((box) => box.right));
+  const bottom = Math.max(...boxes.map((box) => box.bottom));
+  return {
+    x: left * scale,
+    y: top * scale,
+    width: (right - left) * scale,
+    height: (bottom - top) * scale,
+  };
+}
+
+function sameBounds(a: OutlineBounds, b: OutlineBounds): boolean {
+  return a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
 }
 
 const styles = StyleSheet.create({
