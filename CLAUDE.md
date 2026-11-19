@@ -88,7 +88,7 @@ Hooks managed with Husky (Git) and `.claude/settings.json` (Claude Code), set up
   - `src/i18n/` — locales
   - `modules/subject-cutout/` — Expo native module
 - Discriminated unions for states; no `any`; exhaustive `switch` with `never` checks on enums.
-- Components: function components, named exports; one component per file in `src/ui/`.
+- Components: function components, named exports; one exported component per file in `src/ui/`, with private subcomponents allowed in that file.
 - Tests next to the code (`*.test.ts`); engine scenarios in `src/domain/engine/__fixtures__/`.
 - Design tokens only from `src/ui/tokens.ts`, generated from `design/design-system/tokens.json` (one object per theme); role tokens only (`ground`, `ink`, `action`…), no palette colours or raw hex values in components.
 

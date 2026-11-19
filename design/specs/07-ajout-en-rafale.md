@@ -14,7 +14,7 @@ Sheet, Option (tuiles de type, bascules, usages), Button. Voir `design-system/co
 
 ### Proposition d’effacer la démo (AV1, AW1)
 - Les pièces de démo et celles de l’utilisatrice ne cohabitent pas par défaut.
-- Quand l’utilisatrice commence à photographier ses propres vêtements alors que des pièces de démo existent, une popup s’ouvre sur l’appareil photo, avant la première photo : « Supprimer le dressing de démo ? », « Vous commencez votre propre dressing. Les pièces d’exemple disparaissent du Dressing, du Linge et des tenues. », « Si vous les gardez, vous pourrez les supprimer plus tard dans les réglages. », boutons « Garder » (contour) et « Supprimer » (prune).
+- Quand l’utilisatrice commence à photographier ses propres vêtements alors que des pièces de démo existent, une popup s’ouvre sur l’appareil photo, avant la première photo : « Supprimer le dressing de démo ? », « Vous commencez votre propre dressing. Les pièces d’exemple disparaissent du Dressing, de la Buanderie et des tenues. », « Si vous les gardez, vous pourrez les supprimer plus tard dans les réglages. », boutons « Garder » (contour) et « Supprimer » (prune).
 - « Supprimer » efface toutes les pièces de démo, puis l’appareil photo reste ouvert pour la première photo.
 - « Garder » : les pièces de démo restent et se suppriment depuis les réglages (« Supprimer les pièces de démo », `10-reglages.md`). La proposition n’est plus refaite.
 - Même composant Popup et mêmes boutons que la suppression du dressing de démo dans les réglages (AN4), sans illustration. Focus initial sur « Garder », comme le veut le composant.
@@ -25,7 +25,7 @@ Sheet, Option (tuiles de type, bascules, usages), Button. Voir `design-system/co
 ### Feuille de type (AG2, AG4, AG5)
 - Après la photo : détourage en cours (« Détourage… »), puis « Quel type de pièce ? » : récents, puis tous les types en tuiles.
 - Bascules : Favori, Pièce forte, Se repasse.
-- « Plus de détails · facultatif » : usages par groupes — Météo (Chaud, Doux, Frais, Froid, Pluie), Activité (Bureau, Télétravail, Détente, Sport), Déplacement (À pied, Vélo, Trottinette, Transports en commun, Voiture, Moto), Occasion (Quotidien, Soirée, Festif, Cérémonie, Entretien professionnel).
+- « Plus de détails · facultatif » : usages par groupes — Météo (Chaud, Doux, Frais, Froid, Pluie), Activité (Bureau, Télétravail, Détente, Sport), Déplacement (À pied, Vélo, Trottinette, Transports en commun, Voiture, Moto), Occasion (Quotidien, Festif, Cérémonie, Entretien professionnel).
 - Texte d’aide : « Sans précision dans une sous-catégorie, la pièce est proposée dans tous les cas. Choisissez des usages pour ne la proposer qu’à ces moments-là. »
 - L’application ne déduit jamais les usages et ne fait pas de recommandation.
 - « Enregistrer · photo suivante » : enregistre et revient à l’appareil photo.
@@ -61,7 +61,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Terminer »
 - « Posez la pièce à plat, bien éclairée »
 - « Supprimer le dressing de démo ? »
-- « Vous commencez votre propre dressing. Les pièces d’exemple disparaissent du Dressing, du Linge et des tenues. »
+- « Vous commencez votre propre dressing. Les pièces d’exemple disparaissent du Dressing, de la Buanderie et des tenues. »
 - « Si vous les gardez, vous pourrez les supprimer plus tard dans les réglages. »
 - « Garder »
 - « Supprimer »
@@ -86,7 +86,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Terminer »
 - « Posez la pièce à plat, bien éclairée »
 - « Supprimer le dressing de démo ? »
-- « Vous commencez votre propre dressing. Les pièces d’exemple disparaissent du Dressing, du Linge et des tenues. »
+- « Vous commencez votre propre dressing. Les pièces d’exemple disparaissent du Dressing, de la Buanderie et des tenues. »
 - « Si vous les gardez, vous pourrez les supprimer plus tard dans les réglages. »
 - « Garder »
 - « Supprimer »
@@ -197,7 +197,6 @@ Textes visibles (dans l’ordre de lecture) :
 - « Moto »
 - « Occasion »
 - « Quotidien »
-- « Soirée »
 - « Festif »
 - « Cérémonie »
 - « Entretien professionnel »
@@ -251,7 +250,6 @@ Textes visibles (dans l’ordre de lecture) :
 - « Moto »
 - « Occasion »
 - « Quotidien »
-- « Soirée »
 - « Festif »
 - « Cérémonie »
 - « Entretien professionnel »
@@ -362,7 +360,6 @@ Textes visibles (dans l’ordre de lecture) :
 - « Moto »
 - « Occasion »
 - « Quotidien »
-- « Soirée »
 - « Festif »
 - « Cérémonie »
 - « Entretien professionnel »
@@ -416,7 +413,6 @@ Textes visibles (dans l’ordre de lecture) :
 - « Moto »
 - « Occasion »
 - « Quotidien »
-- « Soirée »
 - « Festif »
 - « Cérémonie »
 - « Entretien professionnel »
