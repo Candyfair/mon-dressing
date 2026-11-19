@@ -17,13 +17,13 @@ import { widenRows } from './outfitChoice';
 import { TodayBackground } from './TodayBackground';
 import { OUTFIT_HEIGHT, OUTFIT_WIDTH, TodayOutfit } from './TodayOutfit';
 import { useToday } from './useToday';
-import { WeatherHeader } from './WeatherHeader';
+import { WEATHER_HEADER_HEIGHT, WeatherHeader } from './WeatherHeader';
 
 // Vertical layout of the 375 × 812 pt reference (DESIGN-SYSTEM "L'écran
 // Aujourd'hui"): header 6 pt under the status bar (50 pt), outfit 12 pt under
 // the header (194 pt), 16 pt above the menu (684 pt).
 const HEADER_GAP = spacing.space6;
-const HEADER_HEIGHT = 132;
+const HEADER_HEIGHT = WEATHER_HEADER_HEIGHT;
 const OUTFIT_GAP_TOP = 12;
 const OUTFIT_GAP_BOTTOM = spacing.space16;
 // The note sits at the bottom left, on the line of the confirm button.
@@ -58,6 +58,7 @@ export function TodayScreen() {
     <GlassStage behind={<TodayBackground ambience={today.weather.ambience} />}>
       <View style={[styles.header, { top: headerTop }]}>
         <WeatherHeader
+          width={width - 2 * spacing.space16}
           date={formatShortDate(today.date, t)}
           context={today.context}
           temperatures={today.temperatures}

@@ -67,6 +67,7 @@
     "test": "jest",
     "prepare": "husky",
     "db:generate": "drizzle-kit generate",
+    "header-fonts:generate": "node scripts/generate-header-font-widths.js",
     "tokens:generate": "node scripts/generate-tokens.js"
   },
   "private": true,

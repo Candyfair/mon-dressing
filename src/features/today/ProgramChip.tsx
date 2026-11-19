@@ -6,8 +6,13 @@ import { Glass } from '../../ui/Glass';
 import { Icon, type IconName } from '../../ui/Icon';
 import { useTheme } from '../../ui/theme';
 import { size, typography } from '../../ui/tokens';
+import { HEADER_TOP_MAX_MULTIPLIER } from './headerFit';
 
 const ICON = 20;
+const PADDING = 12;
+const BORDER = 1;
+const GAP = 7;
+const DIVIDER = 1;
 
 // Transport icons drawn in the mockups; the other modes have none yet and
 // show the activity alone (level-2 note).
@@ -16,22 +21,46 @@ const COMMUTE_ICONS: Partial<Record<CommuteMode, IconName>> = {
   walking: 'walking',
 };
 
+function commuteMode(context: DayContext): CommuteMode | undefined {
+  return context.commuteModes.find((candidate) => COMMUTE_ICONS[candidate] !== undefined);
+}
+
+/** Width of the chip without its label. */
+export function programChipFixedWidth(context: DayContext): number {
+  const frame = 2 * (PADDING + BORDER);
+  return commuteMode(context) === undefined ? frame : frame + 2 * GAP + DIVIDER + ICON;
+}
+
 interface ProgramChipProps {
   context: DayContext;
+  label: string;
+  labelScale: number;
   onPress: () => void;
 }
 
 /** The day's program: activity in text, transport as an icon (design-system ProgramChip). */
-export function ProgramChip({ context, onPress }: ProgramChipProps) {
+export function ProgramChip({ context, label, labelScale, onPress }: ProgramChipProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const mode = context.commuteModes.find((candidate) => COMMUTE_ICONS[candidate] !== undefined);
+  const mode = commuteMode(context);
   const icon = mode === undefined ? undefined : COMMUTE_ICONS[mode];
   return (
     <Pressable accessibilityRole="button" onPress={onPress}>
       <Glass style={[styles.chip, { borderColor: colors.glassEdge }]}>
-        <Text style={[typography.chip, { color: colors.controlInk }]} numberOfLines={1}>
-          {t(`usages.activity.${context.activity}`)}
+        <Text
+          testID="header-program"
+          maxFontSizeMultiplier={HEADER_TOP_MAX_MULTIPLIER}
+          style={[
+            typography.chip,
+            {
+              color: colors.controlInk,
+              fontSize: typography.chip.fontSize * labelScale,
+              lineHeight: typography.chip.lineHeight * labelScale,
+            },
+          ]}
+          numberOfLines={1}
+        >
+          {label}
         </Text>
         {mode !== undefined && icon !== undefined ? (
           <>
@@ -53,12 +82,12 @@ export function ProgramChip({ context, onPress }: ProgramChipProps) {
 const styles = StyleSheet.create({
   chip: {
     height: size.sizeChip,
-    paddingHorizontal: 12,
+    paddingHorizontal: PADDING,
     borderRadius: size.sizeChip / 2,
-    borderWidth: 1,
+    borderWidth: BORDER,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 7,
+    gap: GAP,
   },
-  divider: { width: 1, height: 14 },
+  divider: { width: DIVIDER, height: 14 },
 });
