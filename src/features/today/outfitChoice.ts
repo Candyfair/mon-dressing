@@ -7,6 +7,7 @@ import {
   slotInRow,
   type Suggestion,
 } from '../../domain/engine';
+import { loopIndex } from '../../ui/loopIndex';
 
 /**
  * What the user has chosen on Today, on top of the engine's suggestion: the
@@ -53,10 +54,19 @@ export function rowGarments(
   return eligible.length === 0 && choice.widened[row] ? suggestion.closest[row] : eligible;
 }
 
+/** The garment at a row's position, shown or not. */
+export function currentGarment(
+  choice: OutfitChoice,
+  suggestion: Suggestion,
+  row: RowSlot,
+): string | null {
+  const ids = rowGarments(choice, suggestion, row);
+  return ids[loopIndex(choice.index[row], ids.length)] ?? null;
+}
+
 /** The garment a row currently shows, whether or not a dress hides it. */
 function garmentAt(choice: OutfitChoice, suggestion: Suggestion, row: RowSlot): string | null {
-  const ids = rowGarments(choice, suggestion, row);
-  return choice.shown[row] && ids.length > 0 ? (ids[choice.index[row] % ids.length] ?? null) : null;
+  return choice.shown[row] ? currentGarment(choice, suggestion, row) : null;
 }
 
 /** A one-piece in the top row takes the bottom's place. */
@@ -77,7 +87,7 @@ export function onePieceShare(position: number, onePieces: readonly boolean[]): 
   'worklet';
   const count = onePieces.length;
   if (count === 0) return 0;
-  const at = (index: number) => (onePieces[((index % count) + count) % count] ? 1 : 0);
+  const at = (index: number) => (onePieces[loopIndex(index, count)] ? 1 : 0);
   const before = Math.floor(position);
   const progress = position - before;
   return at(before) * (1 - progress) + at(before + 1) * progress;

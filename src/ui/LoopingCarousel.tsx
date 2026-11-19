@@ -93,6 +93,8 @@ export function LoopingCarousel<T>({
   // Absolute (unwrapped) index of the current piece: slots keep their key
   // while the carousel goes round, so nothing jumps when it settles.
   const [base, setBase] = useState(index);
+  // Where an outside change sends the pieces, as a new object each time.
+  const [placement, setPlacement] = useState({ to: index });
   const ownPosition = useSharedValue(index);
   const position = sharedPosition ?? ownPosition;
   const dragStart = useSharedValue(index);
@@ -100,6 +102,8 @@ export function LoopingCarousel<T>({
   const revealed = useSharedValue(0);
   // Reduced motion cross-fade of the current piece.
   const fade = useSharedValue(1);
+  // Reduced motion: the piece a running cross-fade is going to.
+  const crossFadeTarget = useSharedValue<number | null>(null);
 
   const commit = (target: number) => {
     setBase(target);
@@ -107,15 +111,19 @@ export function LoopingCarousel<T>({
   };
 
   // Follow an index set from outside (accessibility action, new suggestion).
-  if (loopIndex(base, count) !== index) {
-    setBase(index);
+  const wrappedIndex = loopIndex(index, count);
+  if (loopIndex(base, count) !== wrappedIndex) {
+    setBase(wrappedIndex);
+    setPlacement({ to: wrappedIndex });
   }
-  // ...and move the pieces there, unless a gesture already did.
+  // ...and move the pieces there, unless they already are.
   useEffect(() => {
-    if (Math.round(position.get()) !== base) {
-      position.set(base);
+    if (Math.round(position.get()) !== placement.to) {
+      position.set(placement.to);
     }
-  }, [base, position]);
+    // A drag under way continues from there.
+    dragStart.set(placement.to);
+  }, [placement, position, dragStart]);
 
   const swipeActive = (active: boolean) => onSwipeActiveChange?.(active);
 
@@ -123,10 +131,19 @@ export function LoopingCarousel<T>({
     .activeOffsetX([-ACTIVE_OFFSET_X, ACTIVE_OFFSET_X])
     .failOffsetY([-FAIL_OFFSET_Y, FAIL_OFFSET_Y])
     .onStart(() => {
+      const crossFading = crossFadeTarget.get();
+      if (crossFading !== null) {
+        cancelAnimation(fade);
+        crossFadeTarget.set(null);
+        position.set(crossFading);
+        fade.set(withTiming(1, motion.carousel.crossFade));
+      }
       cancelAnimation(position);
       const start = Math.round(position.get());
       position.set(start);
       dragStart.set(start);
+      // A drag that interrupts a settle keeps the piece it arrived at.
+      if (start !== base) scheduleOnRN(commit, start);
       if (!reducedMotion) {
         revealed.set(withTiming(1, motion.carousel.neighbourFadeIn));
       }
@@ -153,9 +170,11 @@ export function LoopingCarousel<T>({
         return;
       }
       if (reducedMotion) {
+        crossFadeTarget.set(target);
         fade.set(
           withTiming(0, motion.carousel.crossFade, (finished) => {
             if (!finished) return;
+            crossFadeTarget.set(null);
             position.set(target);
             scheduleOnRN(commit, target);
             fade.set(withTiming(1, motion.carousel.crossFade));

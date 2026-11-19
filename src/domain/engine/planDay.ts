@@ -44,6 +44,10 @@ export interface PlanDayInput extends PlanWeatherInput {
   yesterday: OutfitSelection | null;
 }
 
+export type SuggestDayInput = Omit<PlanDayInput, 'forecast' | 'settings'> & {
+  settings: EngineSettings;
+};
+
 export interface DayPlan extends WeatherPlan {
   suggestion: Suggestion;
 }
@@ -73,24 +77,30 @@ export function planWeather({
   };
 }
 
+/** The outfit proposed for a day whose weather is already planned. */
+export function suggestDay(
+  input: SuggestDayInput,
+  { weather, indoorDay }: Pick<WeatherPlan, 'weather' | 'indoorDay'>,
+): Suggestion {
+  return suggest({
+    date: input.date,
+    timeZone: input.timeZone,
+    garments: input.garments,
+    context: input.context,
+    weather,
+    indoorDay,
+    settings: input.settings,
+    yesterday: input.yesterday,
+  });
+}
+
 /**
- * One day, from its inputs to the proposed outfit: the single composition
- * shared by Today, the reference scenarios and the dev screen. Pure: the
- * date, the forecast, the wardrobe and the settings are all injected.
+ * One day, from its inputs to the proposed outfit, for the reference
+ * scenarios. Pure: the date, the forecast, the wardrobe and the settings are
+ * all injected. Today and the dev screen plan the weather on their own, then
+ * share `suggestDay`.
  */
 export function planDay(input: PlanDayInput): DayPlan {
   const weatherPlan = planWeather(input);
-  return {
-    ...weatherPlan,
-    suggestion: suggest({
-      date: input.date,
-      timeZone: input.timeZone,
-      garments: input.garments,
-      context: input.context,
-      weather: weatherPlan.weather,
-      indoorDay: weatherPlan.indoorDay,
-      settings: input.settings,
-      yesterday: input.yesterday,
-    }),
-  };
+  return { ...weatherPlan, suggestion: suggestDay(input, weatherPlan) };
 }
