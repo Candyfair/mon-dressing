@@ -84,49 +84,59 @@ interface LifecycleDeps {
 export function applyLifecycle(
   db: SyncDatabase,
   operations: readonly LifecycleOperation[],
+  deps: LifecycleDeps,
+): ApplyLifecycleResult {
+  return db.transaction((tx) => applyLifecycleIn(tx, operations, deps));
+}
+
+/**
+ * Same as applyLifecycle, inside a transaction the caller already holds (an
+ * outfit written together with its wears). On a refusal nothing of the batch
+ * is written; rolling back the caller's own writes is up to the caller.
+ */
+export function applyLifecycleIn(
+  tx: SyncDatabase,
+  operations: readonly LifecycleOperation[],
   { now, newId }: LifecycleDeps,
 ): ApplyLifecycleResult {
-  return db.transaction((tx) => {
-    const ids = [...new Set(operations.map((operation) => operation.garmentId))];
-    const current = new Map<string, LifecycleGarment>(
-      tx
-        .select()
-        .from(garments)
-        .where(inArray(garments.id, ids))
-        .all()
-        .map((row) => [row.id, row]),
-    );
+  const ids = [...new Set(operations.map((operation) => operation.garmentId))];
+  const current = new Map<string, LifecycleGarment>(
+    tx
+      .select()
+      .from(garments)
+      .where(inArray(garments.id, ids))
+      .all()
+      .map((row) => [row.id, row]),
+  );
 
-    // Compute every transition before writing anything.
-    const writes: { garmentId: string; patch: LifecyclePatch; events: LifecycleEventDraft[] }[] =
-      [];
-    for (const operation of operations) {
-      const garment = current.get(operation.garmentId);
-      if (!garment) {
-        return { ok: false, reason: 'notFound', operation };
-      }
-      const result = transition(garment, operation.command, now);
-      if (!result.ok) {
-        if (result.reason === 'unchanged') {
-          continue;
-        }
-        return { ok: false, reason: result.reason, operation };
-      }
-      current.set(garment.id, { ...garment, ...result.patch });
-      writes.push({ garmentId: garment.id, patch: result.patch, events: result.events });
+  // Compute every transition before writing anything.
+  const writes: { garmentId: string; patch: LifecyclePatch; events: LifecycleEventDraft[] }[] = [];
+  for (const operation of operations) {
+    const garment = current.get(operation.garmentId);
+    if (!garment) {
+      return { ok: false, reason: 'notFound', operation };
     }
+    const result = transition(garment, operation.command, now);
+    if (!result.ok) {
+      if (result.reason === 'unchanged') {
+        continue;
+      }
+      return { ok: false, reason: result.reason, operation };
+    }
+    current.set(garment.id, { ...garment, ...result.patch });
+    writes.push({ garmentId: garment.id, patch: result.patch, events: result.events });
+  }
 
-    for (const { garmentId, patch, events } of writes) {
-      tx.update(garments)
-        .set({ ...patch, updatedAt: now })
-        .where(eq(garments.id, garmentId))
+  for (const { garmentId, patch, events } of writes) {
+    tx.update(garments)
+      .set({ ...patch, updatedAt: now })
+      .where(eq(garments.id, garmentId))
+      .run();
+    if (events.length > 0) {
+      tx.insert(garmentEvents)
+        .values(events.map((event) => ({ ...event, id: newId(), garmentId, occurredAt: now })))
         .run();
-      if (events.length > 0) {
-        tx.insert(garmentEvents)
-          .values(events.map((event) => ({ ...event, id: newId(), garmentId, occurredAt: now })))
-          .run();
-      }
     }
-    return { ok: true };
-  });
+  }
+  return { ok: true };
 }

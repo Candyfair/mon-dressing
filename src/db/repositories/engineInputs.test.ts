@@ -104,6 +104,7 @@ describe('yesterdayOutfit', () => {
     date: string,
     status: 'validated' | 'probable',
     garmentId: string,
+    validatedAt: Date | null = status === 'validated' ? T0 : null,
   ) {
     const id = randomUUID();
     db.insert(outfits)
@@ -115,11 +116,21 @@ describe('yesterdayOutfit', () => {
         activity: 'office',
         commuteModes: [],
         occasion: 'everyday',
+        validatedAt,
         createdAt: T0,
       })
       .run();
     db.insert(outfitItems).values({ outfitId: id, slot: 'top', garmentId }).run();
   }
+
+  it('ignores an undone validation', () => {
+    const { db, wardrobeId } = setup();
+    add(db, wardrobeId, 'tee', 'tshirt');
+    add(db, wardrobeId, 'shirt', 'shirt');
+    seedOutfit(db, wardrobeId, '2026-11-15', 'probable', 'tee');
+    seedOutfit(db, wardrobeId, '2026-11-15', 'validated', 'shirt', null);
+    expect(yesterdayOutfit(db, wardrobeId, '2026-11-16')).toEqual({ top: 'tee' });
+  });
 
   it('prefers the validated outfit, falls back to the probable one', () => {
     const { db, wardrobeId } = setup();
