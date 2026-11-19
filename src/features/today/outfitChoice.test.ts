@@ -2,8 +2,10 @@ import type { Suggestion } from '../../domain/engine';
 import type { Slot } from '../../domain/types';
 import {
   addLayer,
+  choiceFromSelection,
   chosenOutfit,
   emptyRows,
+  frozenSuggestion,
   initialChoice,
   missingPiece,
   moveTo,
@@ -160,5 +162,55 @@ describe('outfit choice', () => {
     expect(onePieceShare(-2, onePieces)).toBe(1);
     expect(onePieceShare(4, onePieces)).toBe(1);
     expect(onePieceShare(1, [])).toBe(0);
+  });
+});
+
+describe('frozen outfit', () => {
+  it('draws the validated outfit with one piece per row and nothing to add', () => {
+    const frozen = frozenSuggestion({ onePiece: 'dress', midLayer: 'jumper', shoes: 'boots' });
+    const choice = initialChoice(frozen);
+
+    expect(frozen.rows).toEqual({
+      top: ['dress'],
+      bottom: [],
+      midLayer: ['jumper'],
+      outerLayer: [],
+      shoes: ['boots'],
+    });
+    expect(chosenOutfit(choice, frozen, slots)).toEqual({
+      onePiece: 'dress',
+      midLayer: 'jumper',
+      shoes: 'boots',
+    });
+    expect(nextLayer(choice, frozen)).toBeNull();
+    expect(emptyRows(choice, frozen, slots)).toEqual([]);
+  });
+
+  it('goes back to the validated pieces on the engine rows after an undo', () => {
+    const choice = choiceFromSelection(suggestion(), {
+      top: 'shirt',
+      bottom: 'skirt',
+      midLayer: 'jumper',
+    });
+
+    expect(chosenOutfit(choice, suggestion(), slots)).toEqual({
+      top: 'shirt',
+      bottom: 'skirt',
+      midLayer: 'jumper',
+    });
+  });
+
+  it('falls back to the engine where a validated piece is no longer offered', () => {
+    const choice = choiceFromSelection(suggestion(), {
+      top: 'gone',
+      bottom: 'skirt',
+      shoes: 'boots',
+    });
+
+    expect(chosenOutfit(choice, suggestion(), slots)).toEqual({
+      top: 'tee',
+      bottom: 'skirt',
+      shoes: 'boots',
+    });
   });
 });

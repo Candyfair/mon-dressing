@@ -16,7 +16,15 @@ jest.mock(
 
 const PIECES = ['Chemise blanche', 'T-shirt rayé', 'Pull col roulé'];
 
-function Row({ items = PIECES, onPress }: { items?: string[]; onPress?: () => void }) {
+function Row({
+  items = PIECES,
+  onPress,
+  locked,
+}: {
+  items?: string[];
+  onPress?: () => void;
+  locked?: boolean;
+}) {
   const [index, setIndex] = useState(0);
   return (
     <LoopingCarousel
@@ -27,6 +35,7 @@ function Row({ items = PIECES, onPress }: { items?: string[]; onPress?: () => vo
       step={150}
       height={200}
       onPress={onPress}
+      locked={locked}
       accessibilityLabel={`Haut : ${items[index]}`}
     />
   );
@@ -174,6 +183,15 @@ describe('LoopingCarousel', () => {
     const row = screen.getByRole('adjustable');
     await fireEvent(row, 'accessibilityAction', action('next'));
     expect(row).toHaveAccessibleName('Haut : Jean brut');
+  });
+
+  it('offers no swipe action once locked', async () => {
+    await render(<Row locked />);
+    const row = screen.getByLabelText('Haut : Chemise blanche');
+    expect(row.props.accessibilityRole).toBeUndefined();
+    expect(row.props.accessibilityActions).toEqual([]);
+    await fireEvent(row, 'accessibilityAction', action('next'));
+    expect(screen.getByLabelText('Haut : Chemise blanche')).toBeTruthy();
   });
 
   it('is a button that activates like a tap when it opens something', async () => {

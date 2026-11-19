@@ -74,6 +74,7 @@ export function TodayScreen() {
           onChoiceChange={today.setChoice}
           emptyRows={today.emptyRows}
           onAddPiece={() => router.push('/add')}
+          locked={today.frozen}
           scale={scale}
         />
       </View>
@@ -108,8 +109,11 @@ export function TodayScreen() {
       ) : null}
 
       <View style={[styles.confirm, { top: outfitBottom - size.sizeCta / 2 }]}>
-        {/* Validating and freezing the outfit come in S7. */}
-        <ConfirmOutfitButton missing={today.missing} onPress={() => undefined} />
+        <ConfirmOutfitButton
+          missing={today.missing}
+          frozen={today.frozen}
+          onPress={today.frozen ? today.undo : today.validate}
+        />
       </View>
 
       {__DEV__ ? (

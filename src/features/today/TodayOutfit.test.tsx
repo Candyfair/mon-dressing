@@ -41,7 +41,7 @@ const SUGGESTION: Suggestion = {
 const PIECES = new Map([['sweater', { id: 'sweater', label: 'Pull écru' } as TodayPiece]]);
 const SHEET = 'Couche 1, choisir parmi les couches compatibles';
 
-function outfit(choice: OutfitChoice) {
+function outfit(choice: OutfitChoice, locked = false) {
   return (
     <TodayOutfit
       suggestion={SUGGESTION}
@@ -50,6 +50,7 @@ function outfit(choice: OutfitChoice) {
       onChoiceChange={jest.fn()}
       emptyRows={[]}
       onAddPiece={jest.fn()}
+      locked={locked}
       scale={1}
     />
   );
@@ -66,6 +67,14 @@ describe('TodayOutfit', () => {
     expect(screen.queryByLabelText(SHEET)).toBeNull();
 
     await rerender(outfit(shown));
+    expect(screen.queryByLabelText(SHEET)).toBeNull();
+  });
+
+  it('opens no layer sheet once the outfit is validated', async () => {
+    await render(outfit(initialChoice(SUGGESTION), true));
+
+    expect(screen.queryByRole('button', { name: /Pull écru/ })).toBeNull();
+    await fireEvent.press(screen.getByLabelText(/Pull écru/));
     expect(screen.queryByLabelText(SHEET)).toBeNull();
   });
 });

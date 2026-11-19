@@ -1,9 +1,12 @@
 import { act, renderHook } from '@testing-library/react-native';
+import { AppState, type AppStateStatus } from 'react-native';
 
 import '../../i18n';
 import { referenceWardrobe } from '../../domain/engine/__fixtures__/wardrobe';
 import { loadEngineGarments } from '../../db/repositories/engineInputs';
 import { garmentThumbnails } from '../../db/repositories/garments';
+import { saveProbableOutfit, undoValidation, validateOutfit } from '../../db/repositories/outfits';
+import type { OutfitSelection } from '../../domain/engine';
 import { moveTo } from './outfitChoice';
 import { useToday } from './useToday';
 
@@ -20,6 +23,24 @@ jest.mock('../../db/repositories/engineInputs', () => ({
   yesterdayOutfit: () => null,
 }));
 jest.mock('../../db/repositories/garments', () => ({ garmentThumbnails: jest.fn() }));
+jest.mock('expo-crypto', () => ({ randomUUID: () => 'id' }));
+// The day's validated outfit, as the repository would store it.
+let mockValidated: OutfitSelection | null = null;
+jest.mock('../../db/repositories/outfits', () => ({
+  todayOutfit: () =>
+    mockValidated
+      ? { status: 'validated', id: 'outfit', selection: mockValidated }
+      : { status: 'none' },
+  validateOutfit: jest.fn((_db: unknown, { selection }: { selection: OutfitSelection }) => {
+    mockValidated = selection;
+    return { ok: true };
+  }),
+  undoValidation: jest.fn(() => {
+    mockValidated = null;
+    return { ok: true };
+  }),
+  saveProbableOutfit: jest.fn(),
+}));
 jest.mock('./useDayWeather', () => {
   const { SCENARIO_SETTINGS: settings } = jest.requireActual<
     typeof import('../../domain/engine/__fixtures__/scenarios')
@@ -51,6 +72,8 @@ async function renderToday() {
 
 describe('useToday', () => {
   beforeEach(() => {
+    mockValidated = null;
+    jest.clearAllMocks();
     jest.mocked(loadEngineGarments).mockReturnValue(garments);
     jest.mocked(garmentThumbnails).mockReturnValue([thumbnail('original.webp')] as never);
   });
@@ -90,5 +113,66 @@ describe('useToday', () => {
     await act(async () => setChoice((choice) => moveTo(choice, 'top', 99)));
 
     expect(today.current.choice.index).toEqual(index);
+  });
+
+  it('freezes the validated outfit, whatever the engine proposes next', async () => {
+    const today = await renderToday();
+    await act(async () => today.current.setChoice((choice) => moveTo(choice, 'top', 1)));
+    const validated = today.current.outfit;
+
+    await act(async () => today.current.validate());
+
+    expect(validateOutfit).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ date: '2026-11-17', selection: validated }),
+      expect.anything(),
+    );
+    expect(today.current.frozen).toBe(true);
+    expect(today.current.outfit).toEqual(validated);
+    expect(today.current.emptyRows).toEqual([]);
+    // Nothing else to swipe to.
+    expect(today.current.suggestion.rows.top).toHaveLength(1);
+
+    // The garments change (a later open): the outfit stays.
+    jest.mocked(loadEngineGarments).mockReturnValue(garments.slice(1));
+    await act(async () => mockRefocus());
+    expect(today.current.outfit).toEqual(validated);
+  });
+
+  it('goes back to the validated pieces after an undo', async () => {
+    const today = await renderToday();
+    await act(async () => today.current.setChoice((choice) => moveTo(choice, 'top', 1)));
+    const validated = today.current.outfit;
+    await act(async () => today.current.validate());
+
+    await act(async () => today.current.undo());
+
+    expect(undoValidation).toHaveBeenCalledTimes(1);
+    expect(today.current.frozen).toBe(false);
+    expect(today.current.outfit).toEqual(validated);
+    expect(today.current.suggestion.rows.top.length).toBeGreaterThan(1);
+  });
+
+  it('keeps the outfit shown when the app goes to the background, unless validated', async () => {
+    const listeners: ((state: AppStateStatus) => void)[] = [];
+    jest.spyOn(AppState, 'addEventListener').mockImplementation((_type, listener) => {
+      listeners.push(listener);
+      return { remove: () => undefined };
+    });
+    const today = await renderToday();
+    const background = () =>
+      act(async () => listeners.forEach((listener) => listener('background')));
+
+    await background();
+    expect(saveProbableOutfit).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ date: '2026-11-17', selection: today.current.outfit }),
+      expect.anything(),
+    );
+
+    await act(async () => today.current.validate());
+    jest.mocked(saveProbableOutfit).mockClear();
+    await background();
+    expect(saveProbableOutfit).not.toHaveBeenCalled();
   });
 });
