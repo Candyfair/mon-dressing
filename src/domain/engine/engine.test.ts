@@ -110,19 +110,38 @@ describe('matchUsages', () => {
     expect(matchUsages(['weather.cold'], OFFICE_BIKE, null).passes).toBe(true);
   });
 
-  it('requires the garment to cover every commute mode of the day', () => {
-    const bikeAndTrain: DayContext = { ...OFFICE_BIKE, commuteModes: ['bike', 'publicTransport'] };
-    expect(matchUsages(['commute.bike'], bikeAndTrain, ['mild']).passes).toBe(false);
-    expect(
-      matchUsages(['commute.bike', 'commute.publicTransport'], bikeAndTrain, ['mild']),
-    ).toEqual({ passes: true, contextMatches: 1, weatherMatch: false });
-    // No commute today: the group does not apply.
-    const remote: DayContext = { activity: 'remote', commuteModes: [], occasion: 'everyday' };
-    expect(matchUsages(['commute.car'], remote, ['mild'])).toEqual({
+  it('never filters on the commute: one shared mode puts the garment first', () => {
+    const walking: DayContext = { ...OFFICE_BIKE, commuteModes: ['walking'] };
+    expect(matchUsages(['commute.bike'], walking, ['mild'])).toEqual({
       passes: true,
       contextMatches: 0,
       weatherMatch: false,
     });
+    const walkingAndBike: DayContext = { ...OFFICE_BIKE, commuteModes: ['walking', 'bike'] };
+    expect(matchUsages(['commute.bike'], walkingAndBike, ['mild'])).toEqual({
+      passes: true,
+      contextMatches: 1,
+      weatherMatch: false,
+    });
+    // No commute today: no priority.
+    const remote: DayContext = { activity: 'remote', commuteModes: [], occasion: 'everyday' };
+    expect(matchUsages(['commute.bike'], remote, ['mild'])).toEqual({
+      passes: true,
+      contextMatches: 0,
+      weatherMatch: false,
+    });
+  });
+
+  it('ranks a garment of another commute after the ones that match', () => {
+    const walking: DayContext = { ...OFFICE_BIKE, commuteModes: ['walking'] };
+    const garments = [
+      makeGarment({ id: 'bikeTop', slot: 'top', usages: ['commute.bike'] }),
+      makeGarment({ id: 'walkingTop', slot: 'top', usages: ['commute.walking'] }),
+    ];
+    expect(suggest(input(garments, { context: walking })).rows.top).toEqual([
+      'walkingTop',
+      'bikeTop',
+    ]);
   });
 
   it('filters on the activity and the occasion, and counts explicit matches', () => {
