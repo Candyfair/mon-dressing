@@ -194,3 +194,12 @@ body { margin: 0; font-family: var(--font-text); color: var(--ink); background: 
 .md-slot > svg path { fill: var(--slot-fill); stroke: var(--slot-edge); stroke-width: 1.2; stroke-dasharray: 3.5 3; stroke-linejoin: round; }
 .md-slot-add { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--add-action); color: var(--cream); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-add); }
 .md-hint { margin: 0; font: 500 13.5px/16px var(--font-text); color: var(--ink-secondary); }
+
+/* Outfit validation (Today): locked confirm button, frog stamp, hand-drawn outline */
+.md-cta[aria-pressed="true"] { background: var(--glass); color: var(--ink); box-shadow: 0 0 0 1px var(--glass-edge), 0 6px 16px rgba(0,0,0,0.12); }
+.md-stamp { position: relative; width: 290px; height: 174px; color: var(--action); transform: rotate(-8deg); }
+.md-stamp svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.md-stamp .md-stamp-fill { fill: var(--ground); }
+.md-stamp text { fill: currentColor; font-family: var(--font-display); text-anchor: middle; }
+.md-outline path { fill: none; stroke: var(--action); stroke-linecap: round; stroke-linejoin: round; }
+

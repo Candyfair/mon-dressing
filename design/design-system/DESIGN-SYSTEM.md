@@ -112,6 +112,10 @@ Sur Aujourd’hui, chaque ligne de la tenue se glisse pour proposer une autre pi
 
 Tant que le dressing ne permet pas une tenue complète, Aujourd’hui montre ce qui manque au lieu d’un écran vide : les pièces présentes à leur place, une silhouette en pointillés (EmptySlot) pour chaque catégorie jamais ajoutée, et une phrase sous l’en-tête (« Encore 1 bas et 1 paire de chaussures »). Toucher une silhouette ouvre l’ajout en rafale avec le type choisi. Le bouton de validation est désactivé jusqu’à ce que la tenue ait un haut et un bas (ou une pièce pleine hauteur) ; chaussures et couches restent facultatives. Si une catégorie existe mais que tout est au linge, ce n’est pas le guidage : « Vos bas sont au linge » et « Trier le linge ».
 
+## Validation de la tenue
+
+Toucher « Je porte cette tenue » pose un tampon à tête de grenouille « Tenue du jour validée » sur la tenue (ValidationStamp), lisible environ 2 secondes, puis la tenue est entourée d’un contour dessiné à main levée (LockedOutline) et le bouton devient un cadenas en verre (ConfirmOutfitButton, état validé). Retour visuel seulement, sans vibration ni son. Le comportement (tenue figée, annulation) est dans `SPEC.md` §7.
+
 ## Feuilles et popups
 
 Une tâche courte s’ouvre dans une feuille (Sheet) qui garde l’écran visible sous un voile ; sa hauteur suit son contenu. Une action qu’on ne peut pas défaire se confirme dans une popup centrée (Popup), jamais empilée sur une feuille.
