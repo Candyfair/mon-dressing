@@ -45,6 +45,14 @@ const ICONS = {
     ],
   },
   check: { strokeWidth: 2.6, shapes: [<Path key="p" d="M5 12.5l4.5 4.5L19 7.5" />] },
+  // Validated outfit (Validation-AX prototype).
+  lock: {
+    strokeWidth: 2,
+    shapes: [
+      <Rect key="r" x={5} y={10.5} width={14} height={10} rx={2.5} />,
+      <Path key="p" d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />,
+    ],
+  },
   chevronDown: { strokeWidth: 2, shapes: [<Path key="p" d="M6 9l6 6 6-6" />] },
   progress: { strokeWidth: 2.2, shapes: [<Path key="p" d="M12 3a9 9 0 1 0 9 9" />] },
   // Tab bar (TabBar mockups): Today, Laundry, Wardrobe.
