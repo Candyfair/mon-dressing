@@ -212,7 +212,7 @@ Usages are **tags the user gives a garment**, in four groups. The app never dedu
   5. Default outfit = first garment of each row, respecting the coordination rule (§4.5: when a later row only has statement pieces, the earlier statement piece hands over to a plain one of its row; if impossible the outfit is flagged) and **avoiding exactly yesterday's outfit** when another choice exists; one-pieces compete in the top row (§4.1); no shoes on an indoor day (§6.3).
   6. Output: default outfit + **ranked alternatives per row** + the **closest pieces** of each row: available garments left out by their Weather usages alone (other groups still apply), nearest felt category first. Offered only on request ("Voir les autres ?") when a row has nothing eligible.
 - Swiping a row **never changes other rows** (the only exception: a one-piece hides the bottom row, §4.1). If the user's choice breaks a rule (two statement pieces), a discreet indicator shows it; nothing is corrected automatically.
-- Once the outfit is validated ("Je porte cette tenue"), it is **frozen for the day** (no recomputation on later opens, even if the forecast changes).
+- Once the outfit is validated ("Je porte cette tenue"), it is **frozen for the day** (no recomputation on later opens, even if the forecast changes): its rows no longer swipe. **Tapping the button again undoes the validation** (each wear is taken back, Today follows the engine again), until the outfit has been sorted in the evening.
 - Tier 2: 2–3 variants, selected through tabs near the header (never by swipe).
 
 **End-to-end verification (§7):** run the 10 reference scenarios (R3) as Jest fixtures and on device with the real wardrobe; validate an outfit, change the forecast fixture, reopen: outfit unchanged; **rotation scenario**: 5 consecutive days with the same context and no laundry → the default outfit is never identical two days in a row and favourites come back more often without appearing every day.
@@ -520,6 +520,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-18 | Animation durations and curves (open) | Frozen in `src/ui/motion.ts`: swipe settles in 220 ms, neighbours fade out in 180 ms and in within 90 ms, reduced-motion cross-fade 120 ms each way, spring bounce on a single piece, tab screens fade in 150 ms, radial long press 100 ms. The end-of-sort animation is not built yet and gets its values with the evening sort | Values tried on the Galaxy A06 and the iPhone 12 mini (Candice, S6) |
 | 2026-11-18 | Mascot as a colourless line drawing, cream line in the dark theme (design system) | The frog stays in colour in both themes, with the same images | Seen on the dark end-of-sort screen (Candice, S6) |
 | 2026-11-19 | Commute usages filter: the garment must cover every commute mode of the day | Commute usages only order the row: a garment sharing one mode with the day comes first, any other stays eligible without priority | A "Vélo" piece should come first on bike days without disappearing on other days (Candice, after S6 device tests) |
+| 2026-11-19 | Validated outfit frozen for the day, no way back | Rows locked once validated; tapping the button again undoes the validation (`unwear` command, `unworn` event) until the evening sort | A mistaken tap must not leave wrong wear counts (Candice, S7) |
 
 ---
 
