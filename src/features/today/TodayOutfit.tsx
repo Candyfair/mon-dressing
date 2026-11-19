@@ -91,6 +91,8 @@ interface TodayOutfitProps {
   // Rows drawn as dashed silhouettes, and what touching one does.
   emptyRows: readonly OutfitRow[];
   onAddPiece: () => void;
+  // Validated outfit: nothing swipes, no layer to add or change.
+  locked?: boolean;
   // Outfit zone scale: 1 on the 375 × 812 pt reference screen.
   scale: number;
 }
@@ -103,6 +105,7 @@ export function TodayOutfit({
   onChoiceChange,
   emptyRows,
   onAddPiece,
+  locked = false,
   scale,
 }: TodayOutfitProps) {
   const { t } = useTranslation();
@@ -177,12 +180,12 @@ export function TodayOutfit({
             ref={(button) => {
               layerButtons.current[row] = button;
             }}
-            accessibilityRole="button"
+            accessibilityRole={locked ? undefined : 'button'}
             accessibilityLabel={t('today.piece', {
               slot: t('today.slots.layer', { number: position + 1 }),
               description: pieceDescription(piece, t),
             })}
-            onPress={() => setOpenLayer(row)}
+            onPress={locked ? undefined : () => setOpenLayer(row)}
             style={[
               styles.absolute,
               styles.overPieces,
@@ -250,6 +253,7 @@ export function TodayOutfit({
                 position={row === 'top' ? topPosition : undefined}
                 height={bandHeight}
                 edgeFade={twoColumns}
+                locked={locked}
                 onSwipeActiveChange={setSwiping}
                 accessibilityLabel={describe(row, t(`today.slots.${row}`))}
               />
@@ -278,7 +282,7 @@ export function TodayOutfit({
         );
       })}
 
-      {layerToAdd !== null && hasTop ? (
+      {layerToAdd !== null && hasTop && !locked ? (
         <View
           style={[
             styles.absolute,

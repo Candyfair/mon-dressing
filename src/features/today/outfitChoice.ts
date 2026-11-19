@@ -44,6 +44,55 @@ export function initialChoice(suggestion: Suggestion): OutfitChoice {
   };
 }
 
+/** The garment a selection puts in a row: a one-piece sits in the top row. */
+function selectedIn(selection: OutfitSelection, row: RowSlot): string | undefined {
+  return row === 'top' ? (selection.top ?? selection.onePiece) : selection[row];
+}
+
+/**
+ * The validated outfit as a suggestion of one piece per row: Today draws it
+ * like any outfit, with nothing else to swipe to (SPEC §7, frozen for the day).
+ */
+export function frozenSuggestion(selection: OutfitSelection): Suggestion {
+  const rows = mapRows((row): readonly string[] => {
+    const id = selectedIn(selection, row);
+    return id === undefined ? [] : [id];
+  });
+  return {
+    rows,
+    closest: mapRows(() => []),
+    proposedRows: mapRows((row) => rows[row].length > 0),
+    outfit: selection,
+    coordinationBroken: false,
+  };
+}
+
+/**
+ * A choice that shows `selection` on the engine's rows (after an undone
+ * validation): each row goes to its selected piece when it still offers it,
+ * else starts as the engine proposes.
+ */
+export function choiceFromSelection(
+  suggestion: Suggestion,
+  selection: OutfitSelection,
+): OutfitChoice {
+  const start = initialChoice(suggestion);
+  const index = { ...start.index };
+  const shown = { ...start.shown };
+  for (const row of ROW_SLOTS) {
+    const id = selectedIn(selection, row);
+    const position = id === undefined ? -1 : suggestion.rows[row].indexOf(id);
+    if (position >= 0) {
+      index[row] = position;
+      shown[row] = true;
+    } else if (id === undefined && row !== 'top' && row !== 'bottom') {
+      // A layer or shoes left out of the outfit stay out.
+      shown[row] = false;
+    }
+  }
+  return { ...start, index, shown };
+}
+
 /** The garments a row offers: the eligible ones, else the closest once asked for. */
 export function rowGarments(
   choice: OutfitChoice,

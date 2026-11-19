@@ -52,6 +52,8 @@ interface LoopingCarouselProps<T> {
   onSwipeActiveChange?: (active: boolean) => void;
   // Tap: see the piece large / open it.
   onPress?: () => void;
+  // No swiping and no next / previous actions (Today's validated outfit).
+  locked?: boolean;
   // The carousel is one accessible element named after its current piece;
   // swiping is exposed as "Pièce suivante" / "Pièce précédente" actions.
   accessibilityLabel: string;
@@ -81,6 +83,7 @@ export function LoopingCarousel<T>({
   position: sharedPosition,
   onSwipeActiveChange,
   onPress,
+  locked = false,
   accessibilityLabel,
   extraActions = [],
   onExtraAction,
@@ -128,6 +131,7 @@ export function LoopingCarousel<T>({
   const swipeActive = (active: boolean) => onSwipeActiveChange?.(active);
 
   const pan = Gesture.Pan()
+    .enabled(!locked)
     .activeOffsetX([-ACTIVE_OFFSET_X, ACTIVE_OFFSET_X])
     .failOffsetY([-FAIL_OFFSET_Y, FAIL_OFFSET_Y])
     .onStart(() => {
@@ -198,7 +202,7 @@ export function LoopingCarousel<T>({
   const gesture = Gesture.Exclusive(pan, tap);
 
   const moveTo = (moveBy: -1 | 1) => {
-    if (count <= 1) return;
+    if (locked || count <= 1) return;
     const target = base + moveBy;
     position.set(target);
     commit(target);
@@ -228,12 +232,20 @@ export function LoopingCarousel<T>({
     <GestureDetector gesture={gesture}>
       <View
         accessible
-        accessibilityRole={onPress ? 'button' : 'adjustable'}
+        accessibilityRole={onPress ? 'button' : locked ? undefined : 'adjustable'}
         accessibilityLabel={accessibilityLabel}
         accessibilityActions={[
-          { name: 'next', label: t('carousel.next') },
-          { name: 'previous', label: t('carousel.previous') },
-          ...(onPress ? [{ name: 'activate' }] : [{ name: 'increment' }, { name: 'decrement' }]),
+          ...(locked
+            ? []
+            : [
+                { name: 'next', label: t('carousel.next') },
+                { name: 'previous', label: t('carousel.previous') },
+              ]),
+          ...(onPress
+            ? [{ name: 'activate' }]
+            : locked
+              ? []
+              : [{ name: 'increment' }, { name: 'decrement' }]),
           ...extraActions,
         ]}
         onAccessibilityAction={onAccessibilityAction}
