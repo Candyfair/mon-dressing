@@ -13,7 +13,7 @@ Ce guide est dans `design/` : tous les chemins ci-dessous sont relatifs à ce do
 - `specs/03-aujourdhui-guide.md` — Aujourd’hui guidé
 - `specs/04-tri-du-soir.md` — Tri du soir
 - `specs/05-dressing.md` — Dressing
-- `specs/06-linge.md` — Linge
+- `specs/06-linge.md` — Buanderie
 - `specs/07-ajout-en-rafale.md` — Ajout en rafale
 - `specs/08-fiche-vetement.md` — Fiche vêtement
 - `specs/09-onboarding.md` — Premier lancement et onboarding
@@ -39,7 +39,7 @@ Ce guide est dans `design/` : tous les chemins ci-dessous sont relatifs à ce do
 - Aucune donnée personnelle collectée, aucun compte, aucune publicité. Tout est stocké sur le téléphone (photos et données). Seule la ville est envoyée au service météo.
 - L’application ne décide pas et ne recommande pas : elle filtre selon les usages que l’utilisatrice a donnés à chaque pièce. Sans usage dans un groupe, la pièce est proposée dans tous les cas.
 - Pas de rouge ni de couleur d’alarme. Suppression en prune, après une popup de confirmation.
-- Gestes : glisser = choisir ou parcourir (tous les carrousels bouclent) ; toucher = voir en grand ; appui long = agir (éventail). Exception : dans le Linge, toucher sélectionne.
+- Gestes : glisser = choisir ou parcourir (tous les carrousels bouclent) ; toucher = voir en grand ; appui long = agir (éventail). Exception : dans la Buanderie, toucher sélectionne.
 - Accessibilité : contraste texte ≥ 4,5:1, cibles ≥ 44 pt, chaque geste a une action d’accessibilité équivalente, Dynamic Type respecté (libellés français plus longs), mouvement réduit respecté.
 - Les illustrations de vêtements des maquettes sont provisoires : les vraies pièces sont des photos détourées sur l’appareil, avec la photo d’origine en repli.
 

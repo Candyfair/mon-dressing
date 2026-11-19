@@ -64,7 +64,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Pièce forte »
 - « Porté 1 fois »
 - « 12 / 38 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 
 
@@ -105,7 +105,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Pièce forte »
 - « Porté 1 fois »
 - « 12 / 38 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 
 
@@ -152,7 +152,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Pièce forte »
 - « Porté 1 fois »
 - « 12 / 38 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 
 
@@ -196,7 +196,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Disponibles »
 - « Favoris »
 - « Sport »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 
 
@@ -235,7 +235,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Aucun haut pour l’instant »
 - « Photographiez-les à la suite : quelques secondes par pièce. »
 - « Ajouter des hauts »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 
 
@@ -271,7 +271,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Tous vos hauts sont à laver ou à repasser. »
 - « Voir tous les hauts »
 - « Trier le linge »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 
 
@@ -305,7 +305,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Pièce forte »
 - « Porté 1 fois »
 - « 12 / 38 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 
 
@@ -346,7 +346,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Pièce forte »
 - « Porté 1 fois »
 - « 12 / 38 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 
 
@@ -390,7 +390,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Disponibles »
 - « Favoris »
 - « Sport »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 
 
@@ -429,7 +429,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Aucun haut pour l’instant »
 - « Photographiez-les à la suite : quelques secondes par pièce. »
 - « Ajouter des hauts »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 
 
@@ -465,7 +465,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Tous vos hauts sont à laver ou à repasser. »
 - « Voir tous les hauts »
 - « Trier le linge »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 
 

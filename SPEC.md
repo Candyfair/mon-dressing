@@ -154,7 +154,7 @@ Usages are **tags the user gives a garment**, in four groups. The app never dedu
 - The program label at the top of Today (activity + commute icon) opens a compact picker: activity, commute modes, occasion → outfit recomputed instantly.
 - Override is for today only; the weekly program is unchanged.
 
-**End-to-end verification (§5):** configure Mon–Tue office, Wed–Fri remote; check Monday and Tuesday open on "Bureau"; override Tuesday to Remote + occasion Evening, confirm the outfit recomputes, then confirm Wednesday is unaffected.
+**End-to-end verification (§5):** configure Mon–Tue office, Wed–Fri remote; check Monday and Tuesday open on "Bureau"; override Tuesday to Remote + occasion Festive, confirm the outfit recomputes, then confirm Wednesday is unaffected.
 
 ---
 
@@ -291,7 +291,7 @@ Screen-level rules, exact copy, accessible names and validated mockups live in `
 - Every gesture has an equivalent **accessibility action** (VoiceOver/TalkBack), e.g. "Pièce suivante" / "Pièce précédente" on each row.
 
 ### §9.2 Navigation
-- Custom **floating tab bar**: Linge (left) · **Aujourd'hui (centre, larger)** · Dressing (right).
+- Custom **floating tab bar**: Buanderie (left) · **Aujourd'hui (centre, larger)** · Dressing (right).
 - Today icon must evoke "today's outfit" (hanger/silhouette), never "+".
 - App always opens on Today.
 - Settings: icon in Today's header.
@@ -339,7 +339,7 @@ Full-screen camera, always dark ("Posez la pièce à plat, bien éclairée", sta
 ### §9.8 Settings — `design/specs/10`
 - Ma semaine: Semaine type, Trajet du bureau, Je sors le midi, Ville.
 - Horaires: Tenue prête à (07:00), Départ pour le bureau (08:30), Retour du bureau (18:30), Tri du soir à partir de (20:00).
-- Linge: L'étendoir sert de rangement, Temps de séchage (24 h), Aération, Ports avant lavage (per type, §8.2).
+- Buanderie: L'étendoir sert de rangement, Temps de séchage (24 h), Aération, Ports avant lavage (per type, §8.2).
 - Rotation des tenues: long (default) or short (§7 step 4). **Not in `design/specs/10` yet**: placement and copy to design before S9.
 - Notifications (opt-in): Tenue du matin, Rappel du tri du soir, Linge sec.
 - Dressing de démo (§9.7).
@@ -464,6 +464,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | Item | Resolved when |
 |---|---|
 | Today without shoes (indoor day, §6.3) and "Rotation des tenues" setting (§9.8): not designed | Before S7 / S9 |
+| Commute icons (scooter, public transport, car and motorbike have none), date abbreviations and commute accessible names: to choose with Candice | S7 |
 | Ironing carousel (not designed) | Before S8 |
 | Demo wardrobe content | S10 |
 | "Missing photo" state on cards (Android restore without photos, §11.4) | Before S11 |
@@ -506,7 +507,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-15 | Rotation weights incl. a small fit bonus (open) | Explicit matches lead the row (context, then weather); recency cap and favourite bonus set by a "Rotation des tenues" setting: long 14 d / +3 d (default), short 10 d / +2 d | Candice hesitated between a personal and a general rhythm; she wants "Télétravail" pieces to come first, then the weather |
 | 2026-11-15 | Indoor days: "indoor comfort, no outer layer" | Category from the active day, layer 1 by the weather, never layer 2 nor Rain, no shoes in the default outfit | Candice's decisions, S4 |
 | 2026-11-16 | Final weather mascot and onboarding illustration (open) | Seven hand-drawn frog states in `assets/mascot/` (welcome + six weathers), 116 pt at @1x/@2x/@3x, same images in both themes | Drawn by Candice; one square frame with a shared baseline so states swap without layout shift |
-| 2026-11-18 | Usages only by group; a row with nothing eligible not designed; "Ajouter une couche" only in one column; tab "Linge" | "Tous usages" first in the usage tags, "Tous temps" / "Tous types" / "Toutes" first in their groups, Chaud and Froid mutually exclusive; empty row = dashed silhouette, « Des pièces existent, mais aucune ne convient aujourd’hui » and « Voir les autres ? » (closest pieces, §7); the add button stays in two columns for layer 2; the bottom piece overlaps the shoes; tab renamed "Buanderie" (trial) | Candice's decisions, S6 device tests |
+| 2026-11-18 | Usages only by group; a row with nothing eligible not designed; "Ajouter une couche" only in one column; tab "Linge" | "Tous usages" first in the usage tags, "Tous temps" / "Tous types" / "Toutes" first in their groups, Chaud and Froid mutually exclusive; empty row = dashed silhouette, « Des pièces existent, mais aucune ne convient aujourd’hui » and « Voir les autres ? » (closest pieces, §7); the add button stays in two columns for layer 2; the bottom piece overlaps the shoes; tab renamed "Buanderie" | Candice's decisions, S6 device tests |
 | 2026-11-18 | Occasions: everyday, evening, festive, ceremony, job interview | "Soirée" removed and merged into "Festif" (migration `0002` moves garments, day overrides and outfits) | The two overlapped (Candice, S6) |
 | 2026-11-18 | One-piece aligned on the top of the outfit (design system) | One-piece 1.6 times as high as wide, centred on the top and bottom places | Looked too high on device (Candice, S6) |
 | 2026-11-18 | Statement pieces marked only in the note under the header | Each statement piece of the outfit always carries a star badge (favourite colours until designed), stacked under the location badge; the "2 pièces fortes" note moves to the bottom left | Candice, S6 device tests |
@@ -517,6 +518,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-18 | Next temperature at `temperature-range` size (26 pt) | 18 pt in the Today header, and each weather line limited to 2 lines | On a 375 pt wide iPhone the lines ran over the program chip and settings (Candice, S6) |
 | 2026-11-18 | Glass on Android: blur, semi-opaque fallback on low-end devices (open) | Blur on every Android device, Galaxy A06 included; no fallback in use | A06 measures with blur and with tint: blur adds 4 late frames out of about 2,200 on the development build, and release shows at most 1 late frame per scenario (Candice, S6) |
 | 2026-11-18 | Animation durations and curves (open) | Frozen in `src/ui/motion.ts`: swipe settles in 220 ms, neighbours fade out in 180 ms and in within 90 ms, reduced-motion cross-fade 120 ms each way, spring bounce on a single piece, tab screens fade in 150 ms, radial long press 100 ms. The end-of-sort animation is not built yet and gets its values with the evening sort | Values tried on the Galaxy A06 and the iPhone 12 mini (Candice, S6) |
+| 2026-11-18 | Mascot as a colourless line drawing, cream line in the dark theme (design system) | The frog stays in colour in both themes, with the same images | Seen on the dark end-of-sort screen (Candice, S6) |
 
 ---
 
@@ -536,7 +538,7 @@ Create the personal Apple Developer account (identity verification can take days
 | S4 | Engine v0, Open-Meteo windows, reminders, 10 reference scenarios as fixtures | Scenarios rated on the real wardrobe; recorded forecasts tests | R3, R4 |
 | S5 | ~~Claude Design exploration~~ **Done**: handoff in `design/` (specs, tokens, mockups) | — | — |
 | S6 | Coded interaction prototype: Today one/two columns with lane swipe, layer sheet, shared looping carousel, radial menu, tab bar; perf on Galaxy A06 (blur fallback) | Swipes stay in their lane; smooth on A06; animation durations set | R9 |
-| S7 | Today complete (incl. guided state), validation + freeze, evening sort with end animation, probable-outfit safety net; remove the development screens (`src/features/dev/`, `/dev/engine`) and their `dev.*` copy | §9 verification | — |
+| S7 | Today complete (incl. guided state), validation + freeze, evening sort with end animation, probable-outfit safety net; a time set aside to choose the missing commute icons (every mode gets one), the date abbreviations and the commute accessible names; remove the development screens (`src/features/dev/`, including `DevTodayTools` on Today; routes `/dev`, `/dev/engine`, `/dev/gestures`; the development button of `PlaceholderTab`) and their `dev.*` copy | §9 verification | — |
 | S8 | Laundry tab (full cycle), Wardrobe tab (carousel, grid, sheet) | §8 and §9 verifications | — |
 | S9 | Onboarding, weekly program, settings, just-in-time prompts | First-launch flow on both devices | — |
 | **Checkpoint** | **1–2 weeks of real use** (time from open to decision), then **re-examine the Tier 1 / Tier 2 cut** | Timing log | R1, R6 |

@@ -14,7 +14,7 @@ Sheet, Popup, Option, Button. Voir `design-system/components/<Nom>/README.md`.
 
 - Feuille qui monte sur le Dressing (AJ1), étirable (AJ2). « Enregistré automatiquement » : pas de bouton Enregistrer.
 - Contenu : type et « Changer de type », « Porté 4 fois · Disponible », choix de l’image (Détourée / Photo d’origine), bascules (Favori, Pièce forte, Se repasse), usages par groupes avec résumé (« Chaud, Doux », « Tous les cas »), « Supprimer la pièce » en bas.
-- Les statuts de linge ne se changent pas depuis la fiche (Linge, tri du soir et appui long du Dressing).
+- Les statuts de linge ne se changent pas depuis la fiche (Buanderie, tri du soir et appui long du Dressing).
 - Détourage échoué (AJ3) : « Le détourage n’a pas fonctionné. La photo d’origine est utilisée. » et « Réessayer ».
 - Suppression (AJ4) : la feuille se ferme, popup centrée avec la pièce en grand (150 pt), « Supprimer ce T-shirt ? », conséquence, « Garder » / « Supprimer » (prune, jamais rouge).
 
@@ -49,7 +49,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Pièce forte »
 - « Porté 1 fois »
 - « 12 / 38 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Enregistré automatiquement »
 - « T-shirt »
@@ -115,7 +115,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Pièce forte »
 - « Porté 1 fois »
 - « 12 / 38 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Enregistré automatiquement »
 - « Porté 4 fois · Disponible »
@@ -179,7 +179,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Pièce forte »
 - « Porté 1 fois »
 - « 12 / 38 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Enregistré automatiquement »
 - « T-shirt »
@@ -244,7 +244,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Pièce forte »
 - « Porté 1 fois »
 - « 12 / 38 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Enregistré automatiquement »
 - « T-shirt »
@@ -314,7 +314,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Pièce forte »
 - « Porté 1 fois »
 - « 12 / 38 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Enregistré automatiquement »
 - « T-shirt »
@@ -380,7 +380,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Pièce forte »
 - « Porté 1 fois »
 - « 12 / 38 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Enregistré automatiquement »
 - « Porté 4 fois · Disponible »
@@ -444,7 +444,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Pièce forte »
 - « Porté 1 fois »
 - « 12 / 38 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Enregistré automatiquement »
 - « T-shirt »
@@ -509,7 +509,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Pièce forte »
 - « Porté 1 fois »
 - « 12 / 38 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Enregistré automatiquement »
 - « T-shirt »

@@ -1,6 +1,6 @@
 # Frog-à-porter
 
-Le système de design de l’application mobile Frog-à-porter (iOS et Android, téléphone uniquement), en deux thèmes : « Cocon du matin » (clair) et « Cocon du soir » (sombre). Il est tiré des écrans validés du canevas (colonne « Écrans validés ») : Aujourd’hui (J, L), changement d’une pièce (AP, AQ) et état guidé (AR, AS), tri du soir (X, Y, AA, AB), Dressing (S, T2, U, V), Linge (AE, AF), ajout en rafale (AG, AH), fiche vêtement (AJ, AK), premier lancement et onboarding (AL, AM), réglages (AN, AO), et du brief de conception.
+Le système de design de l’application mobile Frog-à-porter (iOS et Android, téléphone uniquement), en deux thèmes : « Cocon du matin » (clair) et « Cocon du soir » (sombre). Il est tiré des écrans validés du canevas (colonne « Écrans validés ») : Aujourd’hui (J, L), changement d’une pièce (AP, AQ) et état guidé (AR, AS), tri du soir (X, Y, AA, AB), Dressing (S, T2, U, V), Buanderie (AE, AF), ajout en rafale (AG, AH), fiche vêtement (AJ, AK), premier lancement et onboarding (AL, AM), réglages (AN, AO), et du brief de conception.
 
 L’application propose la tenue du jour à partir de la météo, du programme et des vêtements disponibles. On l’utilise le matin, à une main, souvent pressé. Trois valeurs guident chaque choix : la rapidité (décider en quelques secondes), un assistant et pas un journal (aucune corvée quotidienne), la sobriété.
 
@@ -69,7 +69,7 @@ Pas de halo : les taches lumineuses ne se marient pas avec un fond de nuit. À l
 - `ink` pour le texte, `ink-secondary` pour le texte secondaire. Jamais `moss` ni `olive` en texte.
 - `secondary` (prune) pour les actions secondaires et les filtres ; `add-action` (prune) pour l’ajout de vêtements ; `mustard` en accent rare en clair (favori, icône conseillée).
 - Statuts d’une pièce : une teinte par statut (`status-*`), voir StatusIcon. Tri du soir : deux teintes seulement, selon l’issue (`sort-linge`, `sort-reporte`). Les deux systèmes ne s’affichent jamais ensemble.
-- Sélection (Linge, options, interrupteurs, tuile de type) : `select`, vert forêt en clair, moutarde en sombre, comme `action`. Les boutons principaux de l’onboarding sont aussi en `action`.
+- Sélection (Buanderie, options, interrupteurs, tuile de type) : `select`, vert forêt en clair, moutarde en sombre, comme `action`. Les boutons principaux de l’onboarding sont aussi en `action`.
 - Indicateurs (points de carrousel, étapes) : `indicator`, vert forêt en clair, crème en sombre.
 - Suppression : `destructive` (prune) après une popup de confirmation.
 - Pas de rouge ni de couleur d’alarme, même pour le linge sale.
@@ -118,7 +118,7 @@ Une tâche courte s’ouvre dans une feuille (Sheet) qui garde l’écran visibl
 
 ## La fiche vêtement
 
-Ouverte seulement depuis le Dressing (toucher une pièce), dans une feuille. On n’y change pas les statuts de linge : ils se gèrent dans le Linge et le tri du soir. Suppression par une popup avec la pièce en grand.
+Ouverte seulement depuis le Dressing (toucher une pièce), dans une feuille. On n’y change pas les statuts de linge : ils se gèrent dans la Buanderie et le tri du soir. Suppression par une popup avec la pièce en grand.
 
 ## L’ajout en rafale
 
@@ -130,19 +130,19 @@ Deux portes : commencer, ou « Découvrir avec un dressing de démo ». Trois é
 
 ## Les réglages
 
-Écran ouvert depuis le bouton réglages de l’en-tête : groupes de lignes en verre (SettingsGroup). Ma semaine (dont « Je sors le midi » : la météo entre 11 h et 15 h compte), Horaires, Linge, Notifications, Dressing de démo, À propos. Le pourboire passe par l’achat intégré des stores ; la politique de confidentialité est un lien obligatoire (stores et application).
+Écran ouvert depuis le bouton réglages de l’en-tête : groupes de lignes en verre (SettingsGroup). Ma semaine (dont « Je sors le midi » : la météo entre 11 h et 15 h compte), Horaires, Buanderie, Notifications, Dressing de démo, À propos. Le pourboire passe par l’achat intégré des stores ; la politique de confidentialité est un lien obligatoire (stores et application).
 
 ## Le tri du soir
 
 Après 20 h, Aujourd’hui devient le tri de la tenue portée : SortCard, RadialMenu limité à favori, aérer, au sale, ranger, et fin animée (envol vers les onglets, écran vidé, météo du lendemain, personnage météo, carte « lavage évité »). Les animations se jouent une fois ; mouvement réduit : état final directement.
 
-## Le Linge
+## La Buanderie
 
 Quatre étagères (LaundryShelf) dans l’ordre du cycle : Au sale → « Lessive faite » → À sécher → (24 h, réglable) → Sur l’étendoir → « Linge rangé » → Dressing. Les pièces à repasser ont un double statut tant qu’elles sont sur l’étendoir ; rangées sans être repassées, elles restent dans « À repasser » (panier propre). L’étendoir comme espace de rangement est activé par défaut et désactivable dans les réglages ; il s’explique à l’onboarding ou au bon moment.
 
 ## Personnage météo
 
-Une grenouille kawaii, au trait seul (même trait que les icônes), sans couleur, 116 pt. Six tenues selon la météo du lendemain : forte chaleur (contente), ensoleillé (lunettes de soleil), nuageux (manteau), pluie (parapluie et bottes), froid (bonnet et écharpe), neige (skis et bâtons). Les esquisses du canevas (planche AC) servent de référence : la version finale sera redessinée. En sombre, trait crème.
+Une grenouille kawaii en couleur, dessinée par Candice, 116 pt. Six tenues selon la météo du lendemain : forte chaleur (contente), ensoleillé (lunettes de soleil), nuageux (manteau), pluie (parapluie et bottes), froid (bonnet et écharpe), neige (skis et bâtons). Les dessins définitifs sont dans `assets/mascot/` ; les mêmes images servent aux deux thèmes.
 
 ## Typographie
 
@@ -153,13 +153,13 @@ Deux familles Google Fonts (OFL), sans fichier local : `display` (Space Grotesk)
 Icônes au trait, grille 24 pt, trait 1,7 à 1,8 pt, bouts et jonctions arrondis, couleur héritée du texte. Pas d’émoji.
 
 - **Étiquette de programme** : l’activité en texte, le mode de transport en icône seule (vélo, vélo de route, à pied, transports en commun en train). L’icône porte un nom accessible (« à vélo »). Sans transport (« Télétravail »), pas d’icône.
-- **Menu** : machine à laver (Linge), cintre (Aujourd’hui), armoire (Dressing).
+- **Menu** : machine à laver (Buanderie), cintre (Aujourd’hui), armoire (Dressing).
 - **Statuts et tri** : cœur (favori), vent (balcon, aérer), machine à laver (au sale), vêtement mouillé à une goutte (à sécher), corde à linge (étendoir), fer à pointe (à repasser), armoire (ranger), boucle (porté), feuille (lavage évité).
 - **Météo** : nuage de pluie, parapluie, soleil, thermomètre, flocon.
 
 ## Gestes
 
-Grammaire fixe : glisser = choisir ou parcourir (tous les carrousels bouclent) ; toucher = voir en grand ; appui long = agir (menu flottant, voir RadialMenu). Exception : dans le Linge, toucher une pièce la sélectionne (écran de tâches par lots). Pas de double toucher. Jamais deux carrousels horizontaux côte à côte : en mode deux colonnes, le prototype Expo doit vérifier qu’un glissement reste dans sa colonne.
+Grammaire fixe : glisser = choisir ou parcourir (tous les carrousels bouclent) ; toucher = voir en grand ; appui long = agir (menu flottant, voir RadialMenu). Exception : dans la Buanderie, toucher une pièce la sélectionne (écran de tâches par lots). Pas de double toucher. Jamais deux carrousels horizontaux côte à côte : en mode deux colonnes, le prototype Expo doit vérifier qu’un glissement reste dans sa colonne.
 
 ## Accessibilité
 

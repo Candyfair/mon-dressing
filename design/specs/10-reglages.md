@@ -15,7 +15,7 @@ SettingsGroup (lignes, interrupteurs, compteurs), Popup, Sheet, Button. Voir `de
 ### Groupes (AN1, AN2)
 - Ma semaine : Semaine type, Trajet du bureau, « Je sors le midi » (« La météo entre 11 h et 15 h compte dans la tenue. »), Ville.
 - Horaires : Tenue prête à (7 h 00), Départ pour le bureau (8 h 30), Retour du bureau (18 h 30), Tri du soir à partir de (20 h 00). Les heures de départ et de retour fixent la météo qui compte dans la tenue les jours de bureau (`01-aujourdhui.md`).
-- Linge : « L’étendoir sert de rangement », Temps de séchage (24 h), Aération, Ports avant lavage.
+- Buanderie : « L’étendoir sert de rangement », Temps de séchage (24 h), Aération, Ports avant lavage.
 - Notifications : Tenue du matin, Rappel du tri du soir, Linge sec.
 - Dressing de démo :
   - « Essayer avec le dressing de démo » seulement quand le dressing est entièrement vide : aucune pièce de l’utilisatrice et aucune pièce de démo. Les données de démo ne s’installent que dans ce cas.
@@ -73,7 +73,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « 18 h 30 »
 - « Tri du soir à partir de »
 - « 20 h 00 »
-- « Linge »
+- « Buanderie »
 - « L’étendoir sert de rangement »
 - « Les pièces sèches restent disponibles. »
 - « Temps de séchage »
@@ -185,7 +185,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Version »
 - « 1.0 »
 - « Supprimer le dressing de démo ? »
-- « Les pièces d’exemple disparaissent du Dressing, du Linge et des tenues. Vos propres pièces sont conservées. »
+- « Les pièces d’exemple disparaissent du Dressing, de la Buanderie et des tenues. Vos propres pièces sont conservées. »
 - « Garder »
 - « Supprimer »
 
@@ -291,7 +291,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « 18 h 30 »
 - « Tri du soir à partir de »
 - « 20 h 00 »
-- « Linge »
+- « Buanderie »
 - « L’étendoir sert de rangement »
 - « Les pièces sèches restent disponibles. »
 - « Temps de séchage »
@@ -403,7 +403,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Version »
 - « 1.0 »
 - « Supprimer le dressing de démo ? »
-- « Les pièces d’exemple disparaissent du Dressing, du Linge et des tenues. Vos propres pièces sont conservées. »
+- « Les pièces d’exemple disparaissent du Dressing, de la Buanderie et des tenues. Vos propres pièces sont conservées. »
 - « Garder »
 - « Supprimer »
 

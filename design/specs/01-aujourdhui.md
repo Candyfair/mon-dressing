@@ -16,7 +16,7 @@ WeatherBackground (clair), NightBackground (sombre), WeatherHeader, ProgramChip,
 1. En-tête à 50 pt du haut : date courte, étiquette de programme (activité + icône de transport), bouton réglages, grande température, maximum du jour, deux lignes météo, filet de 2 pt.
 2. Tenue de 194 à 684 pt, sans cadre : les pièces flottent avec une ombre de contact.
 3. Bouton rond « Je porte cette tenue » à droite, centre à 684 pt.
-4. Menu du bas (Linge, Aujourd’hui, Dressing).
+4. Menu du bas (Buanderie, Aujourd’hui, Dressing).
 
 ### Météo
 - Trois ambiances seulement : pluie, soleil, froid. Les autres conditions s’y rattachent (voir `design-system/README.md`).
@@ -70,7 +70,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « → 14° »
 - « Pluie 70 % vers 18 h »
 - « Parapluie conseillé vers 12 h 30 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -103,7 +103,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « → 27° »
 - « Ensoleillé toute la journée »
 - « Max. 27° vers 16 h »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -134,7 +134,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « → 4° »
 - « Ciel dégagé »
 - « Gel jusqu’à 10 h »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -167,7 +167,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « → 14° »
 - « Pluie 70 % vers 18 h »
 - « Parapluie conseillé vers 12 h 30 »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -200,7 +200,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « → 27° »
 - « Ensoleillé toute la journée »
 - « Max. 27° vers 16 h »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -231,7 +231,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « → 4° »
 - « Ciel dégagé »
 - « Gel jusqu’à 10 h »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 

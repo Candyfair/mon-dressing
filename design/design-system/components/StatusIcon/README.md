@@ -11,7 +11,7 @@ Icône de statut d’une pièce : disque teinté + icône au trait dans la coule
 | Sur l’étendoir | corde, pinces, T-shirt | `status-etendoir`, `status-etendoir-bg` |
 | À repasser | fer, pointe à gauche | `status-repasser`, `status-repasser-bg` |
 
-- Tailles : `size-status` (44 pt) sous la pièce du carrousel ; `size-status-mini` (28 pt) sur une tuile de grille, 24 pt sur une étagère du Linge.
+- Tailles : `size-status` (44 pt) sous la pièce du carrousel ; `size-status-mini` (28 pt) sur une tuile de grille, 24 pt sur une étagère de la Buanderie.
 - Sous le carrousel, seuls les statuts actifs s’affichent, centrés. Ce sont des indicateurs : on les change par l’appui long (RadialMenu).
 - Statuts du linge exclusifs entre eux (au sale, à sécher, sur l’étendoir, à repasser) ; favori et balcon indépendants. Exception : une pièce à repasser posée sur l’étendoir a les deux (« sur l’étendoir » est alors une localisation).
 - Statut inactif (rare, dans les réglages ou la fiche) : icône `status-off`, sans disque.

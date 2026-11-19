@@ -52,7 +52,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Ensoleillé toute la journée »
 - « Max. 27° vers 16 h »
 - « Encore 1 haut, 1 bas et 1 paire de chaussures »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -83,7 +83,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Ensoleillé toute la journée »
 - « Max. 27° vers 16 h »
 - « Encore 1 bas et 1 paire de chaussures »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -115,7 +115,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Ensoleillé toute la journée »
 - « Max. 27° vers 16 h »
 - « Encore 1 paire de chaussures »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -148,7 +148,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Max. 27° vers 16 h »
 - « Vos bas sont au linge »
 - « Trier le linge »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -179,7 +179,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Ensoleillé toute la journée »
 - « Max. 27° vers 16 h »
 - « Encore 1 haut, 1 bas et 1 paire de chaussures »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -210,7 +210,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Ensoleillé toute la journée »
 - « Max. 27° vers 16 h »
 - « Encore 1 bas et 1 paire de chaussures »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -242,7 +242,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Ensoleillé toute la journée »
 - « Max. 27° vers 16 h »
 - « Encore 1 paire de chaussures »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -275,7 +275,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Max. 27° vers 16 h »
 - « Vos bas sont au linge »
 - « Trier le linge »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 

@@ -30,14 +30,14 @@ SortCard, RadialMenu, StatusIcon, Button, NightBackground. Voir `design-system/c
 
 ### Fin du tri
 - Quand tout est trié : « Tout est trié, il reste à valider » et bouton « Terminer le tri ».
-- Fin animée, jouée une fois : les pièces s’envolent vers les onglets (Linge, Dressing), l’écran se vide, puis « Tout est rangé », la météo de demain (« Demain : 11° → 16°, pluie l’après-midi ») et le personnage météo. La carte affiche d’abord « Tenue rangée », le résumé (« 1 au sale · 1 à aérer · 3 rangées ») et « Modifier », puis se retourne sur « 1 lavage évité » avec le compteur du mois qui s’incrémente (« 6 depuis le début du mois »). Des pastilles « +1 » et « +4 » apparaissent sur les onglets Linge et Dressing.
+- Fin animée, jouée une fois : les pièces s’envolent vers les onglets (Buanderie, Dressing), l’écran se vide, puis « Tout est rangé », la météo de demain (« Demain : 11° → 16°, pluie l’après-midi ») et le personnage météo. La carte affiche d’abord « Tenue rangée », le résumé (« 1 au sale · 1 à aérer · 3 rangées ») et « Modifier », puis se retourne sur « 1 lavage évité » avec le compteur du mois qui s’incrémente (« 6 depuis le début du mois »). Des pastilles « +1 » et « +4 » apparaissent sur les onglets Buanderie et Dressing.
 - État final validé (AA2, AB2) : écran vidé, carte « 1 lavage évité », « Tout est rangé », météo de demain, personnage météo, pastilles sur les onglets. Les maquettes HTML d’AA2 et AB2 jouent l’animation en boucle ; la capture montre l’état final.
 - La tenue portée perd ses icônes de tri (sauf favori) ; le nombre de ports est conservé.
 
 - On garde l’animation de fin, le compteur animé et le personnage grenouille.
 
 ### Personnage météo
-- Grenouille kawaii au trait, 116 pt, six tenues : forte chaleur, ensoleillé, nuageux, pluie, froid, neige. La planche AC est une référence : la version finale sera redessinée par une illustratrice.
+- Grenouille kawaii en couleur, 116 pt, six tenues : forte chaleur, ensoleillé, nuageux, pluie, froid, neige. Les dessins définitifs sont dans `assets/mascot/`, identiques en clair et en sombre ; la planche AC n’est plus qu’une esquisse d’origine.
 
 ## Accessibilité
 
@@ -63,7 +63,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Lun. 27 oct. »
 - « Ranger la tenue du jour »
 - « Appui long sur chaque pièce »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -95,7 +95,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Lun. 27 oct. »
 - « Ranger la tenue du jour »
 - « Appui long sur chaque pièce »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -131,7 +131,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Lun. 27 oct. »
 - « Ranger la tenue du jour »
 - « Appui long sur chaque pièce »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 - « Aérer plutôt que laver ? »
@@ -168,7 +168,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Lun. 27 oct. »
 - « Ranger la tenue du jour »
 - « Appui long sur chaque pièce »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -200,7 +200,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Lun. 27 oct. »
 - « Ranger la tenue du jour »
 - « Appui long sur chaque pièce »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -236,7 +236,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Lun. 27 oct. »
 - « Ranger la tenue du jour »
 - « Appui long sur chaque pièce »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 - « Aérer plutôt que laver ? »
@@ -273,7 +273,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Lun. 27 oct. »
 - « Ranger la tenue du jour »
 - « Tout est trié, il reste à valider »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -313,7 +313,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Demain : 11° → 16°, pluie l’après-midi »
 - « Grenouille »
 - « tenue « pluie » »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 - « +1 »
@@ -343,7 +343,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Lun. 27 oct. »
 - « Ranger la tenue du jour »
 - « Tout est trié, il reste à valider »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 
@@ -383,7 +383,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « Demain : 11° → 16°, pluie l’après-midi »
 - « Grenouille »
 - « tenue « pluie » »
-- « Linge »
+- « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
 - « +1 »
