@@ -8,7 +8,7 @@
 
 ## Composants du design system
 
-WeatherBackground (clair), NightBackground (sombre), WeatherHeader, ProgramChip, IconButton, OutfitPiece, LocationBadge, AddLayerButton, ConfirmOutfitButton, TabBar. Voir `design-system/components/<Nom>/README.md`.
+WeatherBackground (clair), NightBackground (sombre), WeatherHeader, ProgramChip, IconButton, OutfitPiece, LocationBadge, AddLayerButton, ConfirmOutfitButton, ValidationStamp, LockedOutline, TabBar. Voir `design-system/components/<Nom>/README.md`.
 
 ## Règles et comportements
 
@@ -41,12 +41,52 @@ WeatherBackground (clair), NightBackground (sombre), WeatherHeader, ProgramChip,
 - Une seule pièce forte par tenue : la tenue proposée n’en contient jamais deux. Si l’utilisatrice en choisit une deuxième en glissant, un indicateur discret le signale et rien n’est corrigé (voir `02-changer-une-piece.md`, AT1 et AU1). Une pièce pleine hauteur pièce forte compte pour une.
 - Pièces exclues : au sale, à sécher, à repasser. Sur l’étendoir : disponibles si l’étendoir sert de rangement (réglage) et si elles ne sont pas à repasser.
 
+### Validation de la tenue (AX, AY)
+
+Décisions de design du 19/11/2026. Le comportement (tenue figée pour la journée, annulation en touchant de nouveau le bouton, ports annulés) est défini dans `SPEC.md` §7 et n’est pas repris ici. Prototype de référence : `mockups/01-aujourdhui/Validation-AX-Prototype.html` (durées et courbes de référence ; le code HTML n’est pas à porter tel quel). Retour visuel seulement : ni vibration ni son.
+
+**Bouton « Je porte cette tenue » (ConfirmOutfitButton)**
+
+| État | Rendu | Animation |
+|---|---|---|
+| Désactivé | Fond `action-disabled`, coche `on-action-disabled`, sans ombre, immobile. | Toucher : secousse horizontale 0, −6, 6, −4, 4, −2, 0 pt en 360 ms (ease-in-out) et un trait `action` de 2 pt souligne la phrase « Encore… » sous l’en-tête (déroulé de gauche à droite sur 45 % de 1 200 ms, puis s’efface). |
+| Activation (la tenue devient complète) | Fond `action`, coche `on-action`, ombre `shadow-cta`. | Les pièces ajoutées tombent en place (−26 pt → +4 pt → 0, échelle 0,92 → 1,02 → 1, 420 ms, chaussures décalées de 90 ms). 260 ms après : le fond se remplit depuis le centre (échelle 0 → 1, 380 ms, `cubic-bezier(.34,1.56,.64,1)`), la coche se trace (300 ms, délai 160 ms) ; 220 ms plus tard, un anneau `action` de 2 pt s’échappe (échelle 1 → 1,9, opacité 0,55 → 0, 620 ms) et le bouton rebondit (1 → 1,12 → 1, 380 ms). |
+| Appui | — | Écrasement à 0,9 en 120 ms au contact ; au relâchement 0,9 → 1,18 → 1 en 340 ms, anneau, et une petite gerbe de 14 points aux couleurs de l’app autour du bouton (environ 570 ms). |
+| Validé | Fond verre (`glass`, liseré `glass-edge`), cadenas 22 pt en `ink`, ombre douce. Même taille et même place. | La coche s’efface (160 ms) et le cadenas apparaît (échelle 0,4 → 1, 320 ms, ressort), 1,5 s après l’appui, pendant que le tampon est encore visible. |
+| Annulation | Retour à l’état actif. | La coche se trace de nouveau et l’anneau s’échappe une fois ; le contour s’efface (voir plus bas). |
+
+**Tampon « Tenue du jour validée » (ValidationStamp)**
+
+- Cadre : `assets/frog-stamp.svg` (tête de grenouille sur le trait du haut, double trait, yeux et sourire), affiché en vectoriel avec `react-native-svg`, couleur `action` (vert forêt en clair, moutarde en sombre). Intérieur du cadre rempli du voile, pour rester lisible sur les vêtements.
+- Taille 290 × 174 pt (`viewBox` 300 × 180), centré horizontalement, haut du cadre à 318 pt sur 812, incliné de −8°.
+- Textes écrits par l’app, en Space Grotesk, centrés : « TENUE DU JOUR » (13 pt, 600, interlettrage 2,4), « VALIDÉE » (44 pt, 700, interlettrage 1,6), date du jour en capitales « VEN. 13 JUIN » (11,5 pt, 600, interlettrage 1,6). Lignes de base à 94, 139 et 157 dans le `viewBox`.
+- Texture d’encre : bruit fractal en masque sur tout le tampon (le prototype utilise `feTurbulence`, fréquence 0,9). Dans l’app, une petite texture de bruit pré-rendue en masque suffit.
+- Voile derrière le tampon : dégradé radial `veil` (ellipse 66 % × 28 % de l’écran, centrée), lin à 64 % en clair, nuit à 68 % en sombre. Apparition 220 ms, disparition 360 ms à 2,3 s.
+- Séquence (environ 2,75 s) :
+  1. 0 ms : le tampon tombe (opacité 0 → 1, rotation −14° → −8°, échelle 2,6 → 0,94 → 1, 320 ms, `cubic-bezier(.55,0,.8,.2)`).
+  2. 200 ms : impact. Les pièces tremblent (0, 2,5, −2, 1, 0 pt en 220 ms) et un second contour du cadre s’échappe (échelle 1 → 1,22, opacité 0,5 → 0, 460 ms).
+  3. Jusqu’à 2,3 s : le tampon reste immobile, environ 2 s lisible.
+  4. 2,3 s : il s’efface (400 ms, échelle 1 → 1,04).
+- Mouvement réduit : le tampon apparaît en fondu (260 ms), sans chute, sans impact ni gerbe, reste le même temps et s’efface en fondu.
+
+**Tenue validée : contour dessiné (LockedOutline)**
+
+- Un trait à main levée entoure toute la tenue, comme au feutre : rectangle arrondi (rayon 40 pt) autour de la boîte englobante des pièces, avec une marge de 12 pt ; un second trait plus fin le double, légèrement décalé.
+- Trait principal 2,6 pt en `action` ; second trait 1,2 pt en `action` à 55 %. Bouts et jonctions arrondis. Le tracé dépasse un peu son point de départ, comme un vrai trait de feutre.
+- Tremblé déterministe (amplitude 1,6 pt et 2,2 pt, graine fixe) : la même tenue donne toujours le même trait, il ne « bouge » pas d’une ouverture à l’autre.
+- Apparition avec le cadenas (1,5 s après l’appui) : le trait se dessine en 760 ms (`cubic-bezier(.5,.1,.3,1)`), le second 120 ms plus tard.
+- Annulation : le trait s’efface en remontant son tracé (300 ms, ease-in).
+- Pas de pictogramme sur le contour : le seul cadenas est celui du bouton, pour éviter la confusion.
+- À la réouverture de l’app sur une tenue déjà validée : contour et cadenas sont affichés directement, sans animation ni tampon.
+- Mouvement réduit : le contour apparaît et disparaît en fondu (200 ms).
+
 ## Accessibilité
 
 - Chaque pièce est un bouton nommé par sa place et sa description : « Couche 1 : Pull mérinos écru, au balcon, porté 3 fois sur 10 ».
 - L’icône de transport a un nom accessible (« à vélo »).
-- Le bouton de validation n’a pas de texte visible : nom accessible « Je porte cette tenue ».
-- Mouvement réduit : pas d’animation de fond.
+- Le bouton de validation n’a pas de texte visible : nom accessible « Je porte cette tenue ». Validé : « Tenue validée, toucher pour annuler » (état sélectionné). Désactivé : la raison dans le nom (« Je porte cette tenue, indisponible : il manque un bas »).
+- Tampon : annoncé une fois, « Tenue validée pour aujourd’hui » (annonce existante `today.validatedAnnouncement`) ; le dessin du tampon et le contour sont décoratifs pour le lecteur d’écran.
+- Mouvement réduit : pas d’animation de fond ; validation en fondus (voir « Validation de la tenue »).
 
 ## Questions ouvertes
 
@@ -249,3 +289,130 @@ Noms accessibles :
 - button — Je porte cette tenue
 - nav — Navigation principale
 
+
+### AX1 — Tampon « Tenue du jour validée » à l’impact (clair)
+
+- Capture : `screens/01-aujourdhui/Today-AX1-Tampon.webp`
+- Maquette : `mockups/01-aujourdhui/Validation-AX-Prototype.html`
+
+
+Textes visibles (dans l’ordre de lecture) :
+
+- « Ven. 13 juin »
+- « Télétravail »
+- « 19° »
+- « → 27° »
+- « Ensoleillé toute la journée »
+- « Max. 27° vers 16 h »
+- « TENUE DU JOUR »
+- « VALIDÉE »
+- « VEN. 13 JUIN »
+- « Buanderie »
+- « Aujourd’hui »
+- « Dressing »
+
+
+Noms accessibles :
+
+- button — Réglages
+- section — Tenue du jour
+- button — Haut : T-shirt rayé, pièce forte
+- button — Bas : Jean brut
+- button — Chaussures : Baskets blanches
+- img — Tenue du jour validée, vendredi 13 juin
+- button — Je porte cette tenue
+- nav — Navigation principale
+
+
+### AX2 — Tenue validée, contour dessiné et cadenas (clair)
+
+- Capture : `screens/01-aujourdhui/Today-AX2-Tenue-Verrouillee.webp`
+- Maquette : `mockups/01-aujourdhui/Validation-AX-Prototype.html`
+
+
+Textes visibles (dans l’ordre de lecture) :
+
+- « Ven. 13 juin »
+- « Télétravail »
+- « 19° »
+- « → 27° »
+- « Ensoleillé toute la journée »
+- « Max. 27° vers 16 h »
+- « Buanderie »
+- « Aujourd’hui »
+- « Dressing »
+
+
+Noms accessibles :
+
+- button — Réglages
+- section — Tenue du jour
+- button — Haut : T-shirt rayé, pièce forte
+- button — Bas : Jean brut
+- button — Chaussures : Baskets blanches
+- button — Tenue validée, toucher pour annuler
+- nav — Navigation principale
+
+
+### AY1 — Sombre — tampon à l’impact (sombre)
+
+- Capture : `screens/01-aujourdhui/Dark-AY1-Tampon.webp`
+- Maquette : `mockups/01-aujourdhui/Validation-AX-Prototype.html`
+
+
+Textes visibles (dans l’ordre de lecture) :
+
+- « Ven. 13 juin »
+- « Télétravail »
+- « 19° »
+- « → 27° »
+- « Ensoleillé toute la journée »
+- « Max. 27° vers 16 h »
+- « TENUE DU JOUR »
+- « VALIDÉE »
+- « VEN. 13 JUIN »
+- « Buanderie »
+- « Aujourd’hui »
+- « Dressing »
+
+
+Noms accessibles :
+
+- button — Réglages
+- section — Tenue du jour
+- button — Haut : T-shirt rayé, pièce forte
+- button — Bas : Jean brut
+- button — Chaussures : Baskets blanches
+- img — Tenue du jour validée, vendredi 13 juin
+- button — Je porte cette tenue
+- nav — Navigation principale
+
+
+### AY2 — Sombre — tenue validée, contour et cadenas (sombre)
+
+- Capture : `screens/01-aujourdhui/Dark-AY2-Tenue-Verrouillee.webp`
+- Maquette : `mockups/01-aujourdhui/Validation-AX-Prototype.html`
+
+
+Textes visibles (dans l’ordre de lecture) :
+
+- « Ven. 13 juin »
+- « Télétravail »
+- « 19° »
+- « → 27° »
+- « Ensoleillé toute la journée »
+- « Max. 27° vers 16 h »
+- « Buanderie »
+- « Aujourd’hui »
+- « Dressing »
+
+
+Noms accessibles :
+
+- button — Réglages
+- section — Tenue du jour
+- button — Haut : T-shirt rayé, pièce forte
+- button — Bas : Jean brut
+- button — Chaussures : Baskets blanches
+- button — Tenue validée, toucher pour annuler
+- nav — Navigation principale
