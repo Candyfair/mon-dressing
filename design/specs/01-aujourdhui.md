@@ -35,7 +35,7 @@ WeatherBackground (clair), NightBackground (sombre), WeatherHeader, ProgramChip,
 - Après 20 h (réglable), l’écran devient le tri du soir (voir `04-tri-du-soir.md`).
 
 ### Choix de la tenue
-- L’application ne décide rien à la place de l’utilisatrice et ne fait pas de recommandation : elle filtre les pièces disponibles selon les usages que l’utilisatrice leur a donnés (météo, activité, déplacement, occasion).
+- L’application ne décide rien à la place de l’utilisatrice et ne fait pas de recommandation : elle filtre les pièces disponibles selon les usages que l’utilisatrice leur a donnés (météo, activité, occasion). Les usages de déplacement ne filtrent pas : une pièce qui a un mode en commun avec la journée passe devant, les autres restent proposées. *Décision de Candice du 19/11/2026, voir `SPEC.md` §7.*
 - Une pièce sans usage dans un groupe est proposée dans tous les cas de ce groupe.
 - Ordre des propositions dans chaque ligne : les pièces dont un usage correspond explicitement au programme (activité, déplacement, occasion) passent devant, puis celles qui correspondent à la météo, puis les autres ; dans chaque groupe, rotation selon la date du dernier port, favoris avantagés (sans priorité absolue). *Écart validé le 31/10/2026 par rapport au handoff (« favoris d’abord, puis adéquation »), précisé le 15/11/2026 : voir `SPEC.md` §7.*
 - Une seule pièce forte par tenue : la tenue proposée n’en contient jamais deux. Si l’utilisatrice en choisit une deuxième en glissant, un indicateur discret le signale et rien n’est corrigé (voir `02-changer-une-piece.md`, AT1 et AU1). Une pièce pleine hauteur pièce forte compte pour une.

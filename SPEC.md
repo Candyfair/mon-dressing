@@ -200,11 +200,11 @@ Usages are **tags the user gives a garment**, in four groups. The app never dedu
 - **The app does not decide or recommend: it filters** the available garments by the usages the user gave them, then orders them.
 - Pipeline:
   1. Eligible garments = in the active wardrobe ∧ available (§8.1) ∧ not over their type's wear limit (§8.2).
-  2. Usage filter, group by group (weather, activity, commute, occasion): a garment **with no usage in the group passes**; otherwise at least one of its usages must match the day (weather: one of today's conditions, §6.3; commute: it must cover **every** commute mode of the day).
+  2. Usage filter, group by group (weather, activity, occasion): a garment **with no usage in the group passes**; otherwise at least one of its usages must match the day (weather: one of today's conditions, §6.3). **Commute usages never filter**: a garment tagged with another mode stays eligible; they only order the row (step 4).
   3. Layers: layer slots shown according to the weather conditions (§6.3); the user can add or remove a layer.
   4. Order each row by a **deterministic rotation** so outfits vary from one day to the next:
      - yesterday's pieces go to the end of the row (from the history or yesterday's outfit);
-     - **explicit matches first**: a garment whose usage explicitly matches the day's activity, commute or occasion comes before one matching only the weather, which comes before an "all cases" garment ("Télétravail first, then the weather");
+     - **explicit matches first**: a garment whose usage explicitly matches the day's activity, commute (one of its modes is one of the day's) or occasion comes before one matching only the weather, which comes before an "all cases" garment ("Télétravail first, then the weather");
      - then **time since last worn** (last `worn` event, §8.6), in local days, capped; never-worn garments count as the cap;
      - plus a **favourite bonus** in days (never an absolute priority, §4.4);
      - stable tie-break: creation date, then id — no randomness.
@@ -519,6 +519,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-18 | Glass on Android: blur, semi-opaque fallback on low-end devices (open) | Blur on every Android device, Galaxy A06 included; no fallback in use | A06 measures with blur and with tint: blur adds 4 late frames out of about 2,200 on the development build, and release shows at most 1 late frame per scenario (Candice, S6) |
 | 2026-11-18 | Animation durations and curves (open) | Frozen in `src/ui/motion.ts`: swipe settles in 220 ms, neighbours fade out in 180 ms and in within 90 ms, reduced-motion cross-fade 120 ms each way, spring bounce on a single piece, tab screens fade in 150 ms, radial long press 100 ms. The end-of-sort animation is not built yet and gets its values with the evening sort | Values tried on the Galaxy A06 and the iPhone 12 mini (Candice, S6) |
 | 2026-11-18 | Mascot as a colourless line drawing, cream line in the dark theme (design system) | The frog stays in colour in both themes, with the same images | Seen on the dark end-of-sort screen (Candice, S6) |
+| 2026-11-19 | Commute usages filter: the garment must cover every commute mode of the day | Commute usages only order the row: a garment sharing one mode with the day comes first, any other stays eligible without priority | A "Vélo" piece should come first on bike days without disappearing on other days (Candice, after S6 device tests) |
 
 ---
 

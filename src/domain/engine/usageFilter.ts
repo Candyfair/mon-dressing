@@ -78,7 +78,8 @@ function verdict(values: readonly string[], matches: () => boolean): GroupVerdic
 
 /**
  * SPEC §7 step 2, group by group: weather (one of today's conditions),
- * activity, commute (must cover every commute mode of the day), occasion.
+ * activity and occasion filter. Commute never filters: a garment sharing a
+ * commute mode with the day only comes first (Candice, 2026-11-19).
  * `conditions` is null when the weather is unknown: the Weather group passes.
  */
 export function matchUsages(
@@ -91,19 +92,16 @@ export function matchUsages(
     conditions === null
       ? 'allCases'
       : verdict(grouped.weather, () => grouped.weather.some((value) => conditions.includes(value)));
-  const contextVerdicts: GroupVerdict[] = [
+  const filteringVerdicts: GroupVerdict[] = [
     verdict(grouped.activity, () => grouped.activity.includes(context.activity)),
-    // No commute today: the Commute group does not apply.
-    context.commuteModes.length === 0
-      ? 'allCases'
-      : verdict(grouped.commute, () =>
-          context.commuteModes.every((mode) => grouped.commute.includes(mode)),
-        ),
     verdict(grouped.occasion, () => grouped.occasion.includes(context.occasion)),
   ];
+  // One mode in common with the day is enough; no commute today, no match.
+  const commuteMatch = grouped.commute.some((mode) => context.commuteModes.includes(mode));
   return {
-    passes: weather !== 'noMatch' && !contextVerdicts.includes('noMatch'),
-    contextMatches: contextVerdicts.filter((value) => value === 'match').length,
+    passes: weather !== 'noMatch' && !filteringVerdicts.includes('noMatch'),
+    contextMatches:
+      filteringVerdicts.filter((value) => value === 'match').length + Number(commuteMatch),
     weatherMatch: weather === 'match',
   };
 }
