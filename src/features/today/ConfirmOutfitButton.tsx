@@ -39,6 +39,12 @@ const RING_OPACITY = 0.55;
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 const { validation } = motion;
+// How long the pill takes to stretch, show its label and grow its lock.
+const PILL_SETTLED = Math.max(
+  validation.stretch.duration,
+  validation.lockIn.duration,
+  validation.labelIn.delay + validation.labelIn.duration,
+);
 const instant = { duration: 0 };
 
 interface ConfirmOutfitButtonProps {
@@ -49,6 +55,10 @@ interface ConfirmOutfitButtonProps {
   frozen: boolean;
   // Validates or undoes; true when it did.
   onPress: () => boolean;
+  // How far up the pill goes to sit astride the bottom of the outline (pt).
+  lift: number;
+  // How far left of the button's right edge the pill centres itself (pt).
+  centre: number;
 }
 
 /**
@@ -58,9 +68,16 @@ interface ConfirmOutfitButtonProps {
  * around it, then stretches it to the left into a glass pill « Portée
  * aujourd’hui » with a lock; a tap on the pill undoes the validation, shrinks
  * it back and draws the check again. Opened on a validated outfit, the pill
- * is shown at once. Its parent anchors it by its right edge.
+ * is shown at once. Its parent anchors it by its right edge; the pill moves
+ * up and sideways from there, so the round button stays in place.
  */
-export function ConfirmOutfitButton({ missing, frozen, onPress }: ConfirmOutfitButtonProps) {
+export function ConfirmOutfitButton({
+  missing,
+  frozen,
+  onPress,
+  lift,
+  centre,
+}: ConfirmOutfitButtonProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const { colors, shadows } = theme;
@@ -77,6 +94,8 @@ export function ConfirmOutfitButton({ missing, frozen, onPress }: ConfirmOutfitB
   // 0: the round button; 1: the pill, and its label shown.
   const stretch = useSharedValue(frozen ? 1 : 0);
   const labelShown = useSharedValue(frozen ? 1 : 0);
+  // Reduced motion: the whole button fades out and back between its states.
+  const shown = useSharedValue(1);
   const [labelWidth, setLabelWidth] = useState<number | null>(null);
   const pillWidth =
     labelWidth === null ? PILL_ESTIMATE : PILL.left + labelWidth + PILL.gap + LOCK + PILL.right;
@@ -94,17 +113,19 @@ export function ConfirmOutfitButton({ missing, frozen, onPress }: ConfirmOutfitB
       withDelay(delay, withSequence(withTiming(0, instant), withTiming(1, validation.ring))),
     );
   };
-  // The label fades and the pill shrinks back to the active button; returns
-  // how long it takes. Reduced motion: fades only.
+  // Reduced motion: the button fades out, changes, and fades back in.
+  const crossFade = (delay: number, target: number) => {
+    const fade = validation.stampFade;
+    shown.set(withDelay(delay, withSequence(withTiming(0, fade), withTiming(1, fade))));
+    for (const value of [lock, stretch, labelShown])
+      value.set(withDelay(delay + fade.duration, withTiming(target, instant)));
+    return fade.duration;
+  };
+  // The label fades and the pill shrinks back down to the active button;
+  // returns how long it takes.
   const shrinkPill = () => {
-    for (const value of [lock, stretch, labelShown]) cancelAnimation(value);
-    if (reducedMotion) {
-      const fade = validation.stampFade;
-      lock.set(withTiming(0, fade));
-      labelShown.set(withTiming(0, fade));
-      stretch.set(withDelay(fade.duration, withTiming(0, instant)));
-      return fade.duration;
-    }
+    for (const value of [lock, stretch, labelShown, shown]) cancelAnimation(value);
+    if (reducedMotion) return crossFade(0, 0);
     const { shrink } = validation;
     // The check is drawn again once the pill is round.
     check.set(0);
@@ -113,31 +134,35 @@ export function ConfirmOutfitButton({ missing, frozen, onPress }: ConfirmOutfitB
     lock.set(withTiming(0, shrink));
     return shrink.duration;
   };
-  // The check fades, the button stretches into the pill, its label fades in
-  // and the lock grows. Reduced motion: fades only.
+  // The check fades, the button stretches into the pill as it goes up onto
+  // the outline, its label fades in and the lock grows.
   const stretchPill = (delay: number) => {
-    lock.set(
-      withDelay(delay, withTiming(1, reducedMotion ? validation.stampFade : validation.lockIn)),
-    );
-    stretch.set(withDelay(delay, withTiming(1, reducedMotion ? instant : validation.stretch)));
-    labelShown.set(
-      reducedMotion
-        ? withDelay(delay, withTiming(1, validation.stampFade))
-        : withDelay(delay + validation.labelIn.delay, withTiming(1, validation.labelIn)),
-    );
+    if (reducedMotion) {
+      crossFade(delay, 1);
+      return;
+    }
+    lock.set(withDelay(delay, withTiming(1, validation.lockIn)));
+    stretch.set(withDelay(delay, withTiming(1, validation.stretch)));
+    labelShown.set(withDelay(delay + validation.labelIn.delay, withTiming(1, validation.labelIn)));
   };
 
   // A tap on the pill shrinks it first, then undoes: undoing redraws the whole
   // outfit, which would swallow the shrink.
   const shrunkForUndo = useRef(false);
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // From the validation until the pill is in place, taps do nothing, so that
+  // the animation always ends on the pill.
+  const settling = useRef(false);
+  const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
     () => () => {
-      if (undoTimer.current !== null) clearTimeout(undoTimer.current);
+      for (const timer of [undoTimer, settleTimer])
+        if (timer.current !== null) clearTimeout(timer.current);
     },
     [],
   );
   const press = () => {
+    if (settling.current) return;
     if (!frozen) {
       onPress();
       return;
@@ -176,6 +201,14 @@ export function ConfirmOutfitButton({ missing, frozen, onPress }: ConfirmOutfitB
         );
       }
       stretchPill(validation.lockDelay);
+      settling.current = true;
+      settleTimer.current = setTimeout(
+        () => {
+          settleTimer.current = null;
+          settling.current = false;
+        },
+        validation.lockDelay + (reducedMotion ? 2 * validation.stampFade.duration : PILL_SETTLED),
+      );
     } else if (!frozen && before.frozen) {
       // Undone: once the pill is back to the round button, the check draws
       // again and a ring leaves.
@@ -238,6 +271,14 @@ export function ConfirmOutfitButton({ missing, frozen, onPress }: ConfirmOutfitB
       : t(`today.confirmMissing.${missing}`);
 
   const bounce = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
+  // The pill rises and slides to its centre with its stretch.
+  const rise = useAnimatedStyle(() => ({
+    opacity: shown.get(),
+    transform: [
+      { translateX: (pillWidth / 2 - centre) * stretch.get() },
+      { translateY: -lift * stretch.get() },
+    ],
+  }));
   const width = useAnimatedStyle(() => ({
     width: size.sizeCta + (pillWidth - size.sizeCta) * stretch.get(),
   }));
@@ -263,79 +304,81 @@ export function ConfirmOutfitButton({ missing, frozen, onPress }: ConfirmOutfitB
 
   const checkColor = enabled ? colors.onAction : colors.onActionDisabled;
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ disabled: !enabled, selected: frozen }}
-      onPressIn={pressIn}
-      onPressOut={pressOut}
-      disabled={!enabled}
-      onPress={press}
-    >
-      <Animated.View style={[styles.button, width]}>
-        <Burst progress={burst} theme={theme} />
-        <Animated.View style={[StyleSheet.absoluteFill, bounce]}>
-          <Animated.View style={[StyleSheet.absoluteFill, solid]}>
-            <View style={[styles.round, { backgroundColor: colors.actionDisabled }]} />
+    <Animated.View style={rise}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        accessibilityState={{ disabled: !enabled, selected: frozen }}
+        onPressIn={pressIn}
+        onPressOut={pressOut}
+        disabled={!enabled}
+        onPress={press}
+      >
+        <Animated.View style={[styles.button, width]}>
+          <Burst progress={burst} theme={theme} />
+          <Animated.View style={[StyleSheet.absoluteFill, bounce]}>
+            <Animated.View style={[StyleSheet.absoluteFill, solid]}>
+              <View style={[styles.round, { backgroundColor: colors.actionDisabled }]} />
+              <Animated.View
+                style={[
+                  styles.round,
+                  { backgroundColor: colors.action, boxShadow: shadows.shadowCta },
+                  grown,
+                ]}
+              />
+            </Animated.View>
+            <Animated.View style={[StyleSheet.absoluteFill, glass]}>
+              <Glass
+                style={[
+                  styles.pill,
+                  { borderColor: colors.glassEdge, borderWidth: 1, boxShadow: shadows.shadowGlass },
+                ]}
+              />
+            </Animated.View>
             <Animated.View
-              style={[
-                styles.round,
-                { backgroundColor: colors.action, boxShadow: shadows.shadowCta },
-                grown,
-              ]}
-            />
-          </Animated.View>
-          <Animated.View style={[StyleSheet.absoluteFill, glass]}>
-            <Glass
-              style={[
-                styles.pill,
-                { borderColor: colors.glassEdge, borderWidth: 1, boxShadow: shadows.shadowGlass },
-              ]}
-            />
-          </Animated.View>
-          <Animated.View
-            style={[styles.label, labelLook]}
-            pointerEvents="none"
-            accessibilityElementsHidden
-            importantForAccessibility="no-hide-descendants"
-          >
-            <Text
-              numberOfLines={1}
-              style={[styles.labelText, { color: colors.ink }]}
-              onLayout={(event) => setLabelWidth(Math.ceil(event.nativeEvent.layout.width))}
-            >
-              {t('today.worn')}
-            </Text>
-          </Animated.View>
-          <Animated.View
-            style={[styles.round, styles.ring, { borderColor: colors.action }, ringLook]}
-          />
-          <Animated.View style={[styles.centre, checkLook]}>
-            <Svg
-              width={CHECK}
-              height={CHECK}
-              viewBox="0 0 24 24"
-              fill="none"
-              accessible={false}
+              style={[styles.label, labelLook]}
+              pointerEvents="none"
+              accessibilityElementsHidden
               importantForAccessibility="no-hide-descendants"
             >
-              <AnimatedPath
-                d={CHECK_PATH}
-                stroke={checkColor}
-                strokeWidth={CHECK_STROKE}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeDasharray={[CHECK_LENGTH, CHECK_LENGTH]}
-                animatedProps={checkProps}
-              />
-            </Svg>
-          </Animated.View>
-          <Animated.View style={[styles.centre, lockLook]}>
-            <Icon name="lock" size={LOCK} color={colors.ink} />
+              <Text
+                numberOfLines={1}
+                style={[styles.labelText, { color: colors.ink }]}
+                onLayout={(event) => setLabelWidth(Math.ceil(event.nativeEvent.layout.width))}
+              >
+                {t('today.worn')}
+              </Text>
+            </Animated.View>
+            <Animated.View
+              style={[styles.round, styles.ring, { borderColor: colors.action }, ringLook]}
+            />
+            <Animated.View style={[styles.centre, checkLook]}>
+              <Svg
+                width={CHECK}
+                height={CHECK}
+                viewBox="0 0 24 24"
+                fill="none"
+                accessible={false}
+                importantForAccessibility="no-hide-descendants"
+              >
+                <AnimatedPath
+                  d={CHECK_PATH}
+                  stroke={checkColor}
+                  strokeWidth={CHECK_STROKE}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeDasharray={[CHECK_LENGTH, CHECK_LENGTH]}
+                  animatedProps={checkProps}
+                />
+              </Svg>
+            </Animated.View>
+            <Animated.View style={[styles.centre, lockLook]}>
+              <Icon name="lock" size={LOCK} color={colors.ink} />
+            </Animated.View>
           </Animated.View>
         </Animated.View>
-      </Animated.View>
-    </Pressable>
+      </Pressable>
+    </Animated.View>
   );
 }
 

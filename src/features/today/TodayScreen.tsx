@@ -50,6 +50,8 @@ export function TodayScreen() {
   // Each validation plays the stamp once; an undo hides it.
   const [validations, setValidations] = useState(0);
   const [stamp, setStamp] = useState<number | null>(null);
+  // The bottom line of the validation outline, in the outfit zone's points.
+  const [outlineBottom, setOutlineBottom] = useState<number | null>(null);
   // The outfit's shake at the stamp's impact: down, and half as much aside.
   const shake = useSharedValue(0);
   const shaken = useAnimatedStyle(() => ({
@@ -79,6 +81,9 @@ export function TodayScreen() {
     (width - 2 * spacing.space16) / OUTFIT_WIDTH,
   );
   const outfitBottom = outfitTop + OUTFIT_HEIGHT * scale;
+  // The « Portée aujourd’hui » pill goes up astride the outline's bottom line
+  // (never down, towards the menu), centred on the screen like the outfit.
+  const lift = outlineBottom === null ? 0 : Math.max(0, outfitBottom - (outfitTop + outlineBottom));
 
   return (
     <GlassStage behind={<TodayBackground ambience={today.weather.ambience} />}>
@@ -102,6 +107,7 @@ export function TodayScreen() {
           onAddPiece={() => router.push('/add')}
           locked={today.frozen}
           scale={scale}
+          onOutlineBottom={setOutlineBottom}
         />
       </Animated.View>
 
@@ -145,6 +151,8 @@ export function TodayScreen() {
           missing={today.missing}
           frozen={today.frozen}
           onPress={today.frozen ? undo : validate}
+          lift={lift}
+          centre={width / 2 - spacing.space40}
         />
       </View>
 

@@ -66,8 +66,8 @@ export const motion = {
     lockDelay: 1500,
     checkOut: { duration: 160, easing: Easing.out(Easing.quad) },
     lockIn: { duration: 320, easing: Easing.bezier(0.34, 1.56, 0.64, 1) },
-    // The button stretches to the left into the « Portée aujourd’hui » pill,
-    // whose label fades in...
+    // The button stretches to the left into the « Portée aujourd’hui » pill
+    // and goes up astride the outline; its label fades in...
     stretch: { duration: 420, easing: Easing.bezier(0.34, 1.4, 0.64, 1) },
     labelIn: { duration: 200, delay: 160, easing: Easing.out(Easing.quad) },
     // ...and on undo, the label fades out and the pill shrinks back.
@@ -93,7 +93,9 @@ export const motion = {
     veilOut: { duration: 360, easing: Easing.inOut(Easing.quad) },
     // Reduced motion: the stamp only fades in and out.
     stampFade: { duration: 260, easing: Easing.inOut(Easing.quad) },
-    // The hand-drawn outline around the locked outfit.
+    // The hand-drawn outline around the locked outfit, drawn once the stamp
+    // has hit the outfit, before the pill comes onto it.
+    outlineDelay: 500,
     outlineDraw: { duration: 760, easing: Easing.bezier(0.5, 0.1, 0.3, 1) },
     outlineSecondDelay: 120,
     outlineErase: { duration: 300, easing: Easing.in(Easing.quad) },

@@ -1,4 +1,4 @@
-import { type ComponentRef, useRef, useState } from 'react';
+import { type ComponentRef, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AccessibilityInfo, Pressable, StyleSheet, View } from 'react-native';
 import Animated, {
@@ -16,7 +16,7 @@ import { size, spacing } from '../../ui/tokens';
 import { AddLayerButton } from './AddLayerButton';
 import { EmptySlot } from './EmptySlot';
 import { LayerSheet } from './LayerSheet';
-import { LockedOutline, type OutlineBounds } from './LockedOutline';
+import { LockedOutline, OUTLINE_MARGIN, type OutlineBounds } from './LockedOutline';
 import {
   addLayer,
   chosenGarment,
@@ -96,6 +96,9 @@ interface TodayOutfitProps {
   locked?: boolean;
   // Outfit zone scale: 1 on the 375 × 812 pt reference screen.
   scale: number;
+  // Where the bottom line of the validation outline is, in the outfit
+  // zone's points: the « Portée aujourd’hui » pill sits astride it.
+  onOutlineBottom?: (bottom: number) => void;
 }
 
 /** The outfit of the day: one column, or layers on the left and a lane. */
@@ -108,6 +111,7 @@ export function TodayOutfit({
   onAddPiece,
   locked = false,
   scale,
+  onOutlineBottom,
 }: TodayOutfitProps) {
   const { t } = useTranslation();
   const [swiping, setSwiping] = useState(false);
@@ -178,6 +182,9 @@ export function TodayOutfit({
   if (locked && !sameBounds(bounds, outlineBounds)) {
     setOutlineBounds(bounds);
   }
+  const outlineBottom = outlineBounds.y + outlineBounds.height + OUTLINE_MARGIN;
+  // Before the paint: a validated outfit opens with the pill already on it.
+  useLayoutEffect(() => onOutlineBottom?.(outlineBottom), [onOutlineBottom, outlineBottom]);
 
   return (
     <View
