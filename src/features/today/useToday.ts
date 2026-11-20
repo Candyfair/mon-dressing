@@ -204,13 +204,15 @@ export function useToday() {
     AccessibilityInfo.announceForAccessibility(t('today.validatedAnnouncement'));
     return true;
   };
-  const undo = () => {
-    if (reference || kept === null) return;
-    if (!undoValidation(db, wardrobe.id, date, deps()).ok) return;
+  /** Undoes the day's validation; true when it is undone. */
+  const undo = (): boolean => {
+    if (reference || kept === null) return false;
+    if (!undoValidation(db, wardrobe.id, date, deps()).ok) return false;
     setState((current) => ({ ...current, carryOver: kept }));
     setFrozenState(readFrozen());
     reload();
     AccessibilityInfo.announceForAccessibility(t('today.undoneAnnouncement'));
+    return true;
   };
 
   // Evening safety net (SPEC §8.5): the outfit shown when the app leaves the

@@ -56,14 +56,15 @@ export function TodayScreen() {
     transform: [{ translateX: shake.get() / 2 }, { translateY: shake.get() }],
   }));
   const validate = () => {
-    if (today.validate()) {
-      setStamp(validations + 1);
-      setValidations(validations + 1);
-    }
+    if (!today.validate()) return false;
+    setStamp(validations + 1);
+    setValidations(validations + 1);
+    return true;
   };
   const undo = () => {
+    if (!today.undo()) return false;
     setStamp(null);
-    today.undo();
+    return true;
   };
 
   // The outfit zone keeps its proportions and shrinks on smaller screens.
