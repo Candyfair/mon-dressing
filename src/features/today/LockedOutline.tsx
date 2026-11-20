@@ -110,7 +110,7 @@ interface LockedOutlineProps {
 /**
  * The felt-pen line around a validated outfit (design spec 01,
  * LockedOutline). Shown at once when the outfit opens validated; drawn
- * while the stamp is still there after a validation; erased back along its
+ * once the stamp has hit the outfit after a validation; erased back along its
  * path on undo. Decorative. Reduced motion: it fades in and out.
  */
 export function LockedOutline({ bounds, visible }: LockedOutlineProps) {
@@ -163,7 +163,7 @@ export function LockedOutline({ bounds, visible }: LockedOutlineProps) {
       fade.set(visible ? 0 : 1);
       fade.set(
         visible
-          ? withDelay(validation.lockDelay, withTiming(1, validation.outlineFade))
+          ? withDelay(validation.outlineDelay, withTiming(1, validation.outlineFade))
           : withTiming(0, validation.outlineFade),
       );
       return;
@@ -172,10 +172,10 @@ export function LockedOutline({ bounds, visible }: LockedOutlineProps) {
     if (visible) {
       first.set(0);
       second.set(0);
-      first.set(withDelay(validation.lockDelay, withTiming(1, validation.outlineDraw)));
+      first.set(withDelay(validation.outlineDelay, withTiming(1, validation.outlineDraw)));
       second.set(
         withDelay(
-          validation.lockDelay + validation.outlineSecondDelay,
+          validation.outlineDelay + validation.outlineSecondDelay,
           withTiming(1, validation.outlineDraw),
         ),
       );

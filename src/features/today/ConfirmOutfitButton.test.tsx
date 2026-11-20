@@ -12,14 +12,18 @@ jest.mock('react-native-worklets', () => jest.requireActual('../../test/animatio
 describe('ConfirmOutfitButton', () => {
   it('validates a complete outfit', async () => {
     const onPress = jest.fn(() => true);
-    await render(<ConfirmOutfitButton missing={null} frozen={false} onPress={onPress} />);
+    await render(
+      <ConfirmOutfitButton missing={null} frozen={false} onPress={onPress} lift={0} centre={0} />,
+    );
     await fireEvent.press(screen.getByRole('button', { name: 'Je porte cette tenue' }));
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
   it('stays findable but does nothing while a piece is missing', async () => {
     const onPress = jest.fn(() => true);
-    await render(<ConfirmOutfitButton missing="bottom" frozen={false} onPress={onPress} />);
+    await render(
+      <ConfirmOutfitButton missing="bottom" frozen={false} onPress={onPress} lift={0} centre={0} />,
+    );
     const button = screen.getByRole('button', {
       name: 'Je porte cette tenue, indisponible : il manque un bas',
     });
@@ -30,14 +34,20 @@ describe('ConfirmOutfitButton', () => {
 
   it('is a selected « Portée aujourd’hui » pill that undoes once validated, and back after the undo', async () => {
     const onPress = jest.fn(() => true);
+    jest.useFakeTimers();
     const { rerender } = await render(
-      <ConfirmOutfitButton missing={null} frozen={false} onPress={onPress} />,
+      <ConfirmOutfitButton missing={null} frozen={false} onPress={onPress} lift={0} centre={0} />,
     );
-    await rerender(<ConfirmOutfitButton missing={null} frozen onPress={onPress} />);
+    await rerender(
+      <ConfirmOutfitButton missing={null} frozen onPress={onPress} lift={0} centre={0} />,
+    );
     const pill = screen.getByRole('button', { name: 'Portée aujourd’hui, toucher pour annuler' });
     expect(pill).toBeSelected();
+    // Until the pill is in place, a tap does nothing.
+    await fireEvent.press(pill);
+    await act(() => jest.runAllTimers());
+    expect(onPress).not.toHaveBeenCalled();
     // The pill shrinks back first, then the validation is undone.
-    jest.useFakeTimers();
     await fireEvent.press(pill);
     await fireEvent.press(pill);
     expect(onPress).not.toHaveBeenCalled();
@@ -45,13 +55,17 @@ describe('ConfirmOutfitButton', () => {
     jest.useRealTimers();
     expect(onPress).toHaveBeenCalledTimes(1);
 
-    await rerender(<ConfirmOutfitButton missing={null} frozen={false} onPress={onPress} />);
+    await rerender(
+      <ConfirmOutfitButton missing={null} frozen={false} onPress={onPress} lift={0} centre={0} />,
+    );
     expect(screen.getByRole('button', { name: 'Je porte cette tenue' })).not.toBeSelected();
   });
 
   it('stays the pill when the undo is refused', async () => {
     const onPress = jest.fn(() => false);
-    await render(<ConfirmOutfitButton missing={null} frozen onPress={onPress} />);
+    await render(
+      <ConfirmOutfitButton missing={null} frozen onPress={onPress} lift={0} centre={0} />,
+    );
     jest.useFakeTimers();
     await fireEvent.press(
       screen.getByRole('button', { name: 'Portée aujourd’hui, toucher pour annuler' }),
