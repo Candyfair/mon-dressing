@@ -114,7 +114,7 @@ Tant que le dressing ne permet pas une tenue complète, Aujourd’hui montre ce 
 
 ## Validation de la tenue
 
-Toucher « Je porte cette tenue » pose un tampon à tête de grenouille « Tenue du jour validée » sur la tenue (ValidationStamp), lisible environ 2 secondes, puis la tenue est entourée d’un contour dessiné à main levée (LockedOutline) et le bouton devient un cadenas en verre (ConfirmOutfitButton, état validé). Retour visuel seulement, sans vibration ni son. Le comportement (tenue figée, annulation) est dans `SPEC.md` §7.
+Toucher « Je porte cette tenue » pose un tampon à tête de grenouille « Tenue du jour validée » sur la tenue (ValidationStamp), lisible environ 2 secondes, puis la tenue est entourée d’un contour dessiné à main levée (LockedOutline) et le bouton s’étire en pastille de verre « Portée aujourd’hui » avec un cadenas (ConfirmOutfitButton, état validé). Retour visuel seulement, sans vibration ni son. Le comportement (tenue figée, annulation) est dans `SPEC.md` §7.
 
 ## Feuilles et popups
 
