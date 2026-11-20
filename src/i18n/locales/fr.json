@@ -84,7 +84,8 @@
       "top": "Je porte cette tenue, indisponible : il manque un haut",
       "bottom": "Je porte cette tenue, indisponible : il manque un bas"
     },
-    "confirmed": "Tenue validée, toucher pour annuler",
+    "confirmed": "Portée aujourd’hui, toucher pour annuler",
+    "worn": "Portée aujourd’hui",
     "validatedAnnouncement": "Tenue validée pour aujourd’hui",
     "undoneAnnouncement": "Validation annulée",
     "stamp": {

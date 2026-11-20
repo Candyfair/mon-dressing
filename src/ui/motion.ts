@@ -66,7 +66,14 @@ export const motion = {
     lockDelay: 1500,
     checkOut: { duration: 160, easing: Easing.out(Easing.quad) },
     lockIn: { duration: 320, easing: Easing.bezier(0.34, 1.56, 0.64, 1) },
-    // After an undo, the check draws itself again.
+    // The button stretches to the left into the « Portée aujourd’hui » pill,
+    // whose label fades in...
+    stretch: { duration: 420, easing: Easing.bezier(0.34, 1.4, 0.64, 1) },
+    labelIn: { duration: 200, delay: 160, easing: Easing.out(Easing.quad) },
+    // ...and on undo, the label fades out and the pill shrinks back.
+    labelOut: { duration: 120, easing: Easing.out(Easing.quad) },
+    shrink: { duration: 300, easing: Easing.bezier(0.4, 0, 0.2, 1) },
+    // After an undo, the check draws itself again (once the pill shrank).
     checkDraw: { duration: 300, delay: 160, easing: Easing.out(Easing.quad) },
     // The outfit becomes complete: the fill grows from the centre, then a
     // ring leaves and the button bounces (1 → 1.12 → 1).

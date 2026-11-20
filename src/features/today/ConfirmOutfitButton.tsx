@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   cancelAnimation,
   type SharedValue,
@@ -18,7 +18,7 @@ import { Glass } from '../../ui/Glass';
 import { Icon } from '../../ui/Icon';
 import { motion } from '../../ui/motion';
 import { type Theme, useTheme } from '../../ui/theme';
-import { size } from '../../ui/tokens';
+import { fontFamilies, size } from '../../ui/tokens';
 
 const CHECK = 26;
 const CHECK_STROKE = 2.2;
@@ -26,6 +26,13 @@ const CHECK_PATH = 'M5 12.5l4.5 4.5L19 7.5';
 // Length of CHECK_PATH in its 24 pt viewBox, for drawing it like a pen.
 const CHECK_LENGTH = Math.hypot(4.5, 4.5) + Math.hypot(9.5, 9.5);
 const LOCK = 22;
+// The « Portée aujourd’hui » pill: its label 18 pt from the left edge, 10 pt
+// before the lock, which keeps the round button's centre (28 pt from the
+// right edge). Its width follows the label (about 196 pt).
+const PILL = { left: 18, gap: 10, right: (size.sizeCta - LOCK) / 2 };
+const PILL_ESTIMATE = 196;
+// Wide enough for the label at any text size: it is measured, not drawn, there.
+const LABEL_ROOM = 480;
 const RING_SCALE = 1.9;
 const RING_OPACITY = 0.55;
 
@@ -37,18 +44,21 @@ const instant = { duration: 0 };
 interface ConfirmOutfitButtonProps {
   // What the outfit still lacks; null when it can be worn.
   missing: 'top' | 'bottom' | null;
-  // The outfit is validated: the button is a glass lock and undoes it.
+  // The outfit is validated: the button is the « Portée aujourd’hui » pill
+  // and undoes it.
   frozen: boolean;
-  onPress: () => void;
+  // Validates or undoes; true when it did.
+  onPress: () => boolean;
 }
 
 /**
  * « Je porte cette tenue », Today's main action (design spec 01, « Validation
  * de la tenue »). Disabled, it stays in place and findable by screen readers,
  * with the reason in its name. Validating squashes it, throws a ring and dots
- * around it, then turns it into a glass lock; a tap on the lock undoes the
- * validation and draws the check again. Opened on a validated outfit, the
- * lock is shown at once.
+ * around it, then stretches it to the left into a glass pill « Portée
+ * aujourd’hui » with a lock; a tap on the pill undoes the validation, shrinks
+ * it back and draws the check again. Opened on a validated outfit, the pill
+ * is shown at once. Its parent anchors it by its right edge.
  */
 export function ConfirmOutfitButton({ missing, frozen, onPress }: ConfirmOutfitButtonProps) {
   const { t } = useTranslation();
@@ -64,19 +74,89 @@ export function ConfirmOutfitButton({ missing, frozen, onPress }: ConfirmOutfitB
   const burst = useSharedValue(1);
   // 0: action and check; 1: glass and lock.
   const lock = useSharedValue(frozen ? 1 : 0);
+  // 0: the round button; 1: the pill, and its label shown.
+  const stretch = useSharedValue(frozen ? 1 : 0);
+  const labelShown = useSharedValue(frozen ? 1 : 0);
+  const [labelWidth, setLabelWidth] = useState<number | null>(null);
+  const pillWidth =
+    labelWidth === null ? PILL_ESTIMATE : PILL.left + labelWidth + PILL.gap + LOCK + PILL.right;
   // How much of the check is drawn.
   const check = useSharedValue(1);
   // The solid fill of an active button, grown from the centre on activation.
   const fill = useSharedValue(missing === null ? 1 : 0);
 
+  const drawCheck = (delay: number) => {
+    if (reducedMotion) return;
+    check.set(
+      withSequence(withTiming(0, instant), withDelay(delay, withTiming(1, validation.checkDraw))),
+    );
+    ring.set(
+      withDelay(delay, withSequence(withTiming(0, instant), withTiming(1, validation.ring))),
+    );
+  };
+  // The label fades and the pill shrinks back to the active button; returns
+  // how long it takes. Reduced motion: fades only.
+  const shrinkPill = () => {
+    for (const value of [lock, stretch, labelShown]) cancelAnimation(value);
+    if (reducedMotion) {
+      const fade = validation.stampFade;
+      lock.set(withTiming(0, fade));
+      labelShown.set(withTiming(0, fade));
+      stretch.set(withDelay(fade.duration, withTiming(0, instant)));
+      return fade.duration;
+    }
+    const { shrink } = validation;
+    // The check is drawn again once the pill is round.
+    check.set(0);
+    labelShown.set(withTiming(0, validation.labelOut));
+    stretch.set(withTiming(0, shrink));
+    lock.set(withTiming(0, shrink));
+    return shrink.duration;
+  };
+  // The check fades, the button stretches into the pill, its label fades in
+  // and the lock grows. Reduced motion: fades only.
+  const stretchPill = (delay: number) => {
+    lock.set(
+      withDelay(delay, withTiming(1, reducedMotion ? validation.stampFade : validation.lockIn)),
+    );
+    stretch.set(withDelay(delay, withTiming(1, reducedMotion ? instant : validation.stretch)));
+    labelShown.set(
+      reducedMotion
+        ? withDelay(delay, withTiming(1, validation.stampFade))
+        : withDelay(delay + validation.labelIn.delay, withTiming(1, validation.labelIn)),
+    );
+  };
+
+  // A tap on the pill shrinks it first, then undoes: undoing redraws the whole
+  // outfit, which would swallow the shrink.
+  const shrunkForUndo = useRef(false);
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (undoTimer.current !== null) clearTimeout(undoTimer.current);
+    },
+    [],
+  );
+  const press = () => {
+    if (!frozen) {
+      onPress();
+      return;
+    }
+    if (shrunkForUndo.current) return;
+    shrunkForUndo.current = true;
+    undoTimer.current = setTimeout(() => {
+      undoTimer.current = null;
+      if (onPress()) return;
+      // Not undone: back to the pill.
+      shrunkForUndo.current = false;
+      stretchPill(0);
+    }, shrinkPill());
+  };
+
   const previous = useRef({ frozen, enabled });
   useEffect(() => {
     const before = previous.current;
     previous.current = { frozen, enabled };
-    const throwRing = () => {
-      if (!reducedMotion)
-        ring.set(withSequence(withTiming(0, instant), withTiming(1, validation.ring)));
-    };
     if (frozen && !before.frozen) {
       // Validated: release bounce, ring and dots, then the lock.
       if (!reducedMotion) {
@@ -87,7 +167,7 @@ export function ConfirmOutfitButton({ missing, frozen, onPress }: ConfirmOutfitB
             withTiming(1, { duration: validation.release.duration - peak }),
           ),
         );
-        throwRing();
+        ring.set(withSequence(withTiming(0, instant), withTiming(1, validation.ring)));
         burst.set(
           withSequence(
             withTiming(0, instant),
@@ -95,24 +175,15 @@ export function ConfirmOutfitButton({ missing, frozen, onPress }: ConfirmOutfitB
           ),
         );
       }
-      lock.set(
-        withDelay(
-          validation.lockDelay,
-          withTiming(1, reducedMotion ? validation.stampFade : validation.lockIn),
-        ),
-      );
+      stretchPill(validation.lockDelay);
     } else if (!frozen && before.frozen) {
-      // Undone: back to the active button, the check drawn again.
-      cancelAnimation(lock);
-      lock.set(withTiming(0, validation.checkOut));
-      if (!reducedMotion) {
-        check.set(
-          withSequence(
-            withTiming(0, instant),
-            withDelay(validation.checkDraw.delay, withTiming(1, validation.checkDraw)),
-          ),
-        );
-        throwRing();
+      // Undone: once the pill is back to the round button, the check draws
+      // again and a ring leaves.
+      if (shrunkForUndo.current) {
+        shrunkForUndo.current = false;
+        drawCheck(0);
+      } else {
+        drawCheck(shrinkPill());
       }
     }
     if (enabled && !before.enabled) {
@@ -148,7 +219,9 @@ export function ConfirmOutfitButton({ missing, frozen, onPress }: ConfirmOutfitB
       cancelAnimation(fill);
       fill.set(0);
     }
-  }, [frozen, enabled, reducedMotion, scale, ring, burst, lock, check, fill]);
+    // Runs on a change of state only; the helpers read the same shared values.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [frozen, enabled]);
 
   const pressIn = () => {
     if (!enabled || frozen || reducedMotion) return;
@@ -165,6 +238,10 @@ export function ConfirmOutfitButton({ missing, frozen, onPress }: ConfirmOutfitB
       : t(`today.confirmMissing.${missing}`);
 
   const bounce = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
+  const width = useAnimatedStyle(() => ({
+    width: size.sizeCta + (pillWidth - size.sizeCta) * stretch.get(),
+  }));
+  const labelLook = useAnimatedStyle(() => ({ opacity: labelShown.get() }));
   const solid = useAnimatedStyle(() => ({ opacity: 1 - lock.get() }));
   const grown = useAnimatedStyle(() => ({ transform: [{ scale: fill.get() }] }));
   const glass = useAnimatedStyle(() => ({ opacity: Math.min(1, lock.get() * 1.5) }));
@@ -193,54 +270,69 @@ export function ConfirmOutfitButton({ missing, frozen, onPress }: ConfirmOutfitB
       onPressIn={pressIn}
       onPressOut={pressOut}
       disabled={!enabled}
-      onPress={onPress}
-      style={styles.button}
+      onPress={press}
     >
-      <Burst progress={burst} theme={theme} />
-      <Animated.View style={[styles.button, bounce]}>
-        <Animated.View style={[StyleSheet.absoluteFill, solid]}>
-          <View style={[styles.round, { backgroundColor: colors.actionDisabled }]} />
+      <Animated.View style={[styles.button, width]}>
+        <Burst progress={burst} theme={theme} />
+        <Animated.View style={[StyleSheet.absoluteFill, bounce]}>
+          <Animated.View style={[StyleSheet.absoluteFill, solid]}>
+            <View style={[styles.round, { backgroundColor: colors.actionDisabled }]} />
+            <Animated.View
+              style={[
+                styles.round,
+                { backgroundColor: colors.action, boxShadow: shadows.shadowCta },
+                grown,
+              ]}
+            />
+          </Animated.View>
+          <Animated.View style={[StyleSheet.absoluteFill, glass]}>
+            <Glass
+              style={[
+                styles.pill,
+                { borderColor: colors.glassEdge, borderWidth: 1, boxShadow: shadows.shadowGlass },
+              ]}
+            />
+          </Animated.View>
           <Animated.View
-            style={[
-              styles.round,
-              { backgroundColor: colors.action, boxShadow: shadows.shadowCta },
-              grown,
-            ]}
-          />
-        </Animated.View>
-        <Animated.View style={[StyleSheet.absoluteFill, glass]}>
-          <Glass
-            style={[
-              styles.round,
-              { borderColor: colors.glassEdge, borderWidth: 1, boxShadow: shadows.shadowAdd },
-            ]}
-          />
-        </Animated.View>
-        <Animated.View
-          style={[styles.round, styles.ring, { borderColor: colors.action }, ringLook]}
-        />
-        <Animated.View style={[styles.centre, checkLook]}>
-          <Svg
-            width={CHECK}
-            height={CHECK}
-            viewBox="0 0 24 24"
-            fill="none"
-            accessible={false}
+            style={[styles.label, labelLook]}
+            pointerEvents="none"
+            accessibilityElementsHidden
             importantForAccessibility="no-hide-descendants"
           >
-            <AnimatedPath
-              d={CHECK_PATH}
-              stroke={checkColor}
-              strokeWidth={CHECK_STROKE}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeDasharray={[CHECK_LENGTH, CHECK_LENGTH]}
-              animatedProps={checkProps}
-            />
-          </Svg>
-        </Animated.View>
-        <Animated.View style={[styles.centre, lockLook]}>
-          <Icon name="lock" size={LOCK} color={colors.ink} />
+            <Text
+              numberOfLines={1}
+              style={[styles.labelText, { color: colors.ink }]}
+              onLayout={(event) => setLabelWidth(Math.ceil(event.nativeEvent.layout.width))}
+            >
+              {t('today.worn')}
+            </Text>
+          </Animated.View>
+          <Animated.View
+            style={[styles.round, styles.ring, { borderColor: colors.action }, ringLook]}
+          />
+          <Animated.View style={[styles.centre, checkLook]}>
+            <Svg
+              width={CHECK}
+              height={CHECK}
+              viewBox="0 0 24 24"
+              fill="none"
+              accessible={false}
+              importantForAccessibility="no-hide-descendants"
+            >
+              <AnimatedPath
+                d={CHECK_PATH}
+                stroke={checkColor}
+                strokeWidth={CHECK_STROKE}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeDasharray={[CHECK_LENGTH, CHECK_LENGTH]}
+                animatedProps={checkProps}
+              />
+            </Svg>
+          </Animated.View>
+          <Animated.View style={[styles.centre, lockLook]}>
+            <Icon name="lock" size={LOCK} color={colors.ink} />
+          </Animated.View>
         </Animated.View>
       </Animated.View>
     </Pressable>
@@ -328,22 +420,45 @@ function BurstDot({
 }
 
 const styles = StyleSheet.create({
-  button: {
+  // The round button and the pill grow from the right edge, where the
+  // check, the lock, the ring and the burst stay.
+  button: { width: size.sizeCta, height: size.sizeCta },
+  round: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: size.sizeCta,
+    height: size.sizeCta,
+    borderRadius: size.sizeCta / 2,
+  },
+  pill: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    borderRadius: size.sizeCta / 2,
+  },
+  label: {
+    position: 'absolute',
+    top: 0,
+    left: PILL.left,
+    width: LABEL_ROOM,
+    height: size.sizeCta,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  labelText: { fontFamily: fontFamilies.text, fontSize: 14.5, fontWeight: '600' },
+  ring: { borderWidth: 2 },
+  centre: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
     width: size.sizeCta,
     height: size.sizeCta,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  round: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: size.sizeCta,
-    height: size.sizeCta,
-    borderRadius: size.sizeCta / 2,
-  },
-  ring: { borderWidth: 2 },
-  centre: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
-  burst: { position: 'absolute', left: size.sizeCta / 2, top: size.sizeCta / 2 },
+  burst: { position: 'absolute', right: size.sizeCta / 2, top: size.sizeCta / 2 },
   dot: { position: 'absolute' },
 });
