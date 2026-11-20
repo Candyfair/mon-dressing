@@ -196,7 +196,9 @@ body { margin: 0; font-family: var(--font-text); color: var(--ink); background: 
 .md-hint { margin: 0; font: 500 13.5px/16px var(--font-text); color: var(--ink-secondary); }
 
 /* Outfit validation (Today): locked confirm button, frog stamp, hand-drawn outline */
-.md-cta[aria-pressed="true"] { background: var(--glass); color: var(--ink); box-shadow: 0 0 0 1px var(--glass-edge), 0 6px 16px rgba(0,0,0,0.12); }
+.md-cta[aria-pressed="true"] { background: var(--glass); color: var(--ink); box-shadow: 0 0 0 1px var(--glass-edge), 0 6px 16px rgba(0,0,0,0.12); -webkit-backdrop-filter: blur(var(--blur-glass)); backdrop-filter: blur(var(--blur-glass)); }
+.md-cta-worn { width: auto; padding: 0 17px 0 18px; gap: 10px; border-radius: var(--radius-full); }
+.md-cta-worn-label { font: 600 14.5px/1 var(--font-text); white-space: nowrap; }
 .md-stamp { position: relative; width: 290px; height: 174px; color: var(--action); transform: rotate(-8deg); }
 .md-stamp svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .md-stamp .md-stamp-fill { fill: var(--ground); }

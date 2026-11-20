@@ -52,8 +52,8 @@ Décisions de design du 19/11/2026. Le comportement (tenue figée pour la journ�
 | Désactivé | Fond `action-disabled`, coche `on-action-disabled`, sans ombre, immobile. | Toucher : secousse horizontale 0, −6, 6, −4, 4, −2, 0 pt en 360 ms (ease-in-out) et un trait `action` de 2 pt souligne la phrase « Encore… » sous l’en-tête (déroulé de gauche à droite sur 45 % de 1 200 ms, puis s’efface). |
 | Activation (la tenue devient complète) | Fond `action`, coche `on-action`, ombre `shadow-cta`. | Les pièces ajoutées tombent en place (−26 pt → +4 pt → 0, échelle 0,92 → 1,02 → 1, 420 ms, chaussures décalées de 90 ms). 260 ms après : le fond se remplit depuis le centre (échelle 0 → 1, 380 ms, `cubic-bezier(.34,1.56,.64,1)`), la coche se trace (300 ms, délai 160 ms) ; 220 ms plus tard, un anneau `action` de 2 pt s’échappe (échelle 1 → 1,9, opacité 0,55 → 0, 620 ms) et le bouton rebondit (1 → 1,12 → 1, 380 ms). |
 | Appui | — | Écrasement à 0,9 en 120 ms au contact ; au relâchement 0,9 → 1,18 → 1 en 340 ms, anneau, et une petite gerbe de 14 points aux couleurs de l’app autour du bouton (environ 570 ms). |
-| Validé | Fond verre (`glass`, liseré `glass-edge`), cadenas 22 pt en `ink`, ombre douce. Même taille et même place. | La coche s’efface (160 ms) et le cadenas apparaît (échelle 0,4 → 1, 320 ms, ressort), 1,5 s après l’appui, pendant que le tampon est encore visible. |
-| Annulation | Retour à l’état actif. | La coche se trace de nouveau et l’anneau s’échappe une fois ; le contour s’efface (voir plus bas). |
+| Validé | Pastille « Portée aujourd’hui » : fond verre flouté (`glass`, `blur-glass`, liseré `glass-edge`), ombre douce `shadow-glass`, hauteur 56 pt, rayon complet. Texte en Instrument Sans 14,5 pt, 600, couleur `ink`, à 18 pt du bord gauche ; cadenas 22 pt en `ink` à droite, à la place de la coche. Ancrée au même bord droit et à la même hauteur que le bouton rond : elle s’étire vers la gauche. Largeur selon le texte (environ 196 pt à la taille de texte par défaut), sur une seule ligne. Elle chevauche le coin bas droit du contour dessiné, comme une étiquette posée dessus. | 1,5 s après l’appui, pendant que le tampon est encore visible : la coche s’efface (160 ms), le bouton s’étire de 56 à environ 196 pt (420 ms, `cubic-bezier(.34,1.4,.64,1)`), le texte apparaît en fondu (200 ms, délai 160 ms) et le cadenas grandit (échelle 0,4 → 1, 320 ms, ressort). |
+| Annulation | Retour au bouton rond actif. | Le texte s’efface (120 ms), la pastille se resserre à 56 pt (300 ms, `cubic-bezier(.4,0,.2,1)`), puis la coche se trace de nouveau et l’anneau s’échappe une fois ; le contour s’efface en même temps (voir plus bas). |
 
 **Tampon « Tenue du jour validée » (ValidationStamp)**
 
@@ -74,17 +74,17 @@ Décisions de design du 19/11/2026. Le comportement (tenue figée pour la journ�
 - Un trait à main levée entoure toute la tenue, comme au feutre : rectangle arrondi (rayon 40 pt) autour de la boîte englobante des pièces, avec une marge de 12 pt ; un second trait plus fin le double, légèrement décalé.
 - Trait principal 2,6 pt en `action` ; second trait 1,2 pt en `action` à 55 %. Bouts et jonctions arrondis. Le tracé dépasse un peu son point de départ, comme un vrai trait de feutre.
 - Tremblé déterministe (amplitude 1,6 pt et 2,2 pt, graine fixe) : la même tenue donne toujours le même trait, il ne « bouge » pas d’une ouverture à l’autre.
-- Apparition avec le cadenas (1,5 s après l’appui) : le trait se dessine en 760 ms (`cubic-bezier(.5,.1,.3,1)`), le second 120 ms plus tard.
+- Apparition avec la pastille « Portée aujourd’hui » (1,5 s après l’appui) : le trait se dessine en 760 ms (`cubic-bezier(.5,.1,.3,1)`), le second 120 ms plus tard.
 - Annulation : le trait s’efface en remontant son tracé (300 ms, ease-in).
-- Pas de pictogramme sur le contour : le seul cadenas est celui du bouton, pour éviter la confusion.
-- À la réouverture de l’app sur une tenue déjà validée : contour et cadenas sont affichés directement, sans animation ni tampon.
+- Pas de pictogramme sur le contour : le seul cadenas est dans la pastille « Portée aujourd’hui », pour éviter la confusion.
+- À la réouverture de l’app sur une tenue déjà validée : contour et pastille sont affichés directement, sans animation ni tampon.
 - Mouvement réduit : le contour apparaît et disparaît en fondu (200 ms).
 
 ## Accessibilité
 
 - Chaque pièce est un bouton nommé par sa place et sa description : « Couche 1 : Pull mérinos écru, au balcon, porté 3 fois sur 10 ».
 - L’icône de transport a un nom accessible (« à vélo »).
-- Le bouton de validation n’a pas de texte visible : nom accessible « Je porte cette tenue ». Validé : « Tenue validée, toucher pour annuler » (état sélectionné). Désactivé : la raison dans le nom (« Je porte cette tenue, indisponible : il manque un bas »).
+- Le bouton de validation n’a pas de texte visible : nom accessible « Je porte cette tenue ». Validé : « Portée aujourd’hui, toucher pour annuler » (état sélectionné) ; le nom commence par le texte visible de la pastille, pour la commande vocale. Désactivé : la raison dans le nom (« Je porte cette tenue, indisponible : il manque un bas »).
 - Tampon : annoncé une fois, « Tenue validée pour aujourd’hui » (annonce existante `today.validatedAnnouncement`) ; le dessin du tampon et le contour sont décoratifs pour le lecteur d’écran.
 - Mouvement réduit : pas d’animation de fond ; validation en fondus (voir « Validation de la tenue »).
 
@@ -324,7 +324,7 @@ Noms accessibles :
 - nav — Navigation principale
 
 
-### AX2 — Tenue validée, contour dessiné et cadenas (clair)
+### AX2 — Tenue validée, contour dessiné et pastille « Portée aujourd’hui » (clair)
 
 - Capture : `screens/01-aujourdhui/Today-AX2-Tenue-Verrouillee.webp`
 - Maquette : `mockups/01-aujourdhui/Validation-AX-Prototype.html`
@@ -338,6 +338,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « → 27° »
 - « Ensoleillé toute la journée »
 - « Max. 27° vers 16 h »
+- « Portée aujourd’hui »
 - « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
@@ -350,7 +351,7 @@ Noms accessibles :
 - button — Haut : T-shirt rayé, pièce forte
 - button — Bas : Jean brut
 - button — Chaussures : Baskets blanches
-- button — Tenue validée, toucher pour annuler
+- button — Portée aujourd’hui, toucher pour annuler
 - nav — Navigation principale
 
 
@@ -388,7 +389,7 @@ Noms accessibles :
 - nav — Navigation principale
 
 
-### AY2 — Sombre — tenue validée, contour et cadenas (sombre)
+### AY2 — Sombre — tenue validée, contour et pastille « Portée aujourd’hui » (sombre)
 
 - Capture : `screens/01-aujourdhui/Dark-AY2-Tenue-Verrouillee.webp`
 - Maquette : `mockups/01-aujourdhui/Validation-AX-Prototype.html`
@@ -402,6 +403,7 @@ Textes visibles (dans l’ordre de lecture) :
 - « → 27° »
 - « Ensoleillé toute la journée »
 - « Max. 27° vers 16 h »
+- « Portée aujourd’hui »
 - « Buanderie »
 - « Aujourd’hui »
 - « Dressing »
@@ -414,5 +416,5 @@ Noms accessibles :
 - button — Haut : T-shirt rayé, pièce forte
 - button — Bas : Jean brut
 - button — Chaussures : Baskets blanches
-- button — Tenue validée, toucher pour annuler
+- button — Portée aujourd’hui, toucher pour annuler
 - nav — Navigation principale

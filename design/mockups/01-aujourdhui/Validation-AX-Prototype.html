@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
 <!--
   Reference prototype for design/specs/01-aujourdhui.md, section « Validation de la tenue » (AX, AY).
-  Chosen design only: confirm button states, frog stamp « Tenue du jour validée », hand-drawn outline while validated.
+  Chosen design only: confirm button states, frog stamp « Tenue du jour validée », hand-drawn outline and « Portée aujourd’hui » pill while validated.
   Timings and curves below are the reference values; the HTML/CSS/Web Animations code is not meant to be ported as is.
   Behaviour (freeze, undo, wear counts) is defined in SPEC.md §7: here a tap on the validated button simply undoes it.
 -->
@@ -43,18 +43,22 @@ body { margin: 0; padding: 24px 16px 48px; background: #E9E4D8; color: #1E3120; 
 .hint-line { position: absolute; left: 16px; top: 219px; height: 2px; width: 270px; border-radius: 1px; background: var(--action); transform: scaleX(0); transform-origin: left; }
 
 /* ConfirmOutfitButton: disabled → ready → validated (lock) */
-.cta { position: absolute; right: 40px; top: 656px; width: 56px; height: 56px; border-radius: 28px; border: 0; padding: 0; background: var(--action-dis); color: var(--on-dis); cursor: pointer; transition: background-color 300ms ease, color 300ms ease, box-shadow 300ms ease; }
+.cta { position: absolute; right: 40px; top: 656px; width: 56px; height: 56px; border-radius: 28px; border: 0; padding: 0; overflow: hidden; background: var(--action-dis); color: var(--on-dis); cursor: pointer; transition: width 300ms cubic-bezier(.4,0,.2,1), background-color 300ms ease, color 300ms ease, box-shadow 300ms ease; }
+.cta-label { position: absolute; left: 18px; top: 0; height: 56px; display: flex; align-items: center; white-space: nowrap; font: 600 14.5px/1 var(--font-text); opacity: 0; transition: opacity 120ms ease; }
 .cta-fill { position: absolute; inset: 0; border-radius: 28px; background: var(--action); transform: scale(0); transition: transform 380ms cubic-bezier(.34,1.56,.64,1); }
 .cta-ring { position: absolute; inset: 0; border-radius: 28px; border: 2px solid var(--action); opacity: 0; pointer-events: none; }
-.cta svg { position: absolute; left: 50%; top: 50%; }
-.cta-check { margin: -13px 0 0 -13px; }
+.cta svg { position: absolute; right: 28px; top: 50%; }
+.cta-check { margin: -13px -13px 0 0; }
 .cta-check path { stroke-dasharray: 1; }
-.cta-lock { margin: -11px 0 0 -11px; opacity: 0; transform: scale(0.4); transition: opacity 220ms ease, transform 320ms cubic-bezier(.34,1.56,.64,1); }
+.cta-lock { margin: -11px -11px 0 0; opacity: 0; transform: scale(0.4); transition: opacity 220ms ease, transform 320ms cubic-bezier(.34,1.56,.64,1); }
 .phone.ready .cta { color: var(--on-action); box-shadow: var(--cta-shadow); }
 .phone.ready .cta-fill { transform: scale(1); }
-.phone.locked .cta { background: var(--glass); color: var(--ink); box-shadow: 0 0 0 1px var(--glass-edge), 0 6px 16px rgba(0,0,0,0.12); }
+.phone.locked .cta { background: var(--glass); color: var(--ink); box-shadow: 0 0 0 1px var(--glass-edge), 0 6px 16px rgba(0,0,0,0.12); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
 .phone.locked .cta-check { opacity: 0; transform: scale(0.4); transition: opacity 160ms ease, transform 200ms ease; }
 .phone.locked .cta-lock { opacity: 1; transform: scale(1); }
+/* validated: pill « Portée aujourd’hui », width follows the label (196 pt at the default text size) */
+.phone.locked .cta { width: 196px; transition: width 420ms cubic-bezier(.34,1.4,.64,1), background-color 300ms ease, color 300ms ease, box-shadow 300ms ease; }
+.phone.locked .cta-label { opacity: 1; transition: opacity 200ms ease 160ms; }
 
 /* stamp « Tenue du jour validée » (frame = assets/frog-stamp.svg) */
 .fx { position: absolute; inset: 0; width: 375px; height: 812px; pointer-events: none; }
@@ -93,13 +97,14 @@ body { margin: 0; padding: 24px 16px 48px; background: #E9E4D8; color: #1E3120; 
     <button class="cta" id="cta" type="button" aria-label="Je porte cette tenue">
       <span class="cta-ring" id="ctaRing"></span>
       <span class="cta-fill"></span>
+      <span class="cta-label" aria-hidden="true">Portée aujourd’hui</span>
       <svg class="cta-check" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path id="checkPath" pathLength="1" d="M5 12.5l4.5 4.5L19 7.5"/></svg>
       <svg class="cta-lock" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>
     </button>
   </div>
   <div class="controls">
     <h1>Validation de la tenue</h1>
-    <p>Prototype de référence des écrans AX et AY. Touchez le bouton du téléphone pour valider, puis de nouveau pour annuler.</p>
+    <p>Prototype de référence des écrans AX et AY. Touchez le bouton du téléphone pour valider, puis la pastille « Portée aujourd’hui » pour annuler.</p>
     <button type="button" id="themeBtn">Thème sombre</button>
     <button type="button" id="incBtn">Tenue incomplète</button>
     <label><input type="checkbox" id="reduce"> Mouvement réduit</label>
@@ -218,16 +223,16 @@ body { margin: 0; padding: 24px 16px 48px; background: #E9E4D8; color: #1E3120; 
     // the outfit locks while the stamp is still visible
     later(1500, () => {
       state = 'locked'; phone.classList.remove('ready'); phone.classList.add('locked');
-      cta.setAttribute('aria-label', 'Tenue validée, toucher pour annuler'); cta.setAttribute('aria-pressed', 'true');
-      drawOutline(true); say('Validée : tampon, puis contour dessiné et cadenas.');
+      cta.setAttribute('aria-label', 'Portée aujourd’hui, toucher pour annuler'); cta.setAttribute('aria-pressed', 'true');
+      drawOutline(true); say('Validée : tampon, puis contour dessiné et pastille « Portée aujourd’hui ».');
     });
   }
   function undo() {
     timers.forEach(clearTimeout); timers = [];
     state = 'ready'; phone.classList.remove('locked'); phone.classList.add('ready');
     cta.setAttribute('aria-label', 'Je porte cette tenue'); cta.removeAttribute('aria-pressed');
-    drawOutline(false); drawCheck(); ringOnce();
-    say('Validation annulée (comportement : SPEC.md §7) : le contour s’efface, le bouton redevient actif.');
+    drawOutline(false); later(reduced ? 0 : 300, () => { drawCheck(); ringOnce(); });
+    say('Validation annulée (comportement : SPEC.md §7) : le contour s’efface, la pastille redevient le bouton rond.');
   }
 })();
 </script>
