@@ -114,6 +114,7 @@ export const themes = {
       shadowSheet: '0 -10px 30px rgba(0,0,0,0.18)',
       shadowPopup: '0 20px 40px rgba(0,0,0,0.25)',
       shadowAdd: '0 6px 14px rgba(30,49,32,0.22)',
+      shadowGlass: '0 6px 16px rgba(0,0,0,0.12)',
     },
   },
   soir: {
@@ -228,6 +229,7 @@ export const themes = {
       shadowSheet: '0 -10px 30px rgba(0,0,0,0.45)',
       shadowPopup: '0 20px 40px rgba(0,0,0,0.50)',
       shadowAdd: '0 0 0 1px rgba(244,239,227,0.22), 0 6px 14px rgba(0,0,0,0.45)',
+      shadowGlass: '0 6px 16px rgba(0,0,0,0.12)',
     },
   },
 } as const;
