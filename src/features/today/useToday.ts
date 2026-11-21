@@ -24,7 +24,8 @@ import {
   hiddenBottom,
   initialChoice,
   type KeptOutfit,
-  missingPiece,
+  missingPieces,
+  neverAddedRows,
   type OutfitChoice,
   widenableRows,
 } from './outfitChoice';
@@ -187,13 +188,13 @@ export function useToday() {
     );
 
   const outfit = chosenOutfit(choice, shown, pieces);
-  const missing = missingPiece(outfit);
+  const missing = missingPieces(outfit);
   const isFrozen = frozenSelection !== null;
 
   const deps = () => ({ now: new Date(), newId: randomUUID });
   /** Validates the outfit shown; true when it is now frozen. */
   const validate = (): boolean => {
-    if (reference || isFrozen || missing !== null) return false;
+    if (reference || isFrozen || missing.length > 0) return false;
     const result = validateOutfit(
       db,
       { wardrobeId: wardrobe.id, date, context, selection: outfit },
@@ -233,7 +234,7 @@ export function useToday() {
           wardrobeId: wardrobe.id,
           date: current.date,
           context: current.context,
-          selection: current.missing === null ? current.outfit : null,
+          selection: current.missing.length === 0 ? current.outfit : null,
         },
         { now: new Date(), newId: randomUUID },
       );
@@ -253,6 +254,8 @@ export function useToday() {
     validate,
     undo,
     emptyRows: isFrozen ? [] : emptyRows(choice, shown, pieces),
+    // What the wardrobe still needs, until the outfit is validated.
+    neverAdded: isFrozen ? [] : neverAddedRows(shown, garments),
     widenableRows: isFrozen ? [] : widenableRows(choice, shown, pieces),
     twoStatements: statementConflict(outfit, pieces),
   };

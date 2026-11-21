@@ -205,12 +205,12 @@ export function chosenOutfit(
   return outfit;
 }
 
+export type RequiredPiece = 'top' | 'bottom';
+
 /** What "Je porte cette tenue" waits for: a top and a bottom, or a one-piece. */
-export function missingPiece(outfit: OutfitSelection): 'top' | 'bottom' | null {
-  if (outfit.onePiece !== undefined) return null;
-  if (outfit.top === undefined) return 'top';
-  if (outfit.bottom === undefined) return 'bottom';
-  return null;
+export function missingPieces(outfit: OutfitSelection): RequiredPiece[] {
+  if (outfit.onePiece !== undefined) return [];
+  return (['top', 'bottom'] as const).filter((piece) => outfit[piece] === undefined);
 }
 
 /** Layers in the outfit, in the order of the left column (Couche 1, Couche 2). */
@@ -256,6 +256,24 @@ export function emptyRows(
       rowGarments(choice, suggestion, row).length === 0 &&
       !(row === 'bottom' && wearsOnePiece(choice, suggestion, slots)),
   );
+}
+
+/**
+ * Rows of the default outfit with no garment at all in the wardrobe, wherever
+ * it is (design spec 03): « Encore 1 haut, 1 bas… ». A one-piece stands for
+ * a top and a bottom.
+ */
+export function neverAddedRows(
+  suggestion: Suggestion,
+  garments: Iterable<Pick<EngineGarment, 'slot'>>,
+): OutfitRow[] {
+  const slots = new Set(Array.from(garments, (garment) => garment.slot));
+  const has: Record<OutfitRow, boolean> = {
+    top: slots.has('top') || slots.has('onePiece'),
+    bottom: slots.has('bottom') || slots.has('onePiece'),
+    shoes: slots.has('shoes'),
+  };
+  return OUTFIT_ROWS.filter((row) => suggestion.proposedRows[row] && !has[row]);
 }
 
 /** Empty rows that have pieces to offer through "Voir les autres ?". */

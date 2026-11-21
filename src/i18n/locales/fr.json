@@ -24,11 +24,11 @@
     "wardrobe": "Dressing"
   },
   "today": {
+    "and": "et",
     "date": "{{weekday}} {{day}} {{month}}",
     "program": {
       "name": "Programme du jour : {{activity}}",
       "nameWithCommute": "Programme du jour : {{activity}}, {{commute}}",
-      "and": "et",
       "hint": "Changer le programme"
     },
     "weekdays": {
@@ -86,9 +86,17 @@
       "remove": "Retirer cette couche"
     },
     "confirm": "Je porte cette tenue",
-    "confirmMissing": {
-      "top": "Je porte cette tenue, indisponible : il manque un haut",
-      "bottom": "Je porte cette tenue, indisponible : il manque un bas"
+    "confirmUnavailable": "Je porte cette tenue, indisponible : {{reason}}",
+    "missingPieces": "il manque {{pieces}}",
+    "aPiece": {
+      "top": "un haut",
+      "bottom": "un bas"
+    },
+    "stillNeeded": "Encore {{pieces}}",
+    "onePiece": {
+      "top": "1 haut",
+      "bottom": "1 bas",
+      "shoes": "1 paire de chaussures"
     },
     "confirmed": "Portée aujourd’hui, toucher pour annuler",
     "worn": "Portée aujourd’hui",

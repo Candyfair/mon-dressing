@@ -19,6 +19,7 @@ import { useTheme } from '../../ui/theme';
 import { fontFamilies, size, spacing } from '../../ui/tokens';
 import { ConfirmOutfitButton } from './ConfirmOutfitButton';
 import { formatShortDate } from './formatHeader';
+import { joinList } from './joinList';
 import { widenRows } from './outfitChoice';
 import { TodayBackground } from './TodayBackground';
 import { OUTFIT_HEIGHT, OUTFIT_WIDTH, TodayOutfit } from './TodayOutfit';
@@ -33,16 +34,18 @@ const HEADER_GAP = spacing.space6;
 const HEADER_HEIGHT = WEATHER_HEADER_HEIGHT;
 const OUTFIT_GAP_TOP = 12;
 const OUTFIT_GAP_BOTTOM = spacing.space16;
-// The note sits at the bottom left, on the line of the confirm button.
+// The notes sit at the bottom left, the last one on the line of the confirm
+// button, left of the shoes: nothing is ever drawn there, layer 2 being
+// level with the bottom (Candice, S7). « Encore 1 haut… » wraps to fit.
 const INDICATOR_LINE = 16;
+const NOTES_GAP = spacing.space8;
 const INDICATOR_ICON = 16;
 // Room taken from the outfit zone by the two-line "Voir les autres ?" hint.
 const HINT_HEIGHT = 44;
-const DEV_TOOLS_HEIGHT = 34;
 // The confirm button's right edge, from the screen's.
 const CONFIRM_RIGHT = spacing.space40;
 
-/** Today (design specs 01 and 02): the day's weather and the outfit to wear. */
+/** Today (design specs 01, 02 and 03): the day's weather and the outfit to wear. */
 export function TodayScreen() {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
@@ -85,6 +88,9 @@ export function TodayScreen() {
   const outfitBottom = outfitTop + OUTFIT_HEIGHT * scale;
   // The « Portée aujourd’hui » pill goes up astride the outline's bottom line
   // (never down, towards the menu), centred on the screen like the outfit.
+  // « Encore 1 haut… » stops before the shoes, centred on the screen.
+  const stillNeededWidth =
+    width / 2 - (size.garmentShoes * scale) / 2 - NOTES_GAP - spacing.space16;
   const lift = outlineBottom === null ? 0 : Math.max(0, outfitBottom - (outfitTop + outlineBottom));
 
   return (
@@ -128,19 +134,47 @@ export function TodayScreen() {
             </Text>
           </Text>
         </Pressable>
-      ) : today.twoStatements ? (
-        <Animated.View
-          entering={FadeIn.duration(motion.carousel.crossFade.duration)}
-          exiting={FadeOut.duration(motion.carousel.crossFade.duration)}
-          accessibilityLiveRegion="polite"
-          style={[styles.indicator, { top: outfitBottom - INDICATOR_LINE / 2 }]}
-        >
-          <Icon name="statementPiece" size={INDICATOR_ICON} color={colors.inkSecondary} />
-          <Text style={[styles.indicatorText, { color: colors.inkSecondary }]}>
-            {t('today.twoStatements')}
-          </Text>
-        </Animated.View>
       ) : null}
+
+      <View
+        pointerEvents="box-none"
+        style={[styles.notes, { height: outfitBottom + INDICATOR_LINE / 2 }]}
+      >
+        {__DEV__ ? (
+          <View style={{ maxWidth: stillNeededWidth }}>
+            <DevTodayTools />
+          </View>
+        ) : null}
+        {today.neverAdded.length > 0 ? (
+          <Text
+            accessibilityLiveRegion="polite"
+            style={[
+              styles.indicatorText,
+              { maxWidth: stillNeededWidth, color: colors.inkSecondary },
+            ]}
+          >
+            {t('today.stillNeeded', {
+              pieces: joinList(
+                today.neverAdded.map((row) => t(`today.onePiece.${row}`)),
+                t('today.and'),
+              ),
+            })}
+          </Text>
+        ) : null}
+        {!hasHint && today.twoStatements ? (
+          <Animated.View
+            entering={FadeIn.duration(motion.carousel.crossFade.duration)}
+            exiting={FadeOut.duration(motion.carousel.crossFade.duration)}
+            accessibilityLiveRegion="polite"
+            style={styles.indicator}
+          >
+            <Icon name="statementPiece" size={INDICATOR_ICON} color={colors.inkSecondary} />
+            <Text style={[styles.indicatorText, { color: colors.inkSecondary }]}>
+              {t('today.twoStatements')}
+            </Text>
+          </Animated.View>
+        ) : null}
+      </View>
 
       <ValidationStamp
         date={formatShortDate(today.date, t).toLocaleUpperCase(i18n.language)}
@@ -157,17 +191,6 @@ export function TodayScreen() {
           centre={width / 2 - CONFIRM_RIGHT}
         />
       </View>
-
-      {__DEV__ ? (
-        <View
-          style={[
-            styles.devTools,
-            { top: outfitBottom - INDICATOR_LINE / 2 - spacing.space6 - DEV_TOOLS_HEIGHT },
-          ]}
-        >
-          <DevTodayTools />
-        </View>
-      ) : null}
     </GlassStage>
   );
 }
@@ -175,10 +198,16 @@ export function TodayScreen() {
 const styles = StyleSheet.create({
   header: { position: 'absolute', left: spacing.space16, right: spacing.space16 },
   outfit: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
-  indicator: {
+  notes: {
     position: 'absolute',
+    top: 0,
     left: spacing.space16,
     right: CONFIRM_RIGHT + size.sizeCta + spacing.space8,
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+    gap: NOTES_GAP,
+  },
+  indicator: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.space6,
@@ -201,5 +230,4 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   confirm: { position: 'absolute', right: CONFIRM_RIGHT },
-  devTools: { position: 'absolute', left: spacing.space16 },
 });

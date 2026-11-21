@@ -8,8 +8,9 @@ import {
   frozenSuggestion,
   hiddenBottom,
   initialChoice,
-  missingPiece,
+  missingPieces,
   moveTo,
+  neverAddedRows,
   nextLayer,
   onePieceShare,
   showRow,
@@ -88,10 +89,24 @@ describe('outfit choice', () => {
   });
 
   it('waits for a top and a bottom, or a one-piece', () => {
-    expect(missingPiece({ top: 'tee', bottom: 'jeans' })).toBeNull();
-    expect(missingPiece({ onePiece: 'dress' })).toBeNull();
-    expect(missingPiece({ top: 'tee' })).toBe('bottom');
-    expect(missingPiece({ bottom: 'jeans' })).toBe('top');
+    expect(missingPieces({ top: 'tee', bottom: 'jeans' })).toEqual([]);
+    expect(missingPieces({ onePiece: 'dress' })).toEqual([]);
+    expect(missingPieces({ top: 'tee' })).toEqual(['bottom']);
+    expect(missingPieces({ bottom: 'jeans' })).toEqual(['top']);
+    expect(missingPieces({ shoes: 'boots' })).toEqual(['top', 'bottom']);
+  });
+
+  it('names the outfit rows the wardrobe has never had a garment for', () => {
+    const engine = suggestion();
+    expect(neverAddedRows(engine, [])).toEqual(['top', 'bottom', 'shoes']);
+    expect(neverAddedRows(engine, [{ slot: 'top' }])).toEqual(['bottom', 'shoes']);
+    expect(neverAddedRows(engine, [{ slot: 'top' }, { slot: 'bottom' }])).toEqual(['shoes']);
+    expect(neverAddedRows(engine, slots.values())).toEqual([]);
+    // A one-piece is a top and a bottom; layers are not asked for.
+    expect(neverAddedRows(engine, [{ slot: 'onePiece' }, { slot: 'midLayer' }])).toEqual(['shoes']);
+    // Shoes the day does not propose are not asked for.
+    const indoor = suggestion({ proposedRows: { ...engine.proposedRows, shoes: false } });
+    expect(neverAddedRows(indoor, [])).toEqual(['top', 'bottom']);
   });
 
   it('adds the first layer that has garments, then removes it', () => {
@@ -115,7 +130,7 @@ describe('outfit choice', () => {
     const choice = initialChoice(engine);
     expect(emptyRows(choice, engine, slots)).toEqual(['top']);
     expect(widenableRows(choice, engine, slots)).toEqual(['top']);
-    expect(missingPiece(chosenOutfit(choice, engine, slots))).toBe('top');
+    expect(missingPieces(chosenOutfit(choice, engine, slots))).toEqual(['top']);
 
     const widened = widenRows(choice, ['top']);
     expect(emptyRows(widened, engine, slots)).toEqual([]);
