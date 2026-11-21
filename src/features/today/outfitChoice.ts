@@ -255,12 +255,8 @@ export function addLayer(
 
 export type { OutfitRow };
 
-/** Rows of the default outfit with nothing to show: drawn as empty slots. */
-export function emptyRows(
-  choice: OutfitChoice,
-  suggestion: Suggestion,
-  slots: GarmentSlots,
-): OutfitRow[] {
+/** Rows of the default outfit with nothing to show. */
+function emptyRows(choice: OutfitChoice, suggestion: Suggestion, slots: GarmentSlots): OutfitRow[] {
   return OUTFIT_ROWS.filter(
     (row) =>
       suggestion.proposedRows[row] &&
@@ -278,33 +274,44 @@ function ofRow<G extends Pick<EngineGarment, 'slot'>>(
 }
 
 /**
- * Rows of the default outfit with no garment at all in the wardrobe, wherever
- * it is (design spec 03): « Encore 1 haut, 1 bas… ».
+ * What a row of the default outfit shows (design spec 03):
+ * - `filled`: garments to swipe, or no bottom under a one-piece;
+ * - `notProposed`: the day does not ask for it (shoes indoors);
+ * - `neverAdded`: no garment that would do, wherever it is: a silhouette,
+ *   named in « Encore 1 haut, 1 bas… »;
+ * - `inLaundry`: the row's garments are all unavailable (dirty, drying, to
+ *   iron…, AR4): « Vos bas sont à la buanderie », not a silhouette;
+ * - `empty`: none suits the day: a silhouette.
  */
-export function neverAddedRows(
-  suggestion: Suggestion,
-  garments: Iterable<Pick<EngineGarment, 'slot'>>,
-): OutfitRow[] {
-  const all = Array.from(garments);
-  return OUTFIT_ROWS.filter(
-    (row) => suggestion.proposedRows[row] && ofRow(all, row, OUTFIT_ROW_COVERS).length === 0,
-  );
-}
+export type RowStatus = 'filled' | 'notProposed' | 'neverAdded' | 'inLaundry' | 'empty';
+export type RowStatuses = Record<OutfitRow, RowStatus>;
 
-/**
- * Empty rows whose garments are all unavailable: dirty, drying, to iron…
- * (design spec 03, AR4): « Vos bas sont à la buanderie », not a silhouette.
- */
-export function laundryRows<G extends Pick<EngineGarment, 'slot'>>(
-  empty: readonly OutfitRow[],
+export function rowStatuses<G extends Pick<EngineGarment, 'slot'>>(
+  choice: OutfitChoice,
+  suggestion: Suggestion,
+  slots: GarmentSlots,
   garments: Iterable<G>,
   isAvailable: (garment: G) => boolean,
-): OutfitRow[] {
+): RowStatuses {
   const all = Array.from(garments);
-  return empty.filter((row) => {
+  const empty = emptyRows(choice, suggestion, slots);
+  const status = (row: OutfitRow): RowStatus => {
+    if (!suggestion.proposedRows[row]) return 'notProposed';
+    if (!empty.includes(row)) return 'filled';
+    // A one-piece covers the bottom's need, but lives in the top row.
+    if (ofRow(all, row, OUTFIT_ROW_COVERS).length === 0) return 'neverAdded';
     const own = ofRow(all, row, OUTFIT_ROW_SLOTS);
-    return own.length > 0 && !own.some(isAvailable);
-  });
+    return own.length > 0 && !own.some(isAvailable) ? 'inLaundry' : 'empty';
+  };
+  return { top: status('top'), bottom: status('bottom'), shoes: status('shoes') };
+}
+
+/** The validated outfit: nothing to say about its rows. */
+export const LOCKED_ROWS: RowStatuses = { top: 'filled', bottom: 'filled', shoes: 'filled' };
+
+/** The rows in one of these states, in the outfit's order. */
+export function rowsIn(statuses: RowStatuses, ...wanted: readonly RowStatus[]): OutfitRow[] {
+  return OUTFIT_ROWS.filter((row) => wanted.includes(statuses[row]));
 }
 
 /** Empty rows that have pieces to offer through "Voir les autres ?". */

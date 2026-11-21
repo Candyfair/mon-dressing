@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import '../../i18n';
 import type { Suggestion } from '../../domain/engine';
-import { initialChoice, type OutfitChoice, showRow } from './outfitChoice';
+import { initialChoice, LOCKED_ROWS, type OutfitChoice, showRow } from './outfitChoice';
 import { TodayOutfit } from './TodayOutfit';
 import type { TodayPiece } from './useToday';
 
@@ -48,9 +48,8 @@ function outfit(choice: OutfitChoice, locked = false) {
       pieces={PIECES}
       choice={choice}
       onChoiceChange={jest.fn()}
-      emptyRows={[]}
+      rowStatus={LOCKED_ROWS}
       onAddPiece={jest.fn()}
-      laundryRows={[]}
       onSortLaundry={jest.fn()}
       locked={locked}
       scale={1}
@@ -88,9 +87,8 @@ describe('TodayOutfit', () => {
         pieces={PIECES}
         choice={initialChoice(SUGGESTION)}
         onChoiceChange={jest.fn()}
-        emptyRows={['top', 'bottom']}
+        rowStatus={{ top: 'neverAdded', bottom: 'inLaundry', shoes: 'filled' }}
         onAddPiece={jest.fn()}
-        laundryRows={['bottom']}
         onSortLaundry={onSortLaundry}
         scale={1}
       />,

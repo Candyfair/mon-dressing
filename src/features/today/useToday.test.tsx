@@ -129,7 +129,7 @@ describe('useToday', () => {
     );
     expect(today.current.frozen).toBe(true);
     expect(today.current.outfit).toEqual(validated);
-    expect(today.current.emptyRows).toEqual([]);
+    expect(today.current.rows).toEqual({ top: 'filled', bottom: 'filled', shoes: 'filled' });
     // Nothing else to swipe to.
     expect(today.current.suggestion.rows.top).toHaveLength(1);
 
