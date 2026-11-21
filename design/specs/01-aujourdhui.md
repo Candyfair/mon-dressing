@@ -83,7 +83,8 @@ Décisions de design du 19/11/2026. Le comportement (tenue figée pour la journ�
 ## Accessibilité
 
 - Chaque pièce est un bouton nommé par sa place et sa description : « Couche 1 : Pull mérinos écru, au balcon, porté 3 fois sur 10 ».
-- L’icône de transport a un nom accessible (« à vélo »).
+- L’étiquette de programme est un seul bouton : « Programme du jour : bureau, à vélo » (tous les modes du jour : « à pied et à vélo »), indice « Changer le programme ». Décision de Candice du 21/11/2026.
+- Date courte sans point d’abréviation : « Sam 21 nov » (décision de Candice du 21/11/2026).
 - Le bouton de validation n’a pas de texte visible : nom accessible « Je porte cette tenue ». Validé : « Portée aujourd’hui, toucher pour annuler » (état sélectionné) ; le nom commence par le texte visible de la pastille, pour la commande vocale. Désactivé : la raison dans le nom (« Je porte cette tenue, indisponible : il manque un bas »).
 - Tampon : annoncé une fois, « Tenue validée pour aujourd’hui » (annonce existante `today.validatedAnnouncement`) ; le dessin du tampon et le contour sont décoratifs pour le lecteur d’écran.
 - Mouvement réduit : pas d’animation de fond ; validation en fondus (voir « Validation de la tenue »).
@@ -104,7 +105,7 @@ Décisions de design du 19/11/2026. Le comportement (tenue figée pour la journ�
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Bureau »
 - « 9° »
 - « → 14° »
@@ -137,7 +138,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -168,7 +169,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Sam. 13 déc. »
+- « Sam 13 déc »
 - « Détente »
 - « −2° »
 - « → 4° »
@@ -201,7 +202,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Bureau »
 - « 9° »
 - « → 14° »
@@ -234,7 +235,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -265,7 +266,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Sam. 13 déc. »
+- « Sam 13 déc »
 - « Détente »
 - « −2° »
 - « → 4° »
@@ -298,7 +299,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -332,7 +333,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -363,7 +364,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -397,7 +398,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
