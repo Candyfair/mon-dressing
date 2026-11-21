@@ -10,7 +10,7 @@ import { garmentThumbnails } from '../../db/repositories/garments';
 import {
   saveProbableOutfit,
   todayOutfit,
-  type TodayOutfit,
+  type DayValidation,
   undoValidation,
   validateOutfit,
 } from '../../db/repositories/outfits';
@@ -107,7 +107,9 @@ export function useToday() {
     () => ({ date, outfit: todayOutfit(db, wardrobe.id, date) }),
     [date, wardrobe.id],
   );
-  const [frozenState, setFrozenState] = useState<{ date: string; outfit: TodayOutfit }>(readFrozen);
+  const [frozenState, setFrozenState] = useState<{ date: string; outfit: DayValidation }>(
+    readFrozen,
+  );
   let frozen = frozenState.outfit;
   if (frozenState.date !== date) {
     const fresh = readFrozen();

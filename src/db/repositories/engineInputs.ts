@@ -1,6 +1,6 @@
 // Reads what the suggestion engine needs (SPEC §7). Read-only: the engine
 // never writes, and the lifecycle columns are only passed through.
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 
 import { getSubtype } from '../../domain/catalogue/subtypes';
 import type { EngineGarment, OutfitSelection } from '../../domain/engine';
@@ -54,39 +54,30 @@ export function loadEngineGarments(db: SyncDatabase, wardrobeId: string): Engine
 
 /**
  * Last wear of each garment that was not taken back: an `unworn` event
- * cancels a `worn` of the same garment and outfit (undone validation).
+ * cancels a `worn` of the same garment and outfit (undone validation). Wears
+ * and take-backs of one outfit alternate, so its latest wear stands when it
+ * has more wears than take-backs. Events without an outfit fall into one
+ * group: this holds because `unworn` is only written against a validated
+ * outfit, and those rows are never deleted.
  */
 function lastWornAt(db: SyncDatabase, ids: readonly string[]): Map<string, Date> {
-  const events = db
+  const worn = sql`${garmentEvents.type} = 'worn'`;
+  const standing = db
     .select({
-      id: garmentEvents.id,
       garmentId: garmentEvents.garmentId,
-      type: garmentEvents.type,
-      outfitId: garmentEvents.outfitId,
-      occurredAt: garmentEvents.occurredAt,
+      at: sql<Date>`max(case when ${worn} then ${garmentEvents.occurredAt} end)`.mapWith(
+        garmentEvents.occurredAt,
+      ),
     })
     .from(garmentEvents)
     .where(
       and(inArray(garmentEvents.type, ['worn', 'unworn']), inArray(garmentEvents.garmentId, ids)),
     )
+    .groupBy(garmentEvents.garmentId, garmentEvents.outfitId)
+    .having(sql`sum(${worn}) > sum(not ${worn})`)
     .all();
-  // Per garment and outfit: wears minus take-backs, and the latest wear. An
-  // event without an outfit cannot be paired and stands alone.
-  const pairs = new Map<string, { garmentId: string; net: number; at: Date | null }>();
-  for (const event of events) {
-    const key = `${event.garmentId}|${event.outfitId ?? event.id}`;
-    const pair = pairs.get(key) ?? { garmentId: event.garmentId, net: 0, at: null };
-    if (event.type === 'worn') {
-      pair.net += 1;
-      if (pair.at === null || event.occurredAt > pair.at) pair.at = event.occurredAt;
-    } else {
-      pair.net -= 1;
-    }
-    pairs.set(key, pair);
-  }
   const last = new Map<string, Date>();
-  for (const { garmentId, net, at } of pairs.values()) {
-    if (net <= 0 || at === null) continue;
+  for (const { garmentId, at } of standing) {
     const current = last.get(garmentId);
     if (current === undefined || at > current) last.set(garmentId, at);
   }

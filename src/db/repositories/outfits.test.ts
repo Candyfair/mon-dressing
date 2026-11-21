@@ -114,6 +114,21 @@ describe('validateOutfit', () => {
     expect(wearCount(db, 'tee')).toBe(0);
     expect(todayOutfit(db, wardrobeId, DATE)).toEqual({ status: 'none' });
   });
+  it('is refused while the day is already validated', () => {
+    const { db, wardrobeId } = setup();
+    const day = { wardrobeId, date: DATE, context: CONTEXT };
+    validateOutfit(db, { ...day, selection: { top: 'tee', bottom: 'jeans' } }, deps(T0));
+
+    expect(
+      validateOutfit(db, { ...day, selection: { top: 'shirt', bottom: 'jeans' } }, deps(LATER)),
+    ).toEqual({ ok: false, reason: 'alreadyValidated' });
+    expect([wearCount(db, 'tee'), wearCount(db, 'shirt'), wearCount(db, 'jeans')]).toEqual([
+      1, 0, 1,
+    ]);
+    expect(todayOutfit(db, wardrobeId, DATE)).toMatchObject({
+      selection: { top: 'tee', bottom: 'jeans' },
+    });
+  });
 });
 
 describe('undoValidation', () => {
