@@ -23,8 +23,9 @@ import type { RequiredPiece } from './outfitChoice';
 export const PILL_LABEL_LEFT = 18;
 const GAP = 4;
 const ENDS = GAP + size.sizeCta;
-// Wide enough for the label at any text size: it is measured, not drawn, there.
-const MEASURE_ROOM = 480;
+// Wide enough for a pill's label at any text size: it is measured, not
+// drawn, there.
+export const MEASURE_ROOM = 480;
 
 const { validation } = motion;
 const instant = { duration: 0 };

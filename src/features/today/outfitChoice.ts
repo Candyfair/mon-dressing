@@ -1,14 +1,9 @@
 import {
-  OUTFIT_ROW_COVERS,
-  OUTFIT_ROW_SLOTS,
-  OUTFIT_ROWS,
-  type OutfitRow,
-} from '../../domain/catalogue/outfitRows';
-import {
   type EngineGarment,
   type LayerSlot,
   type OutfitSelection,
   ROW_SLOTS,
+  rowOf,
   type RowSlot,
   slotInRow,
   type Suggestion,
@@ -253,7 +248,20 @@ export function addLayer(
   };
 }
 
-export type { OutfitRow };
+/**
+ * The rows of the default outfit (design spec 03): what « Encore… » counts,
+ * a missing silhouette stands for and the laundry slot stands in for.
+ */
+export const OUTFIT_ROWS = ['top', 'bottom', 'shoes'] as const;
+export type OutfitRow = (typeof OUTFIT_ROWS)[number];
+
+// The garments that cover a row's need (« Encore… »): a one-piece stands for
+// a top and a bottom, though it is shown in the top row only (`rowOf`).
+const ROW_COVERS: Record<OutfitRow, readonly Slot[]> = {
+  top: ['top', 'onePiece'],
+  bottom: ['bottom', 'onePiece'],
+  shoes: ['shoes'],
+};
 
 /** Rows of the default outfit with nothing to show. */
 function emptyRows(choice: OutfitChoice, suggestion: Suggestion, slots: GarmentSlots): OutfitRow[] {
@@ -263,14 +271,6 @@ function emptyRows(choice: OutfitChoice, suggestion: Suggestion, slots: GarmentS
       rowGarments(choice, suggestion, row).length === 0 &&
       !(row === 'bottom' && wearsOnePiece(choice, suggestion, slots)),
   );
-}
-
-function ofRow<G extends Pick<EngineGarment, 'slot'>>(
-  garments: readonly G[],
-  row: OutfitRow,
-  categories: Record<OutfitRow, readonly Slot[]>,
-): G[] {
-  return garments.filter((garment) => categories[row].includes(garment.slot));
 }
 
 /**
@@ -299,8 +299,8 @@ export function rowStatuses<G extends Pick<EngineGarment, 'slot'>>(
     if (!suggestion.proposedRows[row]) return 'notProposed';
     if (!empty.includes(row)) return 'filled';
     // A one-piece covers the bottom's need, but lives in the top row.
-    if (ofRow(all, row, OUTFIT_ROW_COVERS).length === 0) return 'neverAdded';
-    const own = ofRow(all, row, OUTFIT_ROW_SLOTS);
+    if (!all.some((garment) => ROW_COVERS[row].includes(garment.slot))) return 'neverAdded';
+    const own = all.filter((garment) => rowOf(garment) === row);
     return own.length > 0 && !own.some(isAvailable) ? 'inLaundry' : 'empty';
   };
   return { top: status('top'), bottom: status('bottom'), shoes: status('shoes') };

@@ -98,7 +98,7 @@
       "bottom": "un bas"
     },
     "stillNeeded": "Encore {{pieces}}",
-    "onePiece": {
+    "stillNeededPiece": {
       "top": "1 haut",
       "bottom": "1 bas",
       "shoes": "1 paire de chaussures"

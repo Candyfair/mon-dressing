@@ -47,7 +47,7 @@ export function TypeSheet({ recentSubtypes, isBusy, onSave }: TypeSheetProps) {
   const [usages, setUsages] = useState<ReadonlySet<Usage>>(new Set());
   const [areDetailsOpen, setAreDetailsOpen] = useState(false);
 
-  const { recent, sections } = typeSections(recentSubtypes);
+  const sections = typeSections();
 
   const choose = (key: SubtypeKey) => {
     setSubtype(key);
@@ -87,10 +87,10 @@ export function TypeSheet({ recentSubtypes, isBusy, onSave }: TypeSheetProps) {
             <Text accessibilityRole="header" style={[styles.title, { color: colors.ink }]}>
               {t('add.typeQuestion')}
             </Text>
-            {recent.length > 0 ? (
+            {recentSubtypes.length > 0 ? (
               <>
                 <Text style={sectionLabel}>{t('add.recent')}</Text>
-                {tileGrid(recent)}
+                {tileGrid(recentSubtypes)}
               </>
             ) : null}
             {sections.map((section) => (

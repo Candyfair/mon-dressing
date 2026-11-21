@@ -17,7 +17,6 @@ import { AddLayerButton } from './AddLayerButton';
 import { EmptySlot } from './EmptySlot';
 import { LaundrySlot } from './LaundrySlot';
 import { LayerSheet } from './LayerSheet';
-import { OUTFIT_ROWS } from '../../domain/catalogue/outfitRows';
 import { LockedOutline, OUTLINE_MARGIN, type OutlineBounds } from './LockedOutline';
 import {
   addLayer,
@@ -26,6 +25,7 @@ import {
   moveTo,
   nextLayer,
   onePieceShare,
+  OUTFIT_ROWS,
   type OutfitChoice,
   type OutfitRow,
   rowGarments,
