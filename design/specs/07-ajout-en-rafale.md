@@ -23,7 +23,7 @@ Sheet, Option (tuiles de type, bascules, usages), Button. Voir `design-system/co
 - Plein écran, toujours sombre (dans les deux thèmes). « Ajout en rafale », « Terminer », consigne « Posez la pièce à plat, bien éclairée », pile des photos prises avec leur nombre.
 
 ### Feuille de type (AG2, AG4, AG5)
-- Après la photo : détourage en cours (« Détourage… »), puis « Quel type de pièce ? » : récents, puis tous les types en tuiles.
+- Après la photo : détourage en cours (« Détourage… »), puis « Quel type de pièce ? » : récents, puis tous les types en tuiles, rangés sous « Hauts », « Bas », « Robes et combinaisons », « Vestes et manteaux » et « Chaussures », dans cet ordre. Un type récent reste aussi dans sa section. Ces sections ne servent qu’à l’affichage : elles ne changent pas la catégorie de la pièce. La maquette montre encore « Tous les types » : cette spec prime (Candice, 21 nov.).
 - Bascules : Favori, Pièce forte, Se repasse.
 - « Plus de détails · facultatif » : usages par groupes — Météo (Chaud, Doux, Frais, Froid, Pluie), Activité (Bureau, Télétravail, Détente, Sport), Déplacement (À pied, Vélo, Trottinette, Transports en commun, Voiture, Moto), Occasion (Quotidien, Festif, Cérémonie, Entretien professionnel).
 - Texte d’aide : « Sans précision dans une sous-catégorie, la pièce est proposée dans tous les cas. Choisissez des usages pour ne la proposer qu’à ces moments-là. »
@@ -136,16 +136,11 @@ Textes visibles (dans l’ordre de lecture) :
 - « T-shirt »
 - « Chemise »
 - « Jean »
-- « Tous les types »
-- « Pull »
-- « Débardeur »
-- « Pantalon »
-- « Robe »
-- « Jupe »
-- « Manteau »
-- « Baskets »
-- « Bottines »
-- « Sweat »
+- « Hauts » (T-shirt, Débardeur, Chemise, Blouse, Haut en coton, Haut en laine, Sweat, Pull, Gilet, Blazer)
+- « Bas » (Jean, Pantalon, Jupe, Short)
+- « Robes et combinaisons » (Robe, Combinaison, Salopette)
+- « Vestes et manteaux » (Veste, Manteau, Imperméable)
+- « Chaussures » (Baskets, Bottines, Chaussures)
 - « Favori »
 - « Pièce forte »
 - « Se repasse »
@@ -299,16 +294,11 @@ Textes visibles (dans l’ordre de lecture) :
 - « T-shirt »
 - « Chemise »
 - « Jean »
-- « Tous les types »
-- « Pull »
-- « Débardeur »
-- « Pantalon »
-- « Robe »
-- « Jupe »
-- « Manteau »
-- « Baskets »
-- « Bottines »
-- « Sweat »
+- « Hauts » (T-shirt, Débardeur, Chemise, Blouse, Haut en coton, Haut en laine, Sweat, Pull, Gilet, Blazer)
+- « Bas » (Jean, Pantalon, Jupe, Short)
+- « Robes et combinaisons » (Robe, Combinaison, Salopette)
+- « Vestes et manteaux » (Veste, Manteau, Imperméable)
+- « Chaussures » (Baskets, Bottines, Chaussures)
 - « Favori »
 - « Pièce forte »
 - « Se repasse »

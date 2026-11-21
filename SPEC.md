@@ -306,7 +306,7 @@ Screen-level rules, exact copy, accessible names and validated mockups live in `
 - Tapping a piece never opens its garment sheet (sheets open only from the Wardrobe).
 - Location badge against the shoulder of pieces not in the wardrobe (balcony, drying rack).
 - Round "Je porte cette tenue" button on the right, above the tab bar. Enabled as soon as the outfit has at least one piece (shoes and layers optional). Without a top + bottom or a one-piece, the first tap asks for a confirmation in place (« Il manque un bas · Valider quand même ? »), a second tap validates. Disabled only with no piece at all.
-- **Guided state** (`03`): for a category never added, a dotted silhouette with "+" opens burst add with the type preselected; sentence "Encore 1 haut, 1 bas et 1 paire de chaussures"… If the category exists but everything is in the laundry: "Vos bas sont à la buanderie" + "Trier le linge".
+- **Guided state** (`03`): for a category never added, a dotted silhouette with "+" opens burst add, nothing preselected; sentence "Encore 1 haut, 1 bas et 1 paire de chaussures"… If the category exists but everything is in the laundry: "Vos bas sont à la buanderie" + "Trier le linge".
 - After the evening sort time → evening sort (§8.5).
 - Reduced motion: no background animation; piece changes by cross-fade.
 
@@ -524,6 +524,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-19 | Validated outfit frozen for the day, no way back | Rows locked once validated; tapping the button again undoes the validation (`unwear` command, `unworn` event) until the evening sort | A mistaken tap must not leave wrong wear counts (Candice, S7) |
 | 2026-11-21 | Validation needs a top + bottom or a one-piece; an incomplete outfit is never sorted | An outfit with at least one piece can be validated, after an in-place confirmation when it is incomplete; it is sorted on its pieces alone, and so is an incomplete probable outfit | A garment just bought and not yet photographed must be wearable the same morning (Candice, S7) |
 | 2026-11-21 | Commute icons, date abbreviations and commute accessible names (open, §14.1) | Every mode gets an icon at the app's 1.7 stroke: walking and bike drawn for the app, scooter, car and motorbike from Tabler Icons (MIT), public transport from Lucide `tram-front` (ISC); one icon per day (the first mode), all modes read out. Short date without abbreviation dots (« Sam 21 nov »). The program chip is one button: « Programme du jour : bureau, à vélo », hint « Changer le programme » | Chosen by Candice from a comparison sheet (S7) |
+| 2026-11-21 | A missing silhouette opens burst add with its type preselected; the type sheet lists « Récents » then « Tous les types » | Nothing is preselected. The type sheet always shows « Récents » (a recent type also stays in its section), then every type under « Hauts » (`top`, `midLayer`), « Bas », « Robes et combinaisons », « Vestes et manteaux », « Chaussures », in this order; display only, the slots do not change | Candice found « Bas » at the top of the sheet surprising while looking for « Pantalon »; the most photographed sections come first |
 
 ---
 
