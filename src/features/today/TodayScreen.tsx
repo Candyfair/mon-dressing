@@ -142,7 +142,7 @@ export function TodayScreen() {
       >
         {__DEV__ ? (
           <View style={{ maxWidth: stillNeededWidth }}>
-            <DevTodayTools />
+            <DevTodayTools guided={today.devStage} onGuidedChange={today.setDevStage} />
           </View>
         ) : null}
         {today.neverAdded.length > 0 ? (

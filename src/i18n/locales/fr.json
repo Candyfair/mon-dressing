@@ -315,7 +315,13 @@
     "open": "Écrans de dev",
     "today": {
       "add": "+ Pièce",
-      "theme": "Thème"
+      "theme": "Thème",
+      "guided": {
+        "off": "Guidé : non",
+        "empty": "Guidé : vide",
+        "top": "Guidé : haut",
+        "topAndBottom": "Guidé : haut, bas"
+      }
     }
   }
 }
