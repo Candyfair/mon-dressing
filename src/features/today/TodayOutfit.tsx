@@ -15,6 +15,7 @@ import { motion } from '../../ui/motion';
 import { size, spacing } from '../../ui/tokens';
 import { AddLayerButton } from './AddLayerButton';
 import { EmptySlot } from './EmptySlot';
+import { LaundrySlot } from './LaundrySlot';
 import { LayerSheet } from './LayerSheet';
 import { LockedOutline, OUTLINE_MARGIN, type OutlineBounds } from './LockedOutline';
 import {
@@ -92,6 +93,9 @@ interface TodayOutfitProps {
   // Rows drawn as dashed silhouettes, and what touching one does.
   emptyRows: readonly OutfitRow[];
   onAddPiece: (row: OutfitRow) => void;
+  // Empty rows whose garments are all at the laundry: said, not drawn.
+  laundryRows: readonly OutfitRow[];
+  onSortLaundry: () => void;
   // Validated outfit: nothing swipes, no layer to add or change.
   locked?: boolean;
   // Outfit zone scale: 1 on the 375 × 812 pt reference screen.
@@ -109,6 +113,8 @@ export function TodayOutfit({
   onChoiceChange,
   emptyRows,
   onAddPiece,
+  laundryRows,
+  onSortLaundry,
   locked = false,
   scale,
   onOutlineBottom,
@@ -289,6 +295,28 @@ export function TodayOutfit({
       {emptyRows.map((row) => {
         const place = places[row];
         const frame = place.frame * scale;
+        if (laundryRows.includes(row)) {
+          // Centred in the row's swipe area, which stops where the next row's
+          // starts: on two lines in the narrow lane, it stays clear of the shoes.
+          const [bandTop, bandBottom] = place.band;
+          return (
+            <View
+              key={row}
+              style={[
+                styles.absolute,
+                styles.laundry,
+                {
+                  left: columnLeft,
+                  top: bandTop * scale,
+                  width: columnWidth,
+                  height: (bandBottom - bandTop) * scale,
+                },
+              ]}
+            >
+              <LaundrySlot row={row} width={columnWidth} onSortLaundry={onSortLaundry} />
+            </View>
+          );
+        }
         return (
           <View
             key={row}
@@ -398,6 +426,7 @@ function sameBounds(a: OutlineBounds, b: OutlineBounds): boolean {
 
 const styles = StyleSheet.create({
   absolute: { position: 'absolute' },
+  laundry: { justifyContent: 'center' },
   // Trousers and dresses run down over the shoes, not under them.
   overShoes: { zIndex: 1 },
   // Layers and the add button: the right column's pieces slide under them,

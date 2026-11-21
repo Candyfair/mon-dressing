@@ -16,7 +16,12 @@ import {
   validateOutfit,
 } from '../../db/repositories/outfits';
 import type { SubtypeKey } from '../../domain/catalogue/subtypes';
-import { type EngineGarment, statementConflict, suggestDay } from '../../domain/engine';
+import {
+  type EngineGarment,
+  isAvailable,
+  statementConflict,
+  suggestDay,
+} from '../../domain/engine';
 import {
   choiceFromSelection,
   chosenOutfit,
@@ -25,6 +30,7 @@ import {
   hiddenBottom,
   initialChoice,
   type KeptOutfit,
+  laundryRows,
   missingPieces,
   neverAddedRows,
   type OutfitChoice,
@@ -255,6 +261,7 @@ export function useToday() {
     return () => subscription.remove();
   }, [wardrobe.id]);
 
+  const empty = isFrozen ? [] : emptyRows(choice, shown, pieces);
   return {
     ...day,
     suggestion: shown,
@@ -266,7 +273,11 @@ export function useToday() {
     frozen: isFrozen,
     validate,
     undo,
-    emptyRows: isFrozen ? [] : emptyRows(choice, shown, pieces),
+    emptyRows: empty,
+    // Empty rows whose garments are all at the laundry: said instead of drawn.
+    laundryRows: laundryRows(empty, garments, (garment) =>
+      isAvailable(garment, date, wardrobe.timeZone, settings),
+    ),
     // What the wardrobe still needs, until the outfit is validated.
     neverAdded: isFrozen ? [] : neverAddedRows(shown, garments),
     widenableRows: isFrozen ? [] : widenableRows(choice, shown, pieces),

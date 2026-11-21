@@ -88,3 +88,8 @@ export function referenceWardrobe(): EngineGarment[] {
     }),
   );
 }
+
+/** A reference garment put in the dirty basket, as the lifecycle would. */
+export function inDirtyBasket(garment: EngineGarment): EngineGarment {
+  return { ...garment, location: 'dirty' };
+}

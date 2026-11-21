@@ -109,6 +109,12 @@
     "twoStatements": "2 pièces fortes dans la tenue",
     "noneToday": "Des pièces existent, mais aucune ne convient aujourd’hui",
     "seeOthers": "Voir les autres ?",
+    "inLaundry": {
+      "top": "Vos hauts sont à la buanderie",
+      "bottom": "Vos bas sont à la buanderie",
+      "shoes": "Vos chaussures sont à la buanderie"
+    },
+    "sortLaundry": "Trier le linge",
     "addPiece": {
       "top": "Ajouter un haut",
       "bottom": "Ajouter un bas",
@@ -325,7 +331,8 @@
         "off": "Guidé : non",
         "empty": "Guidé : vide",
         "top": "Guidé : haut",
-        "topAndBottom": "Guidé : haut, bas"
+        "topAndBottom": "Guidé : haut, bas",
+        "bottomsInLaundry": "Guidé : bas au sale"
       }
     }
   }

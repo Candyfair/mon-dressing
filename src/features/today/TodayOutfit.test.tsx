@@ -50,6 +50,8 @@ function outfit(choice: OutfitChoice, locked = false) {
       onChoiceChange={jest.fn()}
       emptyRows={[]}
       onAddPiece={jest.fn()}
+      laundryRows={[]}
+      onSortLaundry={jest.fn()}
       locked={locked}
       scale={1}
     />
@@ -76,5 +78,28 @@ describe('TodayOutfit', () => {
     expect(screen.queryByRole('button', { name: /Pull écru/ })).toBeNull();
     await fireEvent.press(screen.getByLabelText(/Pull écru/));
     expect(screen.queryByLabelText(SHEET)).toBeNull();
+  });
+
+  it('says a row is at the laundry instead of drawing its silhouette', async () => {
+    const onSortLaundry = jest.fn();
+    await render(
+      <TodayOutfit
+        suggestion={SUGGESTION}
+        pieces={PIECES}
+        choice={initialChoice(SUGGESTION)}
+        onChoiceChange={jest.fn()}
+        emptyRows={['top', 'bottom']}
+        onAddPiece={jest.fn()}
+        laundryRows={['bottom']}
+        onSortLaundry={onSortLaundry}
+        scale={1}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Ajouter un haut' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Ajouter un bas' })).toBeNull();
+    expect(screen.getByText('Vos bas sont à la buanderie')).toBeTruthy();
+    await fireEvent.press(screen.getByRole('button', { name: 'Trier le linge' }));
+    expect(onSortLaundry).toHaveBeenCalled();
   });
 });
