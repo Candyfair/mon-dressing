@@ -151,6 +151,39 @@ const ICONS = {
       />,
     ],
   },
+  // Scooter, car and motorbike: Tabler Icons (MIT); public transport: Lucide
+  // tram-front (ISC). Licences in THIRD_PARTY_NOTICES.md.
+  scooter: {
+    strokeWidth: 1.7,
+    shapes: [
+      <Path key="a" d="M16 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />,
+      <Path key="b" d="M4 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />,
+      <Path key="p" d="M8 17h5a6 6 0 0 1 5 -5v-5a2 2 0 0 0 -2 -2h-1" />,
+    ],
+  },
+  publicTransport: {
+    strokeWidth: 1.7,
+    shapes: [
+      <Rect key="r" x={4} y={3} width={16} height={16} rx={2} />,
+      <Path key="p" d="M4 11h16M12 3v8m-4 8-2 3m12 0-2-3M8 15h.01M16 15h.01" />,
+    ],
+  },
+  car: {
+    strokeWidth: 1.7,
+    shapes: [
+      <Path key="a" d="M5 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />,
+      <Path key="b" d="M15 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />,
+      <Path key="p" d="M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5" />,
+    ],
+  },
+  motorbike: {
+    strokeWidth: 1.7,
+    shapes: [
+      <Path key="a" d="M2 16a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />,
+      <Path key="b" d="M16 16a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />,
+      <Path key="p" d="M7.5 14h5l4 -4h-10.5m1.5 4l4 -4M13 6h2l1.5 3l2 4" />,
+    ],
+  },
   plus: { strokeWidth: 2, shapes: [<Path key="p" d="M12 5v14M5 12h14" />] },
   airing: {
     strokeWidth: 2.2,
