@@ -14,15 +14,19 @@ const BORDER = 1;
 const GAP = 7;
 const DIVIDER = 1;
 
-// Transport icons drawn in the mockups; the other modes have none yet and
-// show the activity alone (level-2 note).
-const COMMUTE_ICONS: Partial<Record<CommuteMode, IconName>> = {
-  bike: 'bike',
+// One icon per commute mode (Candice, 2026-11-21).
+const COMMUTE_ICONS: Record<CommuteMode, IconName> = {
   walking: 'walking',
+  bike: 'bike',
+  scooter: 'scooter',
+  publicTransport: 'publicTransport',
+  car: 'car',
+  motorbike: 'motorbike',
 };
 
+// The chip shows the first mode of the day; all of them are read out.
 function commuteMode(context: DayContext): CommuteMode | undefined {
-  return context.commuteModes.find((candidate) => COMMUTE_ICONS[candidate] !== undefined);
+  return context.commuteModes[0];
 }
 
 /** Width of the chip without its label. */
@@ -38,14 +42,31 @@ interface ProgramChipProps {
   onPress: () => void;
 }
 
-/** The day's program: activity in text, transport as an icon (design-system ProgramChip). */
+/**
+ * The day's program: activity in text, transport as an icon (design-system
+ * ProgramChip). One button for screen readers, « Programme du jour : bureau,
+ * à pied et à vélo ».
+ */
 export function ProgramChip({ context, label, labelScale, onPress }: ProgramChipProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const mode = commuteMode(context);
-  const icon = mode === undefined ? undefined : COMMUTE_ICONS[mode];
+  const activity = label.toLocaleLowerCase(i18n.language);
+  const commutes = context.commuteModes.map((each) => t(`today.commute.${each}`));
+  const name =
+    commutes.length === 0
+      ? t('today.program.name', { activity })
+      : t('today.program.nameWithCommute', {
+          activity,
+          commute: joinList(commutes, t('today.program.and')),
+        });
   return (
-    <Pressable accessibilityRole="button" onPress={onPress}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={name}
+      accessibilityHint={t('today.program.hint')}
+      onPress={onPress}
+    >
       <Glass style={[styles.chip, { borderColor: colors.glassEdge }]}>
         <Text
           testID="header-program"
@@ -62,21 +83,21 @@ export function ProgramChip({ context, label, labelScale, onPress }: ProgramChip
         >
           {label}
         </Text>
-        {mode !== undefined && icon !== undefined ? (
+        {mode !== undefined ? (
           <>
             <View style={[styles.divider, { backgroundColor: colors.chipDivider }]} />
-            <View
-              accessible
-              accessibilityRole="image"
-              accessibilityLabel={t(`today.commute.${mode}`)}
-            >
-              <Icon name={icon} size={ICON} color={colors.controlInk} />
-            </View>
+            <Icon name={COMMUTE_ICONS[mode]} size={ICON} color={colors.controlInk} />
           </>
         ) : null}
       </Glass>
     </Pressable>
   );
+}
+
+// « à pied », « à pied et à vélo », « à pied, à vélo et en voiture ».
+function joinList(items: readonly string[], and: string): string {
+  if (items.length < 2) return items.join('');
+  return `${items.slice(0, -1).join(', ')} ${and} ${items[items.length - 1]}`;
 }
 
 const styles = StyleSheet.create({
