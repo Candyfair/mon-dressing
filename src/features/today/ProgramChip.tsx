@@ -59,7 +59,7 @@ export function ProgramChip({ context, label, labelScale, onPress }: ProgramChip
       ? t('today.program.name', { activity })
       : t('today.program.nameWithCommute', {
           activity,
-          commute: joinList(commutes, t('today.program.and')),
+          commute: joinList(commutes, t('today.and')),
         });
   return (
     <Pressable

@@ -18,6 +18,8 @@ import { Icon } from '../../ui/Icon';
 import { motion } from '../../ui/motion';
 import { useTheme } from '../../ui/theme';
 import { fontFamilies, size } from '../../ui/tokens';
+import { joinList } from './joinList';
+import type { RequiredPiece } from './outfitChoice';
 import { ValidationBurst } from './ValidationBurst';
 
 const CHECK = 26;
@@ -48,8 +50,8 @@ const PILL_SETTLED = Math.max(
 const instant = { duration: 0 };
 
 interface ConfirmOutfitButtonProps {
-  // What the outfit still lacks; null when it can be worn.
-  missing: 'top' | 'bottom' | null;
+  // What the outfit still lacks; empty when it can be worn.
+  missing: readonly RequiredPiece[];
   // The outfit is validated: the button is the « Portée aujourd’hui » pill
   // and undoes it.
   frozen: boolean;
@@ -82,7 +84,7 @@ export function ConfirmOutfitButton({
   const theme = useTheme();
   const { colors, shadows } = theme;
   const reducedMotion = useReducedMotion();
-  const enabled = frozen || missing === null;
+  const enabled = frozen || missing.length === 0;
 
   const scale = useSharedValue(1);
   // 0 → 1: one ring leaving the button; 1 at rest (invisible).
@@ -102,7 +104,7 @@ export function ConfirmOutfitButton({
   // How much of the check is drawn.
   const check = useSharedValue(1);
   // The solid fill of an active button, grown from the centre on activation.
-  const fill = useSharedValue(missing === null ? 1 : 0);
+  const fill = useSharedValue(missing.length === 0 ? 1 : 0);
 
   const drawCheck = (delay: number) => {
     if (reducedMotion) return;
@@ -267,9 +269,16 @@ export function ConfirmOutfitButton({
 
   const label = frozen
     ? t('today.confirmed')
-    : missing === null
+    : missing.length === 0
       ? t('today.confirm')
-      : t(`today.confirmMissing.${missing}`);
+      : t('today.confirmUnavailable', {
+          reason: t('today.missingPieces', {
+            pieces: joinList(
+              missing.map((piece) => t(`today.aPiece.${piece}`)),
+              t('today.and'),
+            ),
+          }),
+        });
 
   const bounce = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
   // The pill rises and slides to its centre with its stretch.
