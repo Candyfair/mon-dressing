@@ -91,7 +91,7 @@ interface TodayOutfitProps {
   onChoiceChange: (update: (choice: OutfitChoice) => OutfitChoice) => void;
   // Rows drawn as dashed silhouettes, and what touching one does.
   emptyRows: readonly OutfitRow[];
-  onAddPiece: () => void;
+  onAddPiece: (row: OutfitRow) => void;
   // Validated outfit: nothing swipes, no layer to add or change.
   locked?: boolean;
   // Outfit zone scale: 1 on the 375 × 812 pt reference screen.
@@ -301,7 +301,7 @@ export function TodayOutfit({
               row === 'bottom' && styles.overShoes,
             ]}
           >
-            <EmptySlot row={row} frame={frame} onPress={onAddPiece} />
+            <EmptySlot row={row} frame={frame} onPress={() => onAddPiece(row)} />
           </View>
         );
       })}
