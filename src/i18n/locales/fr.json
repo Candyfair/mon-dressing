@@ -141,12 +141,13 @@
     "cutOut": "Pièce détourée",
     "typeQuestion": "Quel type de pièce ?",
     "recent": "Récents",
-    "category": {
-      "top": "Hauts",
-      "bottom": "Bas",
+    "section": {
+      "tops": "Hauts",
+      "bottoms": "Bas",
+      "onePieces": "Robes et combinaisons",
+      "outerwear": "Vestes et manteaux",
       "shoes": "Chaussures"
     },
-    "allTypes": "Tous les types",
     "changeType": "Changer de type",
     "favorite": "Favori",
     "statementPiece": "Pièce forte",
