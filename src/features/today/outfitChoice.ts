@@ -7,6 +7,7 @@ import {
   slotInRow,
   type Suggestion,
 } from '../../domain/engine';
+import type { Slot } from '../../domain/types';
 import { loopIndex } from '../../ui/loopIndex';
 
 /**
@@ -258,22 +259,43 @@ export function emptyRows(
   );
 }
 
+// The garments that fill each outfit row: a one-piece stands for a top and a bottom.
+const ROW_CATEGORIES: Record<OutfitRow, readonly Slot[]> = {
+  top: ['top', 'onePiece'],
+  bottom: ['bottom', 'onePiece'],
+  shoes: ['shoes'],
+};
+
+function ofRow<G extends Pick<EngineGarment, 'slot'>>(garments: readonly G[], row: OutfitRow): G[] {
+  return garments.filter((garment) => ROW_CATEGORIES[row].includes(garment.slot));
+}
+
 /**
  * Rows of the default outfit with no garment at all in the wardrobe, wherever
- * it is (design spec 03): « Encore 1 haut, 1 bas… ». A one-piece stands for
- * a top and a bottom.
+ * it is (design spec 03): « Encore 1 haut, 1 bas… ».
  */
 export function neverAddedRows(
   suggestion: Suggestion,
   garments: Iterable<Pick<EngineGarment, 'slot'>>,
 ): OutfitRow[] {
-  const slots = new Set(Array.from(garments, (garment) => garment.slot));
-  const has: Record<OutfitRow, boolean> = {
-    top: slots.has('top') || slots.has('onePiece'),
-    bottom: slots.has('bottom') || slots.has('onePiece'),
-    shoes: slots.has('shoes'),
-  };
-  return OUTFIT_ROWS.filter((row) => suggestion.proposedRows[row] && !has[row]);
+  const all = Array.from(garments);
+  return OUTFIT_ROWS.filter((row) => suggestion.proposedRows[row] && ofRow(all, row).length === 0);
+}
+
+/**
+ * Empty rows whose garments are all unavailable: dirty, drying, to iron…
+ * (design spec 03, AR4): « Vos bas sont à la buanderie », not a silhouette.
+ */
+export function laundryRows<G extends Pick<EngineGarment, 'slot'>>(
+  empty: readonly OutfitRow[],
+  garments: Iterable<G>,
+  isAvailable: (garment: G) => boolean,
+): OutfitRow[] {
+  const all = Array.from(garments);
+  return empty.filter((row) => {
+    const own = ofRow(all, row);
+    return own.length > 0 && !own.some(isAvailable);
+  });
 }
 
 /** Empty rows that have pieces to offer through "Voir les autres ?". */

@@ -1,4 +1,4 @@
-import { referenceWardrobe } from '../../domain/engine/__fixtures__/wardrobe';
+import { inDirtyBasket, referenceWardrobe } from '../../domain/engine/__fixtures__/wardrobe';
 import type { EngineGarment } from '../../domain/engine';
 import type { Slot } from '../../domain/types';
 
@@ -6,7 +6,7 @@ import type { Slot } from '../../domain/types';
  * Development only: the guided Today (design spec 03) on the reference
  * wardrobe, cut down to what a first use has. Nothing is stored.
  */
-export const GUIDED_STAGES = ['off', 'empty', 'top', 'topAndBottom'] as const;
+export const GUIDED_STAGES = ['off', 'empty', 'top', 'topAndBottom', 'bottomsInLaundry'] as const;
 export type GuidedStage = (typeof GUIDED_STAGES)[number];
 
 // One-pieces are left out: they would stand for the missing bottom.
@@ -14,6 +14,8 @@ const SLOTS: Record<Exclude<GuidedStage, 'off'>, readonly Slot[]> = {
   empty: [],
   top: ['top', 'midLayer', 'outerLayer'],
   topAndBottom: ['top', 'midLayer', 'outerLayer', 'bottom'],
+  // Every bottom goes to the laundry basket (AR4).
+  bottomsInLaundry: ['top', 'midLayer', 'outerLayer', 'bottom', 'shoes'],
 };
 
 export interface DevGuided {
@@ -34,7 +36,13 @@ export function devWardrobe(
   const all = referenceWardrobe();
   if (stage === 'off') return all;
   return [
-    ...all.filter((garment) => SLOTS[stage].includes(garment.slot)),
+    ...all
+      .filter((garment) => SLOTS[stage].includes(garment.slot))
+      .map((garment) =>
+        stage === 'bottomsInLaundry' && garment.slot === 'bottom'
+          ? inDirtyBasket(garment)
+          : garment,
+      ),
     ...real.filter((garment) => garment.createdAt >= since),
   ];
 }

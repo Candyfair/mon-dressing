@@ -1,5 +1,6 @@
 export { resolveDayContext, type DayOverrideInput } from './context';
 export { sameOutfit } from './defaultOutfit';
+export { isAvailable } from './eligibility';
 export {
   planDay,
   planWeather,

@@ -8,6 +8,7 @@ import {
   frozenSuggestion,
   hiddenBottom,
   initialChoice,
+  laundryRows,
   missingPieces,
   moveTo,
   neverAddedRows,
@@ -107,6 +108,24 @@ describe('outfit choice', () => {
     // Shoes the day does not propose are not asked for.
     const indoor = suggestion({ proposedRows: { ...engine.proposedRows, shoes: false } });
     expect(neverAddedRows(indoor, [])).toEqual(['top', 'bottom']);
+  });
+
+  it('names the empty rows whose garments are all unavailable', () => {
+    const garments = [
+      { slot: 'top' as const, available: true },
+      { slot: 'bottom' as const, available: false },
+      { slot: 'bottom' as const, available: false },
+    ];
+    const available = (garment: { available: boolean }) => garment.available;
+    // Shoes were never added: a silhouette, not the laundry.
+    expect(laundryRows(['bottom', 'shoes'], garments, available)).toEqual(['bottom']);
+    // One clean bottom is enough for the row not to be at the laundry.
+    const oneClean = [...garments, { slot: 'bottom' as const, available: true }];
+    expect(laundryRows(['bottom'], oneClean, available)).toEqual([]);
+    // A dirty dress counts for the top and the bottom rows.
+    expect(
+      laundryRows(['top', 'bottom'], [{ slot: 'onePiece', available: false }], available),
+    ).toEqual(['top', 'bottom']);
   });
 
   it('adds the first layer that has garments, then removes it', () => {
