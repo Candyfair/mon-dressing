@@ -14,7 +14,7 @@ StatusIcon, RadialMenu, GridTile, EmptyState, AddButton, TabBar. Voir `design-sy
 
 ### En-tête
 - Titre « Dressing » et bouton « + » prune (ajout en rafale).
-- Catégories en pastilles : Hauts, Couches, Bas, Robes, Chaussures (active crème, contour mousse en clair).
+- Catégories en pastilles : Hauts, Bas, Robes, Pulls et manteaux, Chaussures, dans l’ordre où l’on s’habille (active crème, contour mousse en clair). « Pulls et manteaux » regroupe les couches intermédiaires et extérieures : « Couches » seul évoquait les couches pour bébé. Les maquettes montrent encore « Couches » en deuxième : cette spec prime (Candice, 21 nov.).
 - Filtres prune : Disponibles, Favoris, Sport ; bouton grille à droite.
 
 ### Carrousel « étagère » (S1)
@@ -54,9 +54,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -95,9 +95,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -142,9 +142,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -189,9 +189,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -228,9 +228,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Aucun haut pour l’instant »
 - « Photographiez-les à la suite : quelques secondes par pièce. »
@@ -256,9 +256,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -295,9 +295,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -336,9 +336,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -383,9 +383,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -422,9 +422,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Aucun haut pour l’instant »
 - « Photographiez-les à la suite : quelques secondes par pièce. »
@@ -450,9 +450,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »

@@ -100,7 +100,7 @@ Les illustrations de vêtements des maquettes sont provisoires : les vraies piè
 
 ## L’écran Dressing
 
-- En-tête : titre « Dressing » 34 pt et AddButton ; catégories en pastilles (Hauts, Couches, Bas, Robes, Chaussures ; active crème, contour `moss-deep` en clair) ; filtres prune (Disponibles, Favoris, Sport) et bouton grille à droite.
+- En-tête : titre « Dressing » 34 pt et AddButton ; catégories en pastilles (Hauts, Bas, Robes, Pulls et manteaux, Chaussures ; active crème, contour `moss-deep` en clair) ; filtres prune (Disponibles, Favoris, Sport) et bouton grille à droite.
 - Carrousel « étagère » : pièce centrale `garment-carousel` sur une ligne de sol commune, voisines 150 pt écartées et estompées. Sous la pièce, centrés : badge « Pièce forte », « Porté 1 fois » (icône boucle), statuts actifs (StatusIcon 44 pt), compteur « 12 / 38 ». Pas de nom.
 - Grille : GridTile, deux par ligne. États vides : EmptyState.
 
