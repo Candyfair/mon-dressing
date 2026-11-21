@@ -3,13 +3,21 @@ import { useTranslation } from 'react-i18next';
 import { Appearance, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
 
 import { useTheme } from '../../ui/theme';
+import { type GuidedStage, nextGuidedStage } from './guidedStages';
 import { fontFamilies, radius, size, spacing } from '../../ui/tokens';
 
 /**
  * Temporary test tools on Today (development builds only, not designed):
- * add garments and switch between the light and dark themes.
+ * add garments, switch between the light and dark themes, and walk through
+ * the guided Today on the reference wardrobe.
  */
-export function DevTodayTools() {
+export function DevTodayTools({
+  guided,
+  onGuidedChange,
+}: {
+  guided: GuidedStage;
+  onGuidedChange: (stage: GuidedStage) => void;
+}) {
   const { t } = useTranslation();
   const scheme = useColorScheme();
   return (
@@ -18,6 +26,10 @@ export function DevTodayTools() {
       <Tool
         label={t('dev.today.theme')}
         onPress={() => Appearance.setColorScheme(scheme === 'dark' ? 'light' : 'dark')}
+      />
+      <Tool
+        label={t(`dev.today.guided.${guided}`)}
+        onPress={() => onGuidedChange(nextGuidedStage(guided))}
       />
     </View>
   );
@@ -37,7 +49,7 @@ function Tool({ label, onPress }: { label: string; onPress: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: spacing.space6 },
+  row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.space6 },
   tool: {
     height: size.sizeOptionSmall,
     paddingHorizontal: spacing.space10,
