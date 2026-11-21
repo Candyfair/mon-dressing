@@ -45,7 +45,7 @@ EmptySlot, ConfirmOutfitButton (désactivé), WeatherHeader, TabBar. Voir `desig
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -76,7 +76,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -108,7 +108,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -140,7 +140,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -172,7 +172,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -203,7 +203,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -235,7 +235,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -267,7 +267,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »

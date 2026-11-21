@@ -464,7 +464,6 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | Item | Resolved when |
 |---|---|
 | Today without shoes (indoor day, §6.3) and "Rotation des tenues" setting (§9.8): not designed | Before S7 / S9 |
-| Commute icons (scooter, public transport, car and motorbike have none), date abbreviations and commute accessible names: to choose with Candice | S7 |
 | Ironing carousel (not designed) | Before S8 |
 | Demo wardrobe content | S10 |
 | "Missing photo" state on cards (Android restore without photos, §11.4) | Before S11 |
@@ -521,6 +520,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-18 | Mascot as a colourless line drawing, cream line in the dark theme (design system) | The frog stays in colour in both themes, with the same images | Seen on the dark end-of-sort screen (Candice, S6) |
 | 2026-11-19 | Commute usages filter: the garment must cover every commute mode of the day | Commute usages only order the row: a garment sharing one mode with the day comes first, any other stays eligible without priority | A "Vélo" piece should come first on bike days without disappearing on other days (Candice, after S6 device tests) |
 | 2026-11-19 | Validated outfit frozen for the day, no way back | Rows locked once validated; tapping the button again undoes the validation (`unwear` command, `unworn` event) until the evening sort | A mistaken tap must not leave wrong wear counts (Candice, S7) |
+| 2026-11-21 | Commute icons, date abbreviations and commute accessible names (open, §14.1) | Every mode gets an icon at the app's 1.7 stroke: walking and bike drawn for the app, scooter, car and motorbike from Tabler Icons (MIT), public transport from Lucide `tram-front` (ISC); one icon per day (the first mode), all modes read out. Short date without abbreviation dots (« Sam 21 nov »). The program chip is one button: « Programme du jour : bureau, à vélo », hint « Changer le programme » | Chosen by Candice from a comparison sheet (S7) |
 
 ---
 

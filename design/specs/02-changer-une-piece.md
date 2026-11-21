@@ -63,7 +63,7 @@ Aucune.
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -94,7 +94,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Bureau »
 - « 9° »
 - « → 14° »
@@ -127,7 +127,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Bureau »
 - « 9° »
 - « → 14° »
@@ -165,7 +165,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -196,7 +196,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -227,7 +227,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Bureau »
 - « 9° »
 - « → 14° »
@@ -260,7 +260,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Bureau »
 - « 9° »
 - « → 14° »
@@ -298,7 +298,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -329,7 +329,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »
@@ -361,7 +361,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Ven. 13 juin »
+- « Ven 13 juin »
 - « Télétravail »
 - « 19° »
 - « → 27° »

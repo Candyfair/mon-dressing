@@ -60,7 +60,7 @@ SortCard, RadialMenu, StatusIcon, Button, NightBackground. Voir `design-system/c
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Ranger la tenue du jour »
 - « Appui long sur chaque pièce »
 - « Buanderie »
@@ -92,7 +92,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Ranger la tenue du jour »
 - « Appui long sur chaque pièce »
 - « Buanderie »
@@ -128,7 +128,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Ranger la tenue du jour »
 - « Appui long sur chaque pièce »
 - « Buanderie »
@@ -165,7 +165,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Ranger la tenue du jour »
 - « Appui long sur chaque pièce »
 - « Buanderie »
@@ -197,7 +197,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Ranger la tenue du jour »
 - « Appui long sur chaque pièce »
 - « Buanderie »
@@ -233,7 +233,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Ranger la tenue du jour »
 - « Appui long sur chaque pièce »
 - « Buanderie »
@@ -270,7 +270,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Ranger la tenue du jour »
 - « Tout est trié, il reste à valider »
 - « Buanderie »
@@ -303,7 +303,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Tenue rangée »
 - « 1 au sale · 1 à aérer · 3 rangées »
 - « Modifier »
@@ -340,7 +340,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Ranger la tenue du jour »
 - « Tout est trié, il reste à valider »
 - « Buanderie »
@@ -373,7 +373,7 @@ Noms accessibles :
 
 Textes visibles (dans l’ordre de lecture) :
 
-- « Lun. 27 oct. »
+- « Lun 27 oct »
 - « Tenue rangée »
 - « 1 au sale · 1 à aérer · 3 rangées »
 - « Modifier »
