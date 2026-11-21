@@ -39,6 +39,8 @@ const INDICATOR_ICON = 16;
 // Room taken from the outfit zone by the two-line "Voir les autres ?" hint.
 const HINT_HEIGHT = 44;
 const DEV_TOOLS_HEIGHT = 34;
+// The confirm button's right edge, from the screen's.
+const CONFIRM_RIGHT = spacing.space40;
 
 /** Today (design specs 01 and 02): the day's weather and the outfit to wear. */
 export function TodayScreen() {
@@ -152,7 +154,7 @@ export function TodayScreen() {
           frozen={today.frozen}
           onPress={today.frozen ? undo : validate}
           lift={lift}
-          centre={width / 2 - spacing.space40}
+          centre={width / 2 - CONFIRM_RIGHT}
         />
       </View>
 
@@ -176,7 +178,7 @@ const styles = StyleSheet.create({
   indicator: {
     position: 'absolute',
     left: spacing.space16,
-    right: spacing.space40 + size.sizeCta + spacing.space8,
+    right: CONFIRM_RIGHT + size.sizeCta + spacing.space8,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.space6,
@@ -198,6 +200,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textDecorationLine: 'underline',
   },
-  confirm: { position: 'absolute', right: spacing.space40 },
+  confirm: { position: 'absolute', right: CONFIRM_RIGHT },
   devTools: { position: 'absolute', left: spacing.space16 },
 });

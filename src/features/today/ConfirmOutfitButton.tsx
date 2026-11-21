@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   cancelAnimation,
-  type SharedValue,
   useAnimatedProps,
   useAnimatedStyle,
   useReducedMotion,
@@ -17,8 +16,9 @@ import Svg, { Path } from 'react-native-svg';
 import { Glass } from '../../ui/Glass';
 import { Icon } from '../../ui/Icon';
 import { motion } from '../../ui/motion';
-import { type Theme, useTheme } from '../../ui/theme';
+import { useTheme } from '../../ui/theme';
 import { fontFamilies, size } from '../../ui/tokens';
+import { ValidationBurst } from './ValidationBurst';
 
 const CHECK = 26;
 const CHECK_STROKE = 2.2;
@@ -146,36 +146,40 @@ export function ConfirmOutfitButton({
     labelShown.set(withDelay(delay + validation.labelIn.delay, withTiming(1, validation.labelIn)));
   };
 
-  // A tap on the pill shrinks it first, then undoes: undoing redraws the whole
-  // outfit, which would swallow the shrink.
-  const shrunkForUndo = useRef(false);
-  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // From the validation until the pill is in place, taps do nothing, so that
-  // the animation always ends on the pill.
-  const settling = useRef(false);
-  const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // What the button is in the middle of; taps do nothing until it is idle.
+  // - settling: from the validation until the pill is in place, so that the
+  //   animation always ends on the pill;
+  // - undoing: a tap on the pill shrinks it first, then undoes (undoing
+  //   redraws the whole outfit, which would swallow the shrink), until the
+  //   button is round again.
+  const phase = useRef<'idle' | 'settling' | 'undoing'>('idle');
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const after = (delay: number, then: () => void) => {
+    if (timer.current !== null) clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      timer.current = null;
+      then();
+    }, delay);
+  };
   useEffect(
     () => () => {
-      for (const timer of [undoTimer, settleTimer])
-        if (timer.current !== null) clearTimeout(timer.current);
+      if (timer.current !== null) clearTimeout(timer.current);
     },
     [],
   );
   const press = () => {
-    if (settling.current) return;
+    if (phase.current !== 'idle') return;
     if (!frozen) {
       onPress();
       return;
     }
-    if (shrunkForUndo.current) return;
-    shrunkForUndo.current = true;
-    undoTimer.current = setTimeout(() => {
-      undoTimer.current = null;
+    phase.current = 'undoing';
+    after(shrinkPill(), () => {
       if (onPress()) return;
       // Not undone: back to the pill.
-      shrunkForUndo.current = false;
+      phase.current = 'idle';
       stretchPill(0);
-    }, shrinkPill());
+    });
   };
 
   const previous = useRef({ frozen, enabled });
@@ -201,23 +205,20 @@ export function ConfirmOutfitButton({
         );
       }
       stretchPill(validation.lockDelay);
-      settling.current = true;
-      settleTimer.current = setTimeout(
-        () => {
-          settleTimer.current = null;
-          settling.current = false;
-        },
+      phase.current = 'settling';
+      after(
         validation.lockDelay + (reducedMotion ? 2 * validation.stampFade.duration : PILL_SETTLED),
+        () => {
+          phase.current = 'idle';
+        },
       );
     } else if (!frozen && before.frozen) {
       // Undone: once the pill is back to the round button, the check draws
       // again and a ring leaves.
-      if (shrunkForUndo.current) {
-        shrunkForUndo.current = false;
-        drawCheck(0);
-      } else {
-        drawCheck(shrinkPill());
-      }
+      drawCheck(phase.current === 'undoing' ? 0 : shrinkPill());
+      if (timer.current !== null) clearTimeout(timer.current);
+      timer.current = null;
+      phase.current = 'idle';
     }
     if (enabled && !before.enabled) {
       // The outfit became complete: the fill grows, the check draws, a ring
@@ -315,7 +316,7 @@ export function ConfirmOutfitButton({
         onPress={press}
       >
         <Animated.View style={[styles.button, width]}>
-          <Burst progress={burst} theme={theme} />
+          <ValidationBurst progress={burst} style={styles.burst} />
           <Animated.View style={[StyleSheet.absoluteFill, bounce]}>
             <Animated.View style={[StyleSheet.absoluteFill, solid]}>
               <View style={[styles.round, { backgroundColor: colors.actionDisabled }]} />
@@ -382,86 +383,6 @@ export function ConfirmOutfitButton({
   );
 }
 
-// The dots of the burst: directions, speeds and sizes drawn once from a fixed
-// seed, so the burst looks the same every time.
-const DOTS = (() => {
-  let seed = 11;
-  const random = () => {
-    seed = (seed * 9301 + 49297) % 233280;
-    return seed / 233280;
-  };
-  return Array.from({ length: motion.validation.burst.count }, (_, index) => {
-    const angle = random() * Math.PI * 2;
-    const speed = 4.2 * (0.45 + random() * 0.75);
-    return {
-      angle,
-      speed,
-      diameter: (2 * (4 + random() * 3)) / 2.6,
-      colour: index % 4,
-    };
-  });
-})();
-
-// The prototype slows each dot by 8 % per frame, for 34 frames.
-const FRICTION = 0.92;
-const FRAMES = 34;
-
-function Burst({ progress, theme }: { progress: SharedValue<number>; theme: Theme }) {
-  const { colors } = theme;
-  const palette = [
-    colors.celebration1,
-    colors.celebration2,
-    colors.celebration3,
-    colors.celebration4,
-  ];
-  return (
-    <View style={styles.burst} pointerEvents="none">
-      {DOTS.map((dot, index) => (
-        <BurstDot key={index} dot={dot} colour={palette[dot.colour]} progress={progress} />
-      ))}
-    </View>
-  );
-}
-
-function BurstDot({
-  dot,
-  colour,
-  progress,
-}: {
-  dot: (typeof DOTS)[number];
-  colour: string | undefined;
-  progress: SharedValue<number>;
-}) {
-  const style = useAnimatedStyle(() => {
-    const time = progress.get();
-    const frames = FRAMES * time;
-    const travel = (dot.speed * FRICTION * (1 - FRICTION ** frames)) / (1 - FRICTION);
-    return {
-      opacity: time < 1 ? Math.min(1, (1 - time) * 1.6) : 0,
-      transform: [
-        { translateX: Math.cos(dot.angle) * travel },
-        { translateY: Math.sin(dot.angle) * travel },
-      ],
-    };
-  });
-  return (
-    <Animated.View
-      style={[
-        styles.dot,
-        {
-          width: dot.diameter,
-          height: dot.diameter,
-          borderRadius: dot.diameter / 2,
-          marginLeft: -dot.diameter / 2,
-          marginTop: -dot.diameter / 2,
-          backgroundColor: colour,
-        },
-        style,
-      ]}
-    />
-  );
-}
-
 const styles = StyleSheet.create({
   // The round button and the pill grow from the right edge, where the
   // check, the lock, the ring and the burst stay.
@@ -503,5 +424,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   burst: { position: 'absolute', right: size.sizeCta / 2, top: size.sizeCta / 2 },
-  dot: { position: 'absolute' },
 });

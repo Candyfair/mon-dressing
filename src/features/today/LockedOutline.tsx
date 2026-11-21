@@ -13,6 +13,7 @@ import Animated, {
 import Svg, { Path } from 'react-native-svg';
 
 import { motion } from '../../ui/motion';
+import { seededRandom } from '../../ui/seededRandom';
 import { useTheme } from '../../ui/theme';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -55,11 +56,8 @@ export function roughRect(
   jitter: number,
   seed: number,
 ): { d: string; length: number } {
-  let state = seed;
-  const random = () => {
-    state = (state * 9301 + 49297) % 233280;
-    return (state / 233280 - 0.5) * 2 * jitter;
-  };
+  const next = seededRandom(seed);
+  const random = () => (next() - 0.5) * 2 * jitter;
   const points: Point[] = [];
   const side = (x1: number, y1: number, x2: number, y2: number, steps: number) => {
     for (let index = 0; index < steps; index++) {

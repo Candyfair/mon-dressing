@@ -25,6 +25,7 @@ import Svg, {
 } from 'react-native-svg';
 
 import { motion } from '../../ui/motion';
+import { seededRandom } from '../../ui/seededRandom';
 import { useTheme } from '../../ui/theme';
 import { fontFamilies } from '../../ui/tokens';
 
@@ -52,11 +53,7 @@ const VEIL = { width: 0.66, height: 0.28 };
 // The ink texture: specks where the ink did not take, drawn once from a fixed
 // seed (a pre-rendered noise, design spec 01).
 const SPECKS = (() => {
-  let seed = 3;
-  const random = () => {
-    seed = (seed * 9301 + 49297) % 233280;
-    return seed / 233280;
-  };
+  const random = seededRandom(3);
   return Array.from({ length: 140 }, () => ({
     x: random() * VIEW_BOX.width,
     y: 10 + random() * (VIEW_BOX.height - 10),
