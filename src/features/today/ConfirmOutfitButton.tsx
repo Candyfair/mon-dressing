@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   cancelAnimation,
   useAnimatedProps,
@@ -35,6 +35,10 @@ const PILL = { left: 18, gap: 10, right: (size.sizeCta - LOCK) / 2 };
 const PILL_ESTIMATE = 196;
 // Wide enough for the label at any text size: it is measured, not drawn, there.
 const LABEL_ROOM = 480;
+// The « Il manque un bas · Valider quand même ? » pill: its label from the
+// same left edge as « Portée aujourd’hui », a few points before the check's
+// round button, on one line when the room allows it, else on two.
+const ASK_GAP = 4;
 const RING_SCALE = 1.9;
 const RING_OPACITY = 0.55;
 
@@ -50,8 +54,10 @@ const PILL_SETTLED = Math.max(
 const instant = { duration: 0 };
 
 interface ConfirmOutfitButtonProps {
-  // What the outfit still lacks; empty when it can be worn.
+  // What the outfit still lacks; empty when it is complete.
   missing: readonly RequiredPiece[];
+  // The outfit has no piece at all: the button is disabled.
+  empty: boolean;
   // The outfit is validated: the button is the « Portée aujourd’hui » pill
   // and undoes it.
   frozen: boolean;
@@ -61,12 +67,16 @@ interface ConfirmOutfitButtonProps {
   lift: number;
   // How far left of the button's right edge the pill centres itself (pt).
   centre: number;
+  // How wide the confirmation pill may grow from the button's right edge (pt).
+  room: number;
 }
 
 /**
  * « Je porte cette tenue », Today's main action (design spec 01, « Validation
- * de la tenue »). Disabled, it stays in place and findable by screen readers,
- * with the reason in its name. Validating squashes it, throws a ring and dots
+ * de la tenue »). Disabled without any piece, it stays in place and findable
+ * by screen readers, with the reason in its name. On an incomplete outfit, a
+ * first tap stretches it in place into « Il manque un bas · Valider quand
+ * même ? », a second one validates, and it folds back on its own. Validating squashes it, throws a ring and dots
  * around it, then stretches it to the left into a glass pill « Portée
  * aujourd’hui » with a lock; a tap on the pill undoes the validation, shrinks
  * it back and draws the check again. Opened on a validated outfit, the pill
@@ -75,16 +85,18 @@ interface ConfirmOutfitButtonProps {
  */
 export function ConfirmOutfitButton({
   missing,
+  empty,
   frozen,
   onPress,
   lift,
   centre,
+  room,
 }: ConfirmOutfitButtonProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const { colors, shadows } = theme;
   const reducedMotion = useReducedMotion();
-  const enabled = frozen || missing.length === 0;
+  const enabled = frozen || !empty;
 
   const scale = useSharedValue(1);
   // 0 → 1: one ring leaving the button; 1 at rest (invisible).
@@ -104,7 +116,32 @@ export function ConfirmOutfitButton({
   // How much of the check is drawn.
   const check = useSharedValue(1);
   // The solid fill of an active button, grown from the centre on activation.
-  const fill = useSharedValue(missing.length === 0 ? 1 : 0);
+  const fill = useSharedValue(empty ? 0 : 1);
+
+  // The confirmation of an incomplete outfit. 0: the round button; 1: the
+  // pill, and its label shown.
+  const ask = useSharedValue(0);
+  const askLabelShown = useSharedValue(0);
+  const [asking, setAsking] = useState(false);
+  const askingNow = useRef(false);
+  const askTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pieces = joinList(
+    missing.map((piece) => t(`today.aPiece.${piece}`)),
+    t('today.and'),
+  );
+  const askMissing = t('today.confirmAnyway.missing', { pieces });
+  const askAction = t('today.confirmAnyway.ask');
+  const askName = t('today.confirmAnyway.name', { missing: askMissing, ask: askAction });
+  // Natural widths of the label on one line, and of each of its two lines.
+  const [askWidths, setAskWidths] = useState({ line: 0, missing: 0, action: 0 });
+  const measure = (key: keyof typeof askWidths) => (width: number) =>
+    setAskWidths((current) =>
+      current[key] === Math.ceil(width) ? current : { ...current, [key]: Math.ceil(width) },
+    );
+  const askEnds = ASK_GAP + size.sizeCta;
+  const oneLine = PILL.left + askWidths.line + askEnds <= room;
+  const askTextWidth = oneLine ? askWidths.line : Math.max(askWidths.missing, askWidths.action);
+  const askWidth = Math.min(room, PILL.left + askTextWidth + askEnds);
 
   const drawCheck = (delay: number) => {
     if (reducedMotion) return;
@@ -147,6 +184,43 @@ export function ConfirmOutfitButton({
     stretch.set(withDelay(delay, withTiming(1, validation.stretch)));
     labelShown.set(withDelay(delay + validation.labelIn.delay, withTiming(1, validation.labelIn)));
   };
+  // The confirmation pill stretches out of the button, or back into it.
+  const moveAsk = (open: boolean) => {
+    cancelAnimation(ask);
+    cancelAnimation(askLabelShown);
+    const target = open ? 1 : 0;
+    if (reducedMotion) {
+      const fade = validation.stampFade;
+      shown.set(withSequence(withTiming(0, fade), withTiming(1, fade)));
+      for (const value of [ask, askLabelShown])
+        value.set(withDelay(fade.duration, withTiming(target, instant)));
+      return;
+    }
+    if (open) {
+      ask.set(withTiming(1, validation.askOpen));
+      askLabelShown.set(
+        withDelay(validation.askLabelIn.delay, withTiming(1, validation.askLabelIn)),
+      );
+    } else {
+      askLabelShown.set(withTiming(0, validation.labelOut));
+      ask.set(withTiming(0, validation.askClose));
+    }
+  };
+  const closeAsk = () => {
+    if (askTimer.current !== null) clearTimeout(askTimer.current);
+    askTimer.current = null;
+    if (!askingNow.current) return;
+    askingNow.current = false;
+    setAsking(false);
+    moveAsk(false);
+  };
+  const openAsk = () => {
+    askingNow.current = true;
+    setAsking(true);
+    moveAsk(true);
+    AccessibilityInfo.announceForAccessibility(askName);
+    askTimer.current = setTimeout(closeAsk, validation.askHold);
+  };
 
   // What the button is in the middle of; taps do nothing until it is idle.
   // - settling: from the validation until the pill is in place, so that the
@@ -165,13 +239,27 @@ export function ConfirmOutfitButton({
   };
   useEffect(
     () => () => {
-      if (timer.current !== null) clearTimeout(timer.current);
+      for (const pending of [timer, askTimer])
+        if (pending.current !== null) clearTimeout(pending.current);
     },
     [],
   );
+  // What the outfit lacks changed: the question no longer holds.
+  const missingKey = missing.join();
+  useEffect(() => {
+    closeAsk();
+    // Runs when what is missing changes only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [missingKey, empty]);
   const press = () => {
     if (phase.current !== 'idle') return;
     if (!frozen) {
+      if (missing.length > 0 && !askingNow.current) {
+        openAsk();
+        return;
+      }
+      // Complete, or confirmed: the pill folds back as the outfit is worn.
+      closeAsk();
       onPress();
       return;
     }
@@ -223,7 +311,7 @@ export function ConfirmOutfitButton({
       phase.current = 'idle';
     }
     if (enabled && !before.enabled) {
-      // The outfit became complete: the fill grows, the check draws, a ring
+      // The outfit got its first piece: the fill grows, the check draws, a ring
       // leaves and the button bounces.
       if (reducedMotion) {
         fill.set(withTiming(1, validation.stampFade));
@@ -269,16 +357,13 @@ export function ConfirmOutfitButton({
 
   const label = frozen
     ? t('today.confirmed')
-    : missing.length === 0
-      ? t('today.confirm')
-      : t('today.confirmUnavailable', {
-          reason: t('today.missingPieces', {
-            pieces: joinList(
-              missing.map((piece) => t(`today.aPiece.${piece}`)),
-              t('today.and'),
-            ),
-          }),
-        });
+    : empty
+      ? t('today.confirmImpossible')
+      : asking
+        ? askName
+        : missing.length === 0
+          ? t('today.confirm')
+          : t('today.confirmIncomplete', { pieces });
 
   const bounce = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
   // The pill rises and slides to its centre with its stretch.
@@ -290,8 +375,13 @@ export function ConfirmOutfitButton({
     ],
   }));
   const width = useAnimatedStyle(() => ({
-    width: size.sizeCta + (pillWidth - size.sizeCta) * stretch.get(),
+    width:
+      size.sizeCta +
+      (pillWidth - size.sizeCta) * stretch.get() +
+      (askWidth - size.sizeCta) * ask.get(),
   }));
+  const askBack = useAnimatedStyle(() => ({ opacity: ask.get() > 0 ? 1 : 0 }));
+  const askLabelLook = useAnimatedStyle(() => ({ opacity: askLabelShown.get() }));
   const labelLook = useAnimatedStyle(() => ({ opacity: labelShown.get() }));
   const solid = useAnimatedStyle(() => ({ opacity: 1 - lock.get() }));
   const grown = useAnimatedStyle(() => ({ transform: [{ scale: fill.get() }] }));
@@ -336,6 +426,13 @@ export function ConfirmOutfitButton({
                   grown,
                 ]}
               />
+              <Animated.View
+                style={[
+                  styles.pill,
+                  { backgroundColor: colors.action, boxShadow: shadows.shadowCta },
+                  askBack,
+                ]}
+              />
             </Animated.View>
             <Animated.View style={[StyleSheet.absoluteFill, glass]}>
               <Glass
@@ -358,6 +455,27 @@ export function ConfirmOutfitButton({
               >
                 {t('today.worn')}
               </Text>
+            </Animated.View>
+            <Animated.View
+              style={[styles.askLabel, { width: askTextWidth }, askLabelLook]}
+              pointerEvents="none"
+              accessibilityElementsHidden
+              importantForAccessibility="no-hide-descendants"
+            >
+              {oneLine ? (
+                <Text numberOfLines={1} style={[styles.labelText, { color: colors.onAction }]}>
+                  {askName}
+                </Text>
+              ) : (
+                <>
+                  <Text numberOfLines={1} style={[styles.labelText, { color: colors.onAction }]}>
+                    {askMissing}
+                  </Text>
+                  <Text numberOfLines={1} style={[styles.labelText, { color: colors.onAction }]}>
+                    {askAction}
+                  </Text>
+                </>
+              )}
             </Animated.View>
             <Animated.View
               style={[styles.round, styles.ring, { borderColor: colors.action }, ringLook]}
@@ -388,6 +506,30 @@ export function ConfirmOutfitButton({
           </Animated.View>
         </Animated.View>
       </Pressable>
+      {/* Measures the confirmation's label, which is drawn at the measured width. */}
+      <View
+        style={styles.measure}
+        pointerEvents="none"
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
+        {(
+          [
+            ['line', askName],
+            ['missing', askMissing],
+            ['action', askAction],
+          ] as const
+        ).map(([key, text]) => (
+          <Text
+            key={key}
+            numberOfLines={1}
+            style={styles.labelText}
+            onLayout={(event) => measure(key)(event.nativeEvent.layout.width)}
+          >
+            {text}
+          </Text>
+        ))}
+      </View>
     </Animated.View>
   );
 }
@@ -420,6 +562,21 @@ const styles = StyleSheet.create({
     height: size.sizeCta,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  askLabel: {
+    position: 'absolute',
+    top: 0,
+    left: PILL.left,
+    height: size.sizeCta,
+    justifyContent: 'center',
+  },
+  measure: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: LABEL_ROOM,
+    alignItems: 'flex-start',
+    opacity: 0,
   },
   labelText: { fontFamily: fontFamilies.text, fontSize: 14.5, fontWeight: '600' },
   ring: { borderWidth: 2 },

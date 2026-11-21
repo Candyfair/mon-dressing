@@ -208,12 +208,14 @@ export function useToday() {
 
   const outfit = chosenOutfit(choice, shown, pieces);
   const missing = missingPieces(outfit);
+  // An incomplete outfit can be worn, with at least one piece (SPEC §7).
+  const noPiece = Object.keys(outfit).length === 0;
   const isFrozen = frozenSelection !== null;
 
   const deps = () => ({ now: new Date(), newId: randomUUID });
   /** Validates the outfit shown; true when it is now frozen. */
   const validate = (): boolean => {
-    if (reference || isFrozen || missing.length > 0) return false;
+    if (reference || isFrozen || noPiece) return false;
     const result = validateOutfit(
       db,
       { wardrobeId: wardrobe.id, date, context, selection: outfit },
@@ -239,9 +241,9 @@ export function useToday() {
 
   // Evening safety net (SPEC §8.5): the outfit shown when the app leaves the
   // screen, read from the latest render.
-  const latest = useRef({ reference, isFrozen, outfit, missing, date, context });
+  const latest = useRef({ reference, isFrozen, outfit, noPiece, date, context });
   useEffect(() => {
-    latest.current = { reference, isFrozen, outfit, missing, date, context };
+    latest.current = { reference, isFrozen, outfit, noPiece, date, context };
   });
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (appState) => {
@@ -253,7 +255,7 @@ export function useToday() {
           wardrobeId: wardrobe.id,
           date: current.date,
           context: current.context,
-          selection: current.missing.length === 0 ? current.outfit : null,
+          selection: current.noPiece ? null : current.outfit,
         },
         { now: new Date(), newId: randomUUID },
       );
@@ -270,6 +272,7 @@ export function useToday() {
     setChoice,
     outfit,
     missing,
+    noPiece,
     frozen: isFrozen,
     validate,
     undo,

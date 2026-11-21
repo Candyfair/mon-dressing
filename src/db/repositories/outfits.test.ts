@@ -194,7 +194,7 @@ describe('undoValidation', () => {
 });
 
 describe('saveProbableOutfit', () => {
-  it('keeps the last outfit shown, and removes it when incomplete', () => {
+  it('keeps the last outfit shown, and removes it when it has no piece', () => {
     const { db, wardrobeId } = setup();
     const day = { wardrobeId, date: DATE, context: CONTEXT };
 
@@ -216,6 +216,22 @@ describe('saveProbableOutfit', () => {
 
     saveProbableOutfit(db, { ...day, selection: null }, deps(LATER));
     expect(outfitRows(db)).toEqual([]);
+  });
+
+  it('keeps an incomplete outfit, to sort on its pieces alone', () => {
+    const { db, wardrobeId } = setup();
+    const day = { wardrobeId, date: DATE, context: CONTEXT };
+
+    saveProbableOutfit(db, { ...day, selection: { top: 'tee' } }, deps(T0));
+
+    expect(outfitRows(db)).toEqual([expect.objectContaining({ status: 'probable' })]);
+    expect(
+      db
+        .select()
+        .from(outfitItems)
+        .all()
+        .map((item) => item.garmentId),
+    ).toEqual(['tee']);
   });
 
   it('changes nothing once the outfit is validated', () => {

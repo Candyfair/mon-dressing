@@ -80,6 +80,13 @@ export const motion = {
     activation: { duration: 380, easing: Easing.bezier(0.34, 1.56, 0.64, 1) },
     activationRingDelay: 220,
     activationBounce: 380,
+    // An incomplete outfit: the first tap stretches the button to the left
+    // into « Il manque un bas · Valider quand même ? », which folds back
+    // after about 4 s without a second tap. To tune on the device.
+    askOpen: { duration: 320, easing: Easing.bezier(0.34, 1.3, 0.64, 1) },
+    askLabelIn: { duration: 180, delay: 120, easing: Easing.out(Easing.quad) },
+    askHold: 4000,
+    askClose: { duration: 260, easing: Easing.bezier(0.4, 0, 0.2, 1) },
     // The stamp falls on the outfit (2.6 → 0.94 → 1, -14° → -8°)...
     stampDrop: { duration: 320, easing: Easing.bezier(0.55, 0, 0.8, 0.2) },
     // ...hits it (the pieces shake, a second frame leaves)...
