@@ -23,6 +23,7 @@ describe('ConfirmOutfitButton', () => {
         lift={0}
         centre={0}
         room={300}
+        onRefused={() => undefined}
       />,
     );
     await fireEvent.press(screen.getByRole('button', { name: 'Je porte cette tenue' }));
@@ -41,6 +42,7 @@ describe('ConfirmOutfitButton', () => {
         lift={0}
         centre={0}
         room={300}
+        onRefused={() => undefined}
       />,
     );
     const button = screen.getByRole('button', {
@@ -67,6 +69,7 @@ describe('ConfirmOutfitButton', () => {
         lift={0}
         centre={0}
         room={300}
+        onRefused={() => undefined}
       />,
     );
     await fireEvent.press(
@@ -83,8 +86,9 @@ describe('ConfirmOutfitButton', () => {
     expect(onPress).not.toHaveBeenCalled();
   });
 
-  it('stays findable but does nothing without any piece', async () => {
+  it('stays findable and only points at what is missing without any piece', async () => {
     const onPress = jest.fn(() => true);
+    const onRefused = jest.fn();
     await render(
       <ConfirmOutfitButton
         missing={['top', 'bottom']}
@@ -94,6 +98,7 @@ describe('ConfirmOutfitButton', () => {
         lift={0}
         centre={0}
         room={300}
+        onRefused={onRefused}
       />,
     );
     const button = screen.getByRole('button', {
@@ -102,6 +107,7 @@ describe('ConfirmOutfitButton', () => {
     expect(button).toBeDisabled();
     await fireEvent.press(button);
     expect(onPress).not.toHaveBeenCalled();
+    expect(onRefused).toHaveBeenCalledTimes(1);
   });
 
   it('is a selected « Portée aujourd’hui » pill that undoes once validated, and back after the undo', async () => {
@@ -116,6 +122,7 @@ describe('ConfirmOutfitButton', () => {
         lift={0}
         centre={0}
         room={300}
+        onRefused={() => undefined}
       />,
     );
     await rerender(
@@ -127,6 +134,7 @@ describe('ConfirmOutfitButton', () => {
         lift={0}
         centre={0}
         room={300}
+        onRefused={() => undefined}
       />,
     );
     const pill = screen.getByRole('button', { name: 'Portée aujourd’hui, toucher pour annuler' });
@@ -152,6 +160,7 @@ describe('ConfirmOutfitButton', () => {
         lift={0}
         centre={0}
         room={300}
+        onRefused={() => undefined}
       />,
     );
     expect(screen.getByRole('button', { name: 'Je porte cette tenue' })).not.toBeSelected();
@@ -168,6 +177,7 @@ describe('ConfirmOutfitButton', () => {
         lift={0}
         centre={0}
         room={300}
+        onRefused={() => undefined}
       />,
     );
     jest.useFakeTimers();

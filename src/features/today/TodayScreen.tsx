@@ -18,6 +18,7 @@ import { tabBarBottom } from '../../ui/TabBar';
 import { useTheme } from '../../ui/theme';
 import { fontFamilies, size, spacing } from '../../ui/tokens';
 import { ConfirmOutfitButton } from './ConfirmOutfitButton';
+import { StillNeeded } from './StillNeeded';
 import { formatShortDate } from './formatHeader';
 import { joinList } from './joinList';
 import { widenRows } from './outfitChoice';
@@ -55,6 +56,8 @@ export function TodayScreen() {
   // Each validation plays the stamp once; an undo hides it.
   const [validations, setValidations] = useState(0);
   const [stamp, setStamp] = useState<number | null>(null);
+  // Each tap on the disabled button underlines « Encore… » once more.
+  const [refusals, setRefusals] = useState(0);
   // The bottom line of the validation outline, in the outfit zone's points.
   const [outlineBottom, setOutlineBottom] = useState<number | null>(null);
   // The outfit's shake at the stamp's impact: down, and half as much aside.
@@ -148,20 +151,17 @@ export function TodayScreen() {
           </View>
         ) : null}
         {today.neverAdded.length > 0 ? (
-          <Text
-            accessibilityLiveRegion="polite"
-            style={[
-              styles.indicatorText,
-              { maxWidth: stillNeededWidth, color: colors.inkSecondary },
-            ]}
-          >
-            {t('today.stillNeeded', {
+          <StillNeeded
+            text={t('today.stillNeeded', {
               pieces: joinList(
                 today.neverAdded.map((row) => t(`today.onePiece.${row}`)),
                 t('today.and'),
               ),
             })}
-          </Text>
+            maxWidth={stillNeededWidth}
+            textStyle={[styles.indicatorText, { color: colors.inkSecondary }]}
+            underline={refusals}
+          />
         ) : null}
         {!hasHint && today.twoStatements ? (
           <Animated.View
@@ -193,6 +193,7 @@ export function TodayScreen() {
           lift={lift}
           centre={width / 2 - CONFIRM_RIGHT}
           room={width - CONFIRM_RIGHT - spacing.space16}
+          onRefused={() => setRefusals((count) => count + 1)}
         />
       </View>
     </GlassStage>

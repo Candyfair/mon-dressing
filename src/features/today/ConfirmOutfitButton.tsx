@@ -69,6 +69,8 @@ interface ConfirmOutfitButtonProps {
   centre: number;
   // How wide the confirmation pill may grow from the button's right edge (pt).
   room: number;
+  // A tap on the disabled button, to point at what is missing.
+  onRefused: () => void;
 }
 
 /**
@@ -91,6 +93,7 @@ export function ConfirmOutfitButton({
   lift,
   centre,
   room,
+  onRefused,
 }: ConfirmOutfitButtonProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -99,6 +102,8 @@ export function ConfirmOutfitButton({
   const enabled = frozen || !empty;
 
   const scale = useSharedValue(1);
+  // Sideways shake of the disabled button when touched (pt).
+  const refused = useSharedValue(0);
   // 0 → 1: one ring leaving the button; 1 at rest (invisible).
   const ring = useSharedValue(1);
   // 0 → 1: the dots thrown on validation; 1 at rest (gone).
@@ -252,6 +257,21 @@ export function ConfirmOutfitButton({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [missingKey, empty]);
   const press = () => {
+    if (!enabled) {
+      // Disabled, but still touchable: it shakes and points at « Encore… ».
+      if (!reducedMotion) {
+        const { refusedShake } = validation;
+        const step = {
+          duration: refusedShake.duration / refusedShake.offsets.length,
+          easing: refusedShake.easing,
+        };
+        refused.set(
+          withSequence(...refusedShake.offsets.map((offset) => withTiming(offset, step))),
+        );
+      }
+      onRefused();
+      return;
+    }
     if (phase.current !== 'idle') return;
     if (!frozen) {
       if (missing.length > 0 && !askingNow.current) {
@@ -370,7 +390,7 @@ export function ConfirmOutfitButton({
   const rise = useAnimatedStyle(() => ({
     opacity: shown.get(),
     transform: [
-      { translateX: (pillWidth / 2 - centre) * stretch.get() },
+      { translateX: (pillWidth / 2 - centre) * stretch.get() + refused.get() },
       { translateY: -lift * stretch.get() },
     ],
   }));
@@ -411,7 +431,6 @@ export function ConfirmOutfitButton({
         accessibilityState={{ disabled: !enabled, selected: frozen }}
         onPressIn={pressIn}
         onPressOut={pressOut}
-        disabled={!enabled}
         onPress={press}
       >
         <Animated.View style={[styles.button, width]}>
