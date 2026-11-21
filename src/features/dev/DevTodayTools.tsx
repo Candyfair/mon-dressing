@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Appearance, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
 
 import { useTheme } from '../../ui/theme';
-import { type GuidedStage, nextGuidedStage } from './guidedStages';
 import { fontFamilies, radius, size, spacing } from '../../ui/tokens';
+import { type GuidedStage, nextGuidedStage } from './guidedStageList';
 
 /**
  * Temporary test tools on Today (development builds only, not designed):

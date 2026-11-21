@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { type StyleProp, StyleSheet, Text, type TextStyle, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -40,8 +40,13 @@ export function StillNeeded({ text, maxWidth, textStyle, underline }: StillNeede
   const drawn = useSharedValue(0);
   const shown = useSharedValue(0);
 
+  // The count when the sentence appeared: shown again later, it does not
+  // replay a tap made while it was away.
+  const played = useRef(underline);
+
   useEffect(() => {
-    if (underline === 0) return;
+    if (underline === played.current) return;
+    played.current = underline;
     const half = { duration: FADE / 2, easing: refusedUnderline.easing };
     if (reducedMotion) {
       // Shown whole, in and out in fades.

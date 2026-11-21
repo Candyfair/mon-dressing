@@ -1,20 +1,12 @@
 import { SUBTYPES, type SubtypeKey } from '../../domain/catalogue/subtypes';
-import type { Slot } from '../../domain/types';
+import { OUTFIT_ROW_SLOTS, OUTFIT_ROWS, type OutfitRow } from '../../domain/catalogue/outfitRows';
 
 /** The kind of piece a missing silhouette on Today asks for (design spec 03). */
-export const ADD_CATEGORIES = ['top', 'bottom', 'shoes'] as const;
-export type AddCategory = (typeof ADD_CATEGORIES)[number];
-
-// A one-piece fills the top's place, and the bottom's with it.
-const CATEGORY_SLOTS: Record<AddCategory, readonly Slot[]> = {
-  top: ['top', 'onePiece'],
-  bottom: ['bottom'],
-  shoes: ['shoes'],
-};
+export type AddCategory = OutfitRow;
 
 /** A route parameter as a category; anything else is none. */
 export function addCategoryOf(value: unknown): AddCategory | null {
-  return ADD_CATEGORIES.find((category) => category === value) ?? null;
+  return OUTFIT_ROWS.find((category) => category === value) ?? null;
 }
 
 export interface TypeSections {
@@ -35,7 +27,7 @@ export function typeSections(
   const first =
     category === null
       ? []
-      : SUBTYPES.filter((s) => CATEGORY_SLOTS[category].includes(s.slot)).map((s) => s.key);
+      : SUBTYPES.filter((s) => OUTFIT_ROW_SLOTS[category].includes(s.slot)).map((s) => s.key);
   const recent = recentSubtypes.filter((key) => !first.includes(key));
   const others = SUBTYPES.map((s) => s.key).filter(
     (key) => !first.includes(key) && !recent.includes(key),
