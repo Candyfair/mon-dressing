@@ -23,8 +23,10 @@ interface DayOutfit {
   selection: OutfitSelection;
 }
 
-export type TodayOutfit =
+export type DayValidation =
   { status: 'validated'; id: string; selection: OutfitSelection } | { status: 'none' };
+
+export type ValidateOutfitResult = ApplyLifecycleResult | { ok: false; reason: 'alreadyValidated' };
 
 export type UndoValidationResult =
   ApplyLifecycleResult | { ok: false; reason: 'notValidated' | 'alreadySorted' };
@@ -129,7 +131,7 @@ function withLifecycle<R extends { ok: boolean }>(
 }
 
 /** The day's validated outfit, frozen for the day (SPEC §7). */
-export function todayOutfit(db: SyncDatabase, wardrobeId: string, date: LocalDate): TodayOutfit {
+export function todayOutfit(db: SyncDatabase, wardrobeId: string, date: LocalDate): DayValidation {
   const row = findOutfit(db, wardrobeId, date, 'validated');
   if (!row || row.validatedAt === null) {
     return { status: 'none' };
@@ -140,13 +142,17 @@ export function todayOutfit(db: SyncDatabase, wardrobeId: string, date: LocalDat
 /**
  * « Je porte cette tenue »: writes the validated outfit and wears each of its
  * pieces (SPEC §8.2), all or nothing. After an undo, the day's row is reused.
+ * Refused while the day is already validated, so a piece is never worn twice.
  */
 export function validateOutfit(
   db: SyncDatabase,
   outfit: DayOutfit,
   deps: OutfitDeps,
-): ApplyLifecycleResult {
-  return withLifecycle(db, (tx) => {
+): ValidateOutfitResult {
+  return withLifecycle<ValidateOutfitResult>(db, (tx) => {
+    if (todayOutfit(tx, outfit.wardrobeId, outfit.date).status === 'validated') {
+      return { ok: false, reason: 'alreadyValidated' };
+    }
     const id = writeOutfit(tx, outfit, 'validated', deps.now, deps);
     const command: LifecycleCommand = { type: 'wear', outfitId: id, source: 'today' };
     return applyLifecycleIn(
