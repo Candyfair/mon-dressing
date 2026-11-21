@@ -26,7 +26,7 @@ function header(lines = LINES, temperatures = TEMPERATURES, width = 288) {
   return (
     <WeatherHeader
       width={width}
-      date="Mer. 30 sept."
+      date="Mer 30 sept"
       context={CONTEXT}
       temperatures={temperatures}
       lines={lines}

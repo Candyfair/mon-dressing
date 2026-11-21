@@ -35,7 +35,7 @@ function at<T>(keys: readonly T[], position: number): T {
   return key;
 }
 
-/** « Lun. 27 oct. » */
+/** « Lun 27 oct », without abbreviation dots (Candice, 2026-11-21). */
 export function formatShortDate(date: LocalDate, t: TFunction): string {
   const [, month = 0, day] = date.split('-').map(Number);
   return t('today.date', {

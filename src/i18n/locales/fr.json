@@ -25,28 +25,34 @@
   },
   "today": {
     "date": "{{weekday}} {{day}} {{month}}",
+    "program": {
+      "name": "Programme du jour : {{activity}}",
+      "nameWithCommute": "Programme du jour : {{activity}}, {{commute}}",
+      "and": "et",
+      "hint": "Changer le programme"
+    },
     "weekdays": {
-      "1": "Lun.",
-      "2": "Mar.",
-      "3": "Mer.",
-      "4": "Jeu.",
-      "5": "Ven.",
-      "6": "Sam.",
-      "7": "Dim."
+      "1": "Lun",
+      "2": "Mar",
+      "3": "Mer",
+      "4": "Jeu",
+      "5": "Ven",
+      "6": "Sam",
+      "7": "Dim"
     },
     "months": {
-      "1": "janv.",
-      "2": "févr.",
+      "1": "janv",
+      "2": "févr",
       "3": "mars",
-      "4": "avr.",
+      "4": "avr",
       "5": "mai",
       "6": "juin",
-      "7": "juil.",
+      "7": "juil",
       "8": "août",
-      "9": "sept.",
-      "10": "oct.",
-      "11": "nov.",
-      "12": "déc."
+      "9": "sept",
+      "10": "oct",
+      "11": "nov",
+      "12": "déc"
     },
     "maxTemperature": "→ {{value}}",
     "settings": "Réglages",
