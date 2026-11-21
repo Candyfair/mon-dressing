@@ -213,6 +213,7 @@ Usages are **tags the user gives a garment**, in four groups. The app never dedu
   6. Output: default outfit + **ranked alternatives per row** + the **closest pieces** of each row: available garments left out by their Weather usages alone (other groups still apply), nearest felt category first. Offered only on request ("Voir les autres ?") when a row has nothing eligible.
 - Swiping a row **never changes other rows** (the only exception: a one-piece hides the bottom row, §4.1). If the user's choice breaks a rule (two statement pieces), a discreet indicator shows it; nothing is corrected automatically.
 - Once the outfit is validated ("Je porte cette tenue"), it is **frozen for the day** (no recomputation on later opens, even if the forecast changes): its rows no longer swipe. **Tapping the button again undoes the validation** (each wear is taken back, Today follows the engine again), until the outfit has been sorted in the evening.
+- An **incomplete outfit** (no top or no bottom, and no one-piece) can be validated too, as long as it has **at least one piece**, after an in-place confirmation (§9.3): a garment just bought and not yet photographed must be wearable the same morning. Only the pieces shown are recorded as worn.
 - Tier 2: 2–3 variants, selected through tabs near the header (never by swipe).
 
 **End-to-end verification (§7):** run the 10 reference scenarios (R3) as Jest fixtures and on device with the real wardrobe; validate an outfit, change the forecast fixture, reopen: outfit unchanged; **rotation scenario**: 5 consecutive days with the same context and no laundry → the default outfit is never identical two days in a row and favourites come back more often without appearing every day.
@@ -262,7 +263,8 @@ releasing on an active status removes it (location → stored, or toIron cleared
 - From a configurable time (default **20:00**), **Today becomes the evening sort** for the day's outfit:
   - the validated outfit, or
   - **safety net:** if no outfit was explicitly validated, the outfit that was displayed when the app was last closed that day ("probable outfit"). Sorting it records it as worn.
-  - **no sort** if that outfit was incomplete (guided state, validation impossible) or if the app was not opened that day: nothing is recorded as worn.
+  - **no sort** if that outfit had no piece at all or if the app was not opened that day: nothing is recorded as worn.
+  - an **incomplete outfit**, validated or probable, is sorted on its pieces alone: the missing piece is not in the wardrobe, so nothing is counted for it.
 - Long press on a piece → menu limited to Favori, Aérer, Au sale, Ranger; recommended option highlighted (airing until the wear limit, dirty after; shoes: put away). Releasing on an active status removes it.
 - "Ranger le reste : N pièces" finishes in one tap; "Terminer le tri" when everything is sorted.
 - **End animation** (played once): pieces fly to the Laundry and Wardrobe tabs, then "Tout est rangé", tomorrow's weather and the **weather mascot (frog)**; the card shows the summary then flips to the **"washes avoided" counter** (pieces aired instead of washed during evening sorts this calendar month), animated increment; "+N" badges on the tabs. Reduced motion: final state directly.
@@ -303,8 +305,8 @@ Screen-level rules, exact copy, accessible names and validated mockups live in `
 - **Two columns** as soon as there is a layer: layers on the left (layer 1 aligned with the top), top/bottom/shoes on the right, swipeable in its lane (gradient-masked edges). Tap a layer → **layer sheet**: carousel of compatible layers, dots, "Retirer cette couche"; last layer removed → one column.
 - Tapping a piece never opens its garment sheet (sheets open only from the Wardrobe).
 - Location badge against the shoulder of pieces not in the wardrobe (balcony, drying rack).
-- Round "Je porte cette tenue" button on the right, above the tab bar. Enabled as soon as there is a top + bottom or a one-piece (shoes and layers optional).
-- **Guided state** (`03`): for a category never added, a dotted silhouette with "+" opens burst add with the type preselected; sentence "Encore 1 haut, 1 bas et 1 paire de chaussures"… If the category exists but everything is in the laundry: "Vos bas sont au linge" + "Trier le linge".
+- Round "Je porte cette tenue" button on the right, above the tab bar. Enabled as soon as the outfit has at least one piece (shoes and layers optional). Without a top + bottom or a one-piece, the first tap asks for a confirmation in place (« Il manque un bas · Valider quand même ? »), a second tap validates. Disabled only with no piece at all.
+- **Guided state** (`03`): for a category never added, a dotted silhouette with "+" opens burst add with the type preselected; sentence "Encore 1 haut, 1 bas et 1 paire de chaussures"… If the category exists but everything is in the laundry: "Vos bas sont à la buanderie" + "Trier le linge".
 - After the evening sort time → evening sort (§8.5).
 - Reduced motion: no background animation; piece changes by cross-fade.
 
@@ -520,6 +522,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-18 | Mascot as a colourless line drawing, cream line in the dark theme (design system) | The frog stays in colour in both themes, with the same images | Seen on the dark end-of-sort screen (Candice, S6) |
 | 2026-11-19 | Commute usages filter: the garment must cover every commute mode of the day | Commute usages only order the row: a garment sharing one mode with the day comes first, any other stays eligible without priority | A "Vélo" piece should come first on bike days without disappearing on other days (Candice, after S6 device tests) |
 | 2026-11-19 | Validated outfit frozen for the day, no way back | Rows locked once validated; tapping the button again undoes the validation (`unwear` command, `unworn` event) until the evening sort | A mistaken tap must not leave wrong wear counts (Candice, S7) |
+| 2026-11-21 | Validation needs a top + bottom or a one-piece; an incomplete outfit is never sorted | An outfit with at least one piece can be validated, after an in-place confirmation when it is incomplete; it is sorted on its pieces alone, and so is an incomplete probable outfit | A garment just bought and not yet photographed must be wearable the same morning (Candice, S7) |
 | 2026-11-21 | Commute icons, date abbreviations and commute accessible names (open, §14.1) | Every mode gets an icon at the app's 1.7 stroke: walking and bike drawn for the app, scooter, car and motorbike from Tabler Icons (MIT), public transport from Lucide `tram-front` (ISC); one icon per day (the first mode), all modes read out. Short date without abbreviation dots (« Sam 21 nov »). The program chip is one button: « Programme du jour : bureau, à vélo », hint « Changer le programme » | Chosen by Candice from a comparison sheet (S7) |
 
 ---
