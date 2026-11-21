@@ -21,7 +21,7 @@ import { ConfirmOutfitButton } from './ConfirmOutfitButton';
 import { StillNeeded } from './StillNeeded';
 import { formatShortDate } from './formatHeader';
 import { joinList } from './joinList';
-import { widenRows } from './outfitChoice';
+import { rowsIn, widenRows } from './outfitChoice';
 import { TodayBackground } from './TodayBackground';
 import { OUTFIT_HEIGHT, OUTFIT_WIDTH, TodayOutfit } from './TodayOutfit';
 import { useToday } from './useToday';
@@ -81,6 +81,7 @@ export function TodayScreen() {
   const headerTop = insets.top + HEADER_GAP;
   const hintTop = headerTop + HEADER_HEIGHT + spacing.space6;
   const hasHint = today.widenableRows.length > 0;
+  const stillNeeded = rowsIn(today.rows, 'neverAdded');
   const outfitTop = hasHint ? hintTop + HINT_HEIGHT : headerTop + HEADER_HEIGHT + OUTFIT_GAP_TOP;
   const menuTop = height - tabBarBottom(insets.bottom) - size.tabbarHeight;
   const scale = Math.min(
@@ -114,9 +115,8 @@ export function TodayScreen() {
           pieces={today.pieces}
           choice={today.choice}
           onChoiceChange={today.setChoice}
-          emptyRows={today.emptyRows}
+          rowStatus={today.rows}
           onAddPiece={(row) => router.push({ pathname: '/add', params: { category: row } })}
-          laundryRows={today.laundryRows}
           onSortLaundry={() => router.push('/laundry')}
           locked={today.frozen}
           scale={scale}
@@ -150,11 +150,11 @@ export function TodayScreen() {
             <DevTodayTools guided={today.devStage} onGuidedChange={today.setDevStage} />
           </View>
         ) : null}
-        {today.neverAdded.length > 0 ? (
+        {stillNeeded.length > 0 ? (
           <StillNeeded
             text={t('today.stillNeeded', {
               pieces: joinList(
-                today.neverAdded.map((row) => t(`today.onePiece.${row}`)),
+                stillNeeded.map((row) => t(`today.onePiece.${row}`)),
                 t('today.and'),
               ),
             })}

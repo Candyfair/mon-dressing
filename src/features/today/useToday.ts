@@ -25,15 +25,14 @@ import { type DevGuided, type GuidedStage, moveToStage } from '../dev/guidedStag
 import {
   choiceFromSelection,
   chosenOutfit,
-  emptyRows,
   frozenSuggestion,
   hiddenBottom,
   initialChoice,
   type KeptOutfit,
-  laundryRows,
   hasAnyPiece,
   missingPieces,
-  neverAddedRows,
+  rowStatuses,
+  LOCKED_ROWS,
   type OutfitChoice,
   widenableRows,
 } from './outfitChoice';
@@ -261,7 +260,6 @@ export function useToday() {
     return () => subscription.remove();
   }, [wardrobe.id]);
 
-  const empty = isFrozen ? [] : emptyRows(choice, shown, pieces);
   return {
     ...day,
     suggestion: shown,
@@ -274,13 +272,12 @@ export function useToday() {
     frozen: isFrozen,
     validate,
     undo,
-    emptyRows: empty,
-    // Empty rows whose garments are all at the laundry: said instead of drawn.
-    laundryRows: laundryRows(empty, garments, (garment) =>
-      isAvailable(garment, date, wardrobe.timeZone, settings),
-    ),
-    // What the wardrobe still needs, until the outfit is validated.
-    neverAdded: isFrozen ? [] : neverAddedRows(shown, garments),
+    // Silhouettes, laundry slots and « Encore… », until the outfit is validated.
+    rows: isFrozen
+      ? LOCKED_ROWS
+      : rowStatuses(choice, shown, pieces, garments, (garment) =>
+          isAvailable(garment, date, wardrobe.timeZone, settings),
+        ),
     widenableRows: isFrozen ? [] : widenableRows(choice, shown, pieces),
     twoStatements: statementConflict(outfit, pieces),
     devStage: devGuided.stage,

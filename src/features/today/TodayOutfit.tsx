@@ -17,6 +17,7 @@ import { AddLayerButton } from './AddLayerButton';
 import { EmptySlot } from './EmptySlot';
 import { LaundrySlot } from './LaundrySlot';
 import { LayerSheet } from './LayerSheet';
+import { OUTFIT_ROWS } from '../../domain/catalogue/outfitRows';
 import { LockedOutline, OUTLINE_MARGIN, type OutlineBounds } from './LockedOutline';
 import {
   addLayer,
@@ -28,6 +29,7 @@ import {
   type OutfitChoice,
   type OutfitRow,
   rowGarments,
+  type RowStatuses,
   showRow,
   shownLayers,
   wearsOnePiece,
@@ -90,11 +92,10 @@ interface TodayOutfitProps {
   pieces: ReadonlyMap<string, TodayPiece>;
   choice: OutfitChoice;
   onChoiceChange: (update: (choice: OutfitChoice) => OutfitChoice) => void;
-  // Rows drawn as dashed silhouettes, and what touching one does.
-  emptyRows: readonly OutfitRow[];
+  // What each row shows: garments, a dashed silhouette or the laundry slot.
+  rowStatus: RowStatuses;
+  // Touching a silhouette, and the laundry slot's link.
   onAddPiece: (row: OutfitRow) => void;
-  // Empty rows whose garments are all at the laundry: said, not drawn.
-  laundryRows: readonly OutfitRow[];
   onSortLaundry: () => void;
   // Validated outfit: nothing swipes, no layer to add or change.
   locked?: boolean;
@@ -111,9 +112,8 @@ export function TodayOutfit({
   pieces,
   choice,
   onChoiceChange,
-  emptyRows,
+  rowStatus,
   onAddPiece,
-  laundryRows,
   onSortLaundry,
   locked = false,
   scale,
@@ -167,7 +167,7 @@ export function TodayOutfit({
     opacity: followsSwipe ? 1 - onePieceShare(topPosition.get(), topOnePieces) : underDress ? 0 : 1,
   }));
 
-  const rows = (['top', 'bottom', 'shoes'] as const).filter(
+  const rows = OUTFIT_ROWS.filter(
     (row) => choice.shown[row] && rowGarments(choice, suggestion, row).length > 0,
   );
   const columnLeft = twoColumns ? LANE.left * scale : 0;
@@ -292,46 +292,58 @@ export function TodayOutfit({
         );
       })}
 
-      {emptyRows.map((row) => {
+      {OUTFIT_ROWS.map((row) => {
+        const status = rowStatus[row];
         const place = places[row];
         const frame = place.frame * scale;
-        if (laundryRows.includes(row)) {
-          // Centred in the row's swipe area, which stops where the next row's
-          // starts: on two lines in the narrow lane, it stays clear of the shoes.
-          const [bandTop, bandBottom] = place.band;
-          return (
-            <View
-              key={row}
-              style={[
-                styles.absolute,
-                styles.laundry,
-                {
-                  left: columnLeft,
-                  top: bandTop * scale,
-                  width: columnWidth,
-                  height: (bandBottom - bandTop) * scale,
-                },
-              ]}
-            >
-              <LaundrySlot row={row} width={columnWidth} onSortLaundry={onSortLaundry} />
-            </View>
-          );
+        switch (status) {
+          case 'filled':
+          case 'notProposed':
+            return null;
+          case 'neverAdded':
+          case 'empty':
+            return (
+              <View
+                key={row}
+                style={[
+                  styles.absolute,
+                  {
+                    left: columnLeft + (columnWidth - frame) / 2,
+                    top: place.frameTop * scale,
+                  },
+                  row === 'bottom' && styles.overShoes,
+                ]}
+              >
+                <EmptySlot row={row} frame={frame} onPress={() => onAddPiece(row)} />
+              </View>
+            );
+          case 'inLaundry': {
+            // Centred in the row's swipe area, which stops where the next row's
+            // starts: on two lines in the narrow lane, it stays clear of the shoes.
+            const [bandTop, bandBottom] = place.band;
+            return (
+              <View
+                key={row}
+                style={[
+                  styles.absolute,
+                  styles.laundry,
+                  {
+                    left: columnLeft,
+                    top: bandTop * scale,
+                    width: columnWidth,
+                    height: (bandBottom - bandTop) * scale,
+                  },
+                ]}
+              >
+                <LaundrySlot row={row} width={columnWidth} onSortLaundry={onSortLaundry} />
+              </View>
+            );
+          }
+          default: {
+            const unknown: never = status;
+            throw new Error(`Unknown row status ${String(unknown)}`);
+          }
         }
-        return (
-          <View
-            key={row}
-            style={[
-              styles.absolute,
-              {
-                left: columnLeft + (columnWidth - frame) / 2,
-                top: place.frameTop * scale,
-              },
-              row === 'bottom' && styles.overShoes,
-            ]}
-          >
-            <EmptySlot row={row} frame={frame} onPress={() => onAddPiece(row)} />
-          </View>
-        );
       })}
 
       {layerToAdd !== null && hasTop && !locked ? (

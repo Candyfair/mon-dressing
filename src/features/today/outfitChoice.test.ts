@@ -4,17 +4,18 @@ import {
   addLayer,
   choiceFromSelection,
   chosenOutfit,
-  emptyRows,
   frozenSuggestion,
+  LOCKED_ROWS,
   hasAnyPiece,
   hiddenBottom,
   initialChoice,
-  laundryRows,
   missingPieces,
   moveTo,
-  neverAddedRows,
+  type OutfitChoice,
   nextLayer,
   onePieceShare,
+  rowsIn,
+  rowStatuses,
   showRow,
   shownLayers,
   wearsOnePiece,
@@ -47,6 +48,29 @@ function suggestion(overrides: Partial<Suggestion> = {}): Suggestion {
     coordinationBroken: false,
     ...overrides,
   };
+}
+
+// A day whose rows have nothing to propose.
+function bare(overrides: Partial<Suggestion> = {}): Suggestion {
+  return suggestion({
+    rows: { top: [], bottom: [], midLayer: [], outerLayer: [], shoes: [] },
+    outfit: {},
+    ...overrides,
+  });
+}
+
+// Every garment available.
+function statusesOf(choice: OutfitChoice, engine: Suggestion, garments: readonly { slot: Slot }[]) {
+  return rowStatuses(choice, engine, slots, garments, () => true);
+}
+
+function emptyOf(choice: OutfitChoice, engine: Suggestion) {
+  return rowsIn(
+    statusesOf(choice, engine, [...slots.values()]),
+    'empty',
+    'neverAdded',
+    'inLaundry',
+  );
 }
 
 describe('outfit choice', () => {
@@ -105,37 +129,47 @@ describe('outfit choice', () => {
   });
 
   it('names the outfit rows the wardrobe has never had a garment for', () => {
-    const engine = suggestion();
-    expect(neverAddedRows(engine, [])).toEqual(['top', 'bottom', 'shoes']);
-    expect(neverAddedRows(engine, [{ slot: 'top' }])).toEqual(['bottom', 'shoes']);
-    expect(neverAddedRows(engine, [{ slot: 'top' }, { slot: 'bottom' }])).toEqual(['shoes']);
-    expect(neverAddedRows(engine, slots.values())).toEqual([]);
+    const neverAdded = (engine: Suggestion, garments: readonly { slot: Slot }[]) =>
+      rowsIn(statusesOf(initialChoice(engine), engine, garments), 'neverAdded');
+    const engine = bare();
+    expect(neverAdded(engine, [])).toEqual(['top', 'bottom', 'shoes']);
+    expect(neverAdded(engine, [{ slot: 'top' }])).toEqual(['bottom', 'shoes']);
+    expect(neverAdded(engine, [{ slot: 'top' }, { slot: 'bottom' }])).toEqual(['shoes']);
+    expect(neverAdded(engine, [...slots.values()])).toEqual([]);
     // A one-piece is a top and a bottom; layers are not asked for.
-    expect(neverAddedRows(engine, [{ slot: 'onePiece' }, { slot: 'midLayer' }])).toEqual(['shoes']);
+    expect(neverAdded(engine, [{ slot: 'onePiece' }, { slot: 'midLayer' }])).toEqual(['shoes']);
     // Shoes the day does not propose are not asked for.
-    const indoor = suggestion({ proposedRows: { ...engine.proposedRows, shoes: false } });
-    expect(neverAddedRows(indoor, [])).toEqual(['top', 'bottom']);
+    const indoor = bare({ proposedRows: { ...engine.proposedRows, shoes: false } });
+    expect(neverAdded(indoor, [])).toEqual(['top', 'bottom']);
+    expect(statusesOf(initialChoice(indoor), indoor, []).shoes).toBe('notProposed');
   });
 
-  it('names the empty rows whose garments are all unavailable', () => {
+  it('says which empty rows have all their garments unavailable', () => {
+    const inLaundry = (garments: readonly { slot: Slot; available: boolean }[]) =>
+      rowsIn(
+        rowStatuses(initialChoice(bare()), bare(), slots, garments, (g) => g.available),
+        'inLaundry',
+      );
     const garments = [
       { slot: 'top' as const, available: true },
       { slot: 'bottom' as const, available: false },
       { slot: 'bottom' as const, available: false },
     ];
-    const available = (garment: { available: boolean }) => garment.available;
     // Shoes were never added: a silhouette, not the laundry.
-    expect(laundryRows(['bottom', 'shoes'], garments, available)).toEqual(['bottom']);
+    expect(inLaundry(garments)).toEqual(['bottom']);
     // One clean bottom is enough for the row not to be at the laundry.
-    const oneClean = [...garments, { slot: 'bottom' as const, available: true }];
-    expect(laundryRows(['bottom'], oneClean, available)).toEqual([]);
+    expect(inLaundry([...garments, { slot: 'bottom', available: true }])).toEqual([]);
     // A dirty dress lives in the top row: no bottom is at the laundry.
-    expect(
-      laundryRows(['top', 'bottom'], [{ slot: 'onePiece', available: false }], available),
-    ).toEqual(['top']);
+    expect(inLaundry([{ slot: 'onePiece', available: false }])).toEqual(['top']);
     // A clean dress does not hide that every bottom is at the laundry.
-    const cleanDress = [...garments, { slot: 'onePiece' as const, available: true }];
-    expect(laundryRows(['bottom'], cleanDress, available)).toEqual(['bottom']);
+    expect(inLaundry([...garments, { slot: 'onePiece', available: true }])).toEqual(['bottom']);
+  });
+
+  it('counts the rows with garments to swipe, or no bottom under a dress, as filled', () => {
+    const engine = suggestion();
+    expect(statusesOf(initialChoice(engine), engine, [...slots.values()])).toEqual(LOCKED_ROWS);
+    const onDress = moveTo(initialChoice(engine), 'top', 1);
+    expect(statusesOf(onDress, engine, [{ slot: 'onePiece' }]).bottom).toBe('filled');
   });
 
   it('adds the first layer that has garments, then removes it', () => {
@@ -157,12 +191,12 @@ describe('outfit choice', () => {
       outfit: { bottom: 'jeans', shoes: 'boots' },
     });
     const choice = initialChoice(engine);
-    expect(emptyRows(choice, engine, slots)).toEqual(['top']);
+    expect(emptyOf(choice, engine)).toEqual(['top']);
     expect(widenableRows(choice, engine, slots)).toEqual(['top']);
     expect(missingPieces(chosenOutfit(choice, engine, slots))).toEqual(['top']);
 
     const widened = widenRows(choice, ['top']);
-    expect(emptyRows(widened, engine, slots)).toEqual([]);
+    expect(emptyOf(widened, engine)).toEqual([]);
     expect(chosenOutfit(widened, engine, slots).top).toBe('shirt');
     expect(chosenOutfit(moveTo(widened, 'top', 1), engine, slots)).toEqual({
       onePiece: 'dress',
@@ -174,7 +208,7 @@ describe('outfit choice', () => {
     const base = suggestion();
     const engine = suggestion({ rows: { ...base.rows, shoes: [] } });
     const choice = initialChoice(engine);
-    expect(emptyRows(choice, engine, slots)).toEqual(['shoes']);
+    expect(emptyOf(choice, engine)).toEqual(['shoes']);
     expect(widenableRows(choice, engine, slots)).toEqual([]);
   });
 
@@ -184,7 +218,7 @@ describe('outfit choice', () => {
       rows: { ...base.rows, top: ['dress'], bottom: [] },
       outfit: { onePiece: 'dress', shoes: 'boots' },
     });
-    expect(emptyRows(initialChoice(engine), engine, slots)).toEqual([]);
+    expect(emptyOf(initialChoice(engine), engine)).toEqual([]);
   });
 
   it('adds a second layer from its closest pieces when none is eligible', () => {
@@ -231,7 +265,7 @@ describe('frozen outfit', () => {
       shoes: 'boots',
     });
     expect(nextLayer(choice, frozen)).toBeNull();
-    expect(emptyRows(choice, frozen, slots)).toEqual([]);
+    expect(emptyOf(choice, frozen)).toEqual([]);
   });
 
   it('goes back to the validated pieces on the engine rows after an undo', () => {
