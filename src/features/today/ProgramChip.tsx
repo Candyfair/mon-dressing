@@ -7,6 +7,7 @@ import { Icon, type IconName } from '../../ui/Icon';
 import { useTheme } from '../../ui/theme';
 import { size, typography } from '../../ui/tokens';
 import { HEADER_TOP_MAX_MULTIPLIER } from './headerFit';
+import { joinList } from './joinList';
 
 const ICON = 20;
 const PADDING = 12;
@@ -51,7 +52,7 @@ export function ProgramChip({ context, label, labelScale, onPress }: ProgramChip
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const mode = commuteMode(context);
-  const activity = label.toLocaleLowerCase(i18n.language);
+  const activity = t(`usages.activity.${context.activity}`).toLocaleLowerCase(i18n.language);
   const commutes = context.commuteModes.map((each) => t(`today.commute.${each}`));
   const name =
     commutes.length === 0
@@ -92,12 +93,6 @@ export function ProgramChip({ context, label, labelScale, onPress }: ProgramChip
       </Glass>
     </Pressable>
   );
-}
-
-// « à pied », « à pied et à vélo », « à pied, à vélo et en voiture ».
-function joinList(items: readonly string[], and: string): string {
-  if (items.length < 2) return items.join('');
-  return `${items.slice(0, -1).join(', ')} ${and} ${items[items.length - 1]}`;
 }
 
 const styles = StyleSheet.create({
