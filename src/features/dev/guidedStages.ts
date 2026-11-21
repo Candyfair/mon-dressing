@@ -16,10 +16,32 @@ const SLOTS: Record<Exclude<GuidedStage, 'off'>, readonly Slot[]> = {
   topAndBottom: ['top', 'midLayer', 'outerLayer', 'bottom'],
 };
 
-/** The reference wardrobe at a stage: all of it when the guided Today is off. */
-export function devWardrobe(stage: GuidedStage): EngineGarment[] {
+export interface DevGuided {
+  stage: GuidedStage;
+  // When the guided Today was turned on: garments added since then join it.
+  since: Date;
+}
+
+/**
+ * The reference wardrobe at a stage, with the real garments added since the
+ * guided Today was turned on, so that adding a piece shows it at once. All
+ * of the reference wardrobe when the guided Today is off.
+ */
+export function devWardrobe(
+  { stage, since }: DevGuided,
+  real: readonly EngineGarment[],
+): EngineGarment[] {
   const all = referenceWardrobe();
-  return stage === 'off' ? all : all.filter((garment) => SLOTS[stage].includes(garment.slot));
+  if (stage === 'off') return all;
+  return [
+    ...all.filter((garment) => SLOTS[stage].includes(garment.slot)),
+    ...real.filter((garment) => garment.createdAt >= since),
+  ];
+}
+
+/** Moves to a stage; the start time is kept while the guided Today stays on. */
+export function moveToStage(current: DevGuided, stage: GuidedStage, now: Date): DevGuided {
+  return { stage, since: current.stage === 'off' ? now : current.since };
 }
 
 export function nextGuidedStage(stage: GuidedStage): GuidedStage {
