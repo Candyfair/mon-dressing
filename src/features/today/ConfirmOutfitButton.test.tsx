@@ -1,5 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
+import { AccessibilityInfo } from 'react-native';
+
 import '../../i18n';
 import { ConfirmOutfitButton } from './ConfirmOutfitButton';
 
@@ -13,42 +15,89 @@ describe('ConfirmOutfitButton', () => {
   it('validates a complete outfit', async () => {
     const onPress = jest.fn(() => true);
     await render(
-      <ConfirmOutfitButton missing={[]} frozen={false} onPress={onPress} lift={0} centre={0} />,
+      <ConfirmOutfitButton
+        missing={[]}
+        empty={false}
+        frozen={false}
+        onPress={onPress}
+        lift={0}
+        centre={0}
+        room={300}
+      />,
     );
     await fireEvent.press(screen.getByRole('button', { name: 'Je porte cette tenue' }));
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
-  it('names every missing piece', async () => {
+  it('asks first on an incomplete outfit, then validates on a second tap', async () => {
+    const onPress = jest.fn(() => true);
+    const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
     await render(
       <ConfirmOutfitButton
         missing={['top', 'bottom']}
-        frozen={false}
-        onPress={() => true}
-        lift={0}
-        centre={0}
-      />,
-    );
-    expect(
-      screen.getByRole('button', {
-        name: 'Je porte cette tenue, indisponible : il manque un haut et un bas',
-      }),
-    ).toBeDisabled();
-  });
-
-  it('stays findable but does nothing while a piece is missing', async () => {
-    const onPress = jest.fn(() => true);
-    await render(
-      <ConfirmOutfitButton
-        missing={['bottom']}
+        empty={false}
         frozen={false}
         onPress={onPress}
         lift={0}
         centre={0}
+        room={300}
       />,
     );
     const button = screen.getByRole('button', {
-      name: 'Je porte cette tenue, indisponible : il manque un bas',
+      name: 'Je porte cette tenue, il manque un haut et un bas',
+    });
+    expect(button).toBeEnabled();
+    await fireEvent.press(button);
+    expect(onPress).not.toHaveBeenCalled();
+    const question = 'Il manque un haut et un bas · Valider quand même ?';
+    expect(announce).toHaveBeenCalledWith(question);
+    await fireEvent.press(screen.getByRole('button', { name: question }));
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it('folds the question back without a second tap', async () => {
+    const onPress = jest.fn(() => true);
+    jest.useFakeTimers();
+    await render(
+      <ConfirmOutfitButton
+        missing={['bottom']}
+        empty={false}
+        frozen={false}
+        onPress={onPress}
+        lift={0}
+        centre={0}
+        room={300}
+      />,
+    );
+    await fireEvent.press(
+      screen.getByRole('button', { name: 'Je porte cette tenue, il manque un bas' }),
+    );
+    expect(
+      screen.getByRole('button', { name: 'Il manque un bas · Valider quand même ?' }),
+    ).toBeTruthy();
+    await act(() => jest.advanceTimersByTime(4000));
+    jest.useRealTimers();
+    await fireEvent.press(
+      screen.getByRole('button', { name: 'Je porte cette tenue, il manque un bas' }),
+    );
+    expect(onPress).not.toHaveBeenCalled();
+  });
+
+  it('stays findable but does nothing without any piece', async () => {
+    const onPress = jest.fn(() => true);
+    await render(
+      <ConfirmOutfitButton
+        missing={['top', 'bottom']}
+        empty
+        frozen={false}
+        onPress={onPress}
+        lift={0}
+        centre={0}
+        room={300}
+      />,
+    );
+    const button = screen.getByRole('button', {
+      name: 'Validation de la tenue impossible, aucune pièce sélectionnée',
     });
     expect(button).toBeDisabled();
     await fireEvent.press(button);
@@ -59,10 +108,26 @@ describe('ConfirmOutfitButton', () => {
     const onPress = jest.fn(() => true);
     jest.useFakeTimers();
     const { rerender } = await render(
-      <ConfirmOutfitButton missing={[]} frozen={false} onPress={onPress} lift={0} centre={0} />,
+      <ConfirmOutfitButton
+        missing={[]}
+        empty={false}
+        frozen={false}
+        onPress={onPress}
+        lift={0}
+        centre={0}
+        room={300}
+      />,
     );
     await rerender(
-      <ConfirmOutfitButton missing={[]} frozen onPress={onPress} lift={0} centre={0} />,
+      <ConfirmOutfitButton
+        missing={[]}
+        empty={false}
+        frozen
+        onPress={onPress}
+        lift={0}
+        centre={0}
+        room={300}
+      />,
     );
     const pill = screen.getByRole('button', { name: 'Portée aujourd’hui, toucher pour annuler' });
     expect(pill).toBeSelected();
@@ -79,14 +144,32 @@ describe('ConfirmOutfitButton', () => {
     expect(onPress).toHaveBeenCalledTimes(1);
 
     await rerender(
-      <ConfirmOutfitButton missing={[]} frozen={false} onPress={onPress} lift={0} centre={0} />,
+      <ConfirmOutfitButton
+        missing={[]}
+        empty={false}
+        frozen={false}
+        onPress={onPress}
+        lift={0}
+        centre={0}
+        room={300}
+      />,
     );
     expect(screen.getByRole('button', { name: 'Je porte cette tenue' })).not.toBeSelected();
   });
 
   it('stays the pill when the undo is refused', async () => {
     const onPress = jest.fn(() => false);
-    await render(<ConfirmOutfitButton missing={[]} frozen onPress={onPress} lift={0} centre={0} />);
+    await render(
+      <ConfirmOutfitButton
+        missing={[]}
+        empty={false}
+        frozen
+        onPress={onPress}
+        lift={0}
+        centre={0}
+        room={300}
+      />,
+    );
     jest.useFakeTimers();
     await fireEvent.press(
       screen.getByRole('button', { name: 'Portée aujourd’hui, toucher pour annuler' }),

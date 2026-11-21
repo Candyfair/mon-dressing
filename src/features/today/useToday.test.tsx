@@ -181,6 +181,54 @@ describe('useToday', () => {
     expect(today.current.outfit.bottom).toBe(bottom);
   });
 
+  it('validates an outfit with a top only, and keeps it as probable before that', async () => {
+    const listeners: ((state: AppStateStatus) => void)[] = [];
+    jest.spyOn(AppState, 'addEventListener').mockImplementation((_type, listener) => {
+      listeners.push(listener);
+      return { remove: () => undefined };
+    });
+    jest.mocked(loadEngineGarments).mockReturnValue(garments.filter((g) => g.slot === 'top'));
+    const today = await renderToday();
+    const { outfit } = today.current;
+    expect(Object.keys(outfit)).toEqual(['top']);
+    expect(today.current.missing).toEqual(['bottom']);
+    expect(today.current.noPiece).toBe(false);
+
+    await act(async () => listeners.forEach((listener) => listener('background')));
+    expect(saveProbableOutfit).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ selection: outfit }),
+      expect.anything(),
+    );
+
+    expect(await act(async () => today.current.validate())).toBe(true);
+    expect(validateOutfit).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ selection: outfit }),
+      expect.anything(),
+    );
+  });
+
+  it('validates nothing and keeps nothing without any piece', async () => {
+    const listeners: ((state: AppStateStatus) => void)[] = [];
+    jest.spyOn(AppState, 'addEventListener').mockImplementation((_type, listener) => {
+      listeners.push(listener);
+      return { remove: () => undefined };
+    });
+    jest.mocked(loadEngineGarments).mockReturnValue(garments.filter((g) => g.slot === 'midLayer'));
+    const today = await renderToday();
+    expect(today.current.noPiece).toBe(true);
+
+    await act(async () => listeners.forEach((listener) => listener('background')));
+    expect(saveProbableOutfit).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ selection: null }),
+      expect.anything(),
+    );
+    expect(await act(async () => today.current.validate())).toBe(false);
+    expect(validateOutfit).not.toHaveBeenCalled();
+  });
+
   it('keeps the outfit shown when the app goes to the background, unless validated', async () => {
     const listeners: ((state: AppStateStatus) => void)[] = [];
     jest.spyOn(AppState, 'addEventListener').mockImplementation((_type, listener) => {

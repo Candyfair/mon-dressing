@@ -187,10 +187,12 @@ export function TodayScreen() {
       <View style={[styles.confirm, { top: outfitBottom - size.sizeCta / 2 }]}>
         <ConfirmOutfitButton
           missing={today.missing}
+          empty={today.noPiece}
           frozen={today.frozen}
           onPress={today.frozen ? undo : validate}
           lift={lift}
           centre={width / 2 - CONFIRM_RIGHT}
+          room={width - CONFIRM_RIGHT - spacing.space16}
         />
       </View>
     </GlassStage>

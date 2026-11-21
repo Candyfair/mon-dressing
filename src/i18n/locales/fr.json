@@ -86,8 +86,13 @@
       "remove": "Retirer cette couche"
     },
     "confirm": "Je porte cette tenue",
-    "confirmUnavailable": "Je porte cette tenue, indisponible : {{reason}}",
-    "missingPieces": "il manque {{pieces}}",
+    "confirmIncomplete": "Je porte cette tenue, il manque {{pieces}}",
+    "confirmImpossible": "Validation de la tenue impossible, aucune pièce sélectionnée",
+    "confirmAnyway": {
+      "missing": "Il manque {{pieces}}",
+      "ask": "Valider quand même ?",
+      "name": "{{missing}} · {{ask}}"
+    },
     "aPiece": {
       "top": "un haut",
       "bottom": "un bas"

@@ -194,8 +194,9 @@ export function undoValidation(
 
 /**
  * The outfit shown when Today goes to the background (SPEC §8.5 safety net).
- * `selection` is null when the outfit is incomplete: no sort will happen, so
- * the day's probable outfit is removed. Nothing changes once validated.
+ * An incomplete outfit is kept too, and sorted on its pieces alone; `selection`
+ * is null when the outfit has no piece: no sort will happen, so the day's
+ * probable outfit is removed. Nothing changes once validated.
  */
 export function saveProbableOutfit(
   db: SyncDatabase,
