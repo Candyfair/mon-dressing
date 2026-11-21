@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   cancelAnimation,
   useAnimatedProps,
@@ -18,7 +18,7 @@ import { Icon } from '../../ui/Icon';
 import { motion } from '../../ui/motion';
 import { useTheme } from '../../ui/theme';
 import { fontFamilies, size } from '../../ui/tokens';
-import { joinList } from './joinList';
+import { AskLabel, AskMeasure, PILL_LABEL_LEFT, useConfirmAsk } from './ConfirmAsk';
 import type { RequiredPiece } from './outfitChoice';
 import { ValidationBurst } from './ValidationBurst';
 
@@ -31,14 +31,10 @@ const LOCK = 22;
 // The « Portée aujourd’hui » pill: its label 18 pt from the left edge, 10 pt
 // before the lock, which keeps the round button's centre (28 pt from the
 // right edge). Its width follows the label (about 196 pt).
-const PILL = { left: 18, gap: 10, right: (size.sizeCta - LOCK) / 2 };
+const PILL = { left: PILL_LABEL_LEFT, gap: 10, right: (size.sizeCta - LOCK) / 2 };
 const PILL_ESTIMATE = 196;
 // Wide enough for the label at any text size: it is measured, not drawn, there.
 const LABEL_ROOM = 480;
-// The « Il manque un bas · Valider quand même ? » pill: its label from the
-// same left edge as « Portée aujourd’hui », a few points before the check's
-// round button, on one line when the room allows it, else on two.
-const ASK_GAP = 4;
 const RING_SCALE = 1.9;
 const RING_OPACITY = 0.55;
 
@@ -123,30 +119,10 @@ export function ConfirmOutfitButton({
   // The solid fill of an active button, grown from the centre on activation.
   const fill = useSharedValue(empty ? 0 : 1);
 
-  // The confirmation of an incomplete outfit. 0: the round button; 1: the
-  // pill, and its label shown.
-  const ask = useSharedValue(0);
-  const askLabelShown = useSharedValue(0);
-  const [asking, setAsking] = useState(false);
-  const askingNow = useRef(false);
-  const askTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pieces = joinList(
-    missing.map((piece) => t(`today.aPiece.${piece}`)),
-    t('today.and'),
-  );
-  const askMissing = t('today.confirmAnyway.missing', { pieces });
-  const askAction = t('today.confirmAnyway.ask');
-  const askName = t('today.confirmAnyway.name', { missing: askMissing, ask: askAction });
-  // Natural widths of the label on one line, and of each of its two lines.
-  const [askWidths, setAskWidths] = useState({ line: 0, missing: 0, action: 0 });
-  const measure = (key: keyof typeof askWidths) => (width: number) =>
-    setAskWidths((current) =>
-      current[key] === Math.ceil(width) ? current : { ...current, [key]: Math.ceil(width) },
-    );
-  const askEnds = ASK_GAP + size.sizeCta;
-  const oneLine = PILL.left + askWidths.line + askEnds <= room;
-  const askTextWidth = oneLine ? askWidths.line : Math.max(askWidths.missing, askWidths.action);
-  const askWidth = Math.min(room, PILL.left + askTextWidth + askEnds);
+  // The confirmation of an incomplete outfit.
+  const ask = useConfirmAsk({ missing, empty, reducedMotion, room });
+  // Only these go to the UI thread, not the whole object.
+  const { progress: askProgress, opacity: askOpacity, width: askWidth } = ask;
 
   const drawCheck = (delay: number) => {
     if (reducedMotion) return;
@@ -189,44 +165,6 @@ export function ConfirmOutfitButton({
     stretch.set(withDelay(delay, withTiming(1, validation.stretch)));
     labelShown.set(withDelay(delay + validation.labelIn.delay, withTiming(1, validation.labelIn)));
   };
-  // The confirmation pill stretches out of the button, or back into it.
-  const moveAsk = (open: boolean) => {
-    cancelAnimation(ask);
-    cancelAnimation(askLabelShown);
-    const target = open ? 1 : 0;
-    if (reducedMotion) {
-      const fade = validation.stampFade;
-      shown.set(withSequence(withTiming(0, fade), withTiming(1, fade)));
-      for (const value of [ask, askLabelShown])
-        value.set(withDelay(fade.duration, withTiming(target, instant)));
-      return;
-    }
-    if (open) {
-      ask.set(withTiming(1, validation.askOpen));
-      askLabelShown.set(
-        withDelay(validation.askLabelIn.delay, withTiming(1, validation.askLabelIn)),
-      );
-    } else {
-      askLabelShown.set(withTiming(0, validation.labelOut));
-      ask.set(withTiming(0, validation.askClose));
-    }
-  };
-  const closeAsk = () => {
-    if (askTimer.current !== null) clearTimeout(askTimer.current);
-    askTimer.current = null;
-    if (!askingNow.current) return;
-    askingNow.current = false;
-    setAsking(false);
-    moveAsk(false);
-  };
-  const openAsk = () => {
-    askingNow.current = true;
-    setAsking(true);
-    moveAsk(true);
-    AccessibilityInfo.announceForAccessibility(askName);
-    askTimer.current = setTimeout(closeAsk, validation.askHold);
-  };
-
   // What the button is in the middle of; taps do nothing until it is idle.
   // - settling: from the validation until the pill is in place, so that the
   //   animation always ends on the pill;
@@ -244,18 +182,10 @@ export function ConfirmOutfitButton({
   };
   useEffect(
     () => () => {
-      for (const pending of [timer, askTimer])
-        if (pending.current !== null) clearTimeout(pending.current);
+      if (timer.current !== null) clearTimeout(timer.current);
     },
     [],
   );
-  // What the outfit lacks changed: the question no longer holds.
-  const missingKey = missing.join();
-  useEffect(() => {
-    closeAsk();
-    // Runs when what is missing changes only.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [missingKey, empty]);
   const press = () => {
     if (!enabled) {
       // Disabled, but still touchable: it shakes and points at « Encore… ».
@@ -274,12 +204,12 @@ export function ConfirmOutfitButton({
     }
     if (phase.current !== 'idle') return;
     if (!frozen) {
-      if (missing.length > 0 && !askingNow.current) {
-        openAsk();
+      if (missing.length > 0 && !ask.isOpen()) {
+        ask.open();
         return;
       }
       // Complete, or confirmed: the pill folds back as the outfit is worn.
-      closeAsk();
+      ask.close();
       onPress();
       return;
     }
@@ -379,16 +309,16 @@ export function ConfirmOutfitButton({
     ? t('today.confirmed')
     : empty
       ? t('today.confirmImpossible')
-      : asking
-        ? askName
+      : ask.asking
+        ? ask.name
         : missing.length === 0
           ? t('today.confirm')
-          : t('today.confirmIncomplete', { pieces });
+          : t('today.confirmIncomplete', { pieces: ask.pieces });
 
   const bounce = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
   // The pill rises and slides to its centre with its stretch.
   const rise = useAnimatedStyle(() => ({
-    opacity: shown.get(),
+    opacity: shown.get() * askOpacity.get(),
     transform: [
       { translateX: (pillWidth / 2 - centre) * stretch.get() + refused.get() },
       { translateY: -lift * stretch.get() },
@@ -398,10 +328,9 @@ export function ConfirmOutfitButton({
     width:
       size.sizeCta +
       (pillWidth - size.sizeCta) * stretch.get() +
-      (askWidth - size.sizeCta) * ask.get(),
+      (askWidth - size.sizeCta) * askProgress.get(),
   }));
-  const askBack = useAnimatedStyle(() => ({ opacity: ask.get() > 0 ? 1 : 0 }));
-  const askLabelLook = useAnimatedStyle(() => ({ opacity: askLabelShown.get() }));
+  const askBack = useAnimatedStyle(() => ({ opacity: askProgress.get() > 0 ? 1 : 0 }));
   const labelLook = useAnimatedStyle(() => ({ opacity: labelShown.get() }));
   const solid = useAnimatedStyle(() => ({ opacity: 1 - lock.get() }));
   const grown = useAnimatedStyle(() => ({ transform: [{ scale: fill.get() }] }));
@@ -475,27 +404,7 @@ export function ConfirmOutfitButton({
                 {t('today.worn')}
               </Text>
             </Animated.View>
-            <Animated.View
-              style={[styles.askLabel, { width: askTextWidth }, askLabelLook]}
-              pointerEvents="none"
-              accessibilityElementsHidden
-              importantForAccessibility="no-hide-descendants"
-            >
-              {oneLine ? (
-                <Text numberOfLines={1} style={[styles.labelText, { color: colors.onAction }]}>
-                  {askName}
-                </Text>
-              ) : (
-                <>
-                  <Text numberOfLines={1} style={[styles.labelText, { color: colors.onAction }]}>
-                    {askMissing}
-                  </Text>
-                  <Text numberOfLines={1} style={[styles.labelText, { color: colors.onAction }]}>
-                    {askAction}
-                  </Text>
-                </>
-              )}
-            </Animated.View>
+            <AskLabel ask={ask} textStyle={styles.labelText} />
             <Animated.View
               style={[styles.round, styles.ring, { borderColor: colors.action }, ringLook]}
             />
@@ -525,30 +434,7 @@ export function ConfirmOutfitButton({
           </Animated.View>
         </Animated.View>
       </Pressable>
-      {/* Measures the confirmation's label, which is drawn at the measured width. */}
-      <View
-        style={styles.measure}
-        pointerEvents="none"
-        accessibilityElementsHidden
-        importantForAccessibility="no-hide-descendants"
-      >
-        {(
-          [
-            ['line', askName],
-            ['missing', askMissing],
-            ['action', askAction],
-          ] as const
-        ).map(([key, text]) => (
-          <Text
-            key={key}
-            numberOfLines={1}
-            style={styles.labelText}
-            onLayout={(event) => measure(key)(event.nativeEvent.layout.width)}
-          >
-            {text}
-          </Text>
-        ))}
-      </View>
+      <AskMeasure ask={ask} textStyle={styles.labelText} />
     </Animated.View>
   );
 }
@@ -581,21 +467,6 @@ const styles = StyleSheet.create({
     height: size.sizeCta,
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  askLabel: {
-    position: 'absolute',
-    top: 0,
-    left: PILL.left,
-    height: size.sizeCta,
-    justifyContent: 'center',
-  },
-  measure: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: LABEL_ROOM,
-    alignItems: 'flex-start',
-    opacity: 0,
   },
   labelText: { fontFamily: fontFamilies.text, fontSize: 14.5, fontWeight: '600' },
   ring: { borderWidth: 2 },
