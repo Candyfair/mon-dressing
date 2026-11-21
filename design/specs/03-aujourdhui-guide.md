@@ -22,7 +22,7 @@ EmptySlot, ConfirmOutfitButton (désactivé sans aucune pièce, confirmation qua
 - « Ajouter une couche » masqué tant qu’il n’y a pas de haut.
 
 ### Actions
-- Toucher une silhouette ouvre l’appareil photo de l’ajout en rafale avec le type déjà choisi (haut, bas, chaussures).
+- Toucher une silhouette ouvre l’appareil photo de l’ajout en rafale. Rien n’est choisi à l’avance : la feuille de type est la même que pour tout ajout, rangée en sections dans un ordre fixe (spec 07, Candice, 21 nov.).
 - « Je porte cette tenue » est actif dès que la tenue a une pièce, avec le même aspect que pour une tenue complète. Sans haut et bas (ou pièce pleine hauteur), le premier appui ouvre la pastille de confirmation « Il manque un bas · Valider quand même ? » et un second appui valide (voir `01-aujourdhui.md`, « Validation de la tenue »). Chaussures et couches sont facultatives. Décisions de Candice du 21/11/2026 : une pièce achetée et pas encore photographiée doit pouvoir se porter le matin même.
 - Sans aucune pièce, le bouton est désactivé et reste à sa place : fond `action-disabled`, coche `on-action-disabled`, sans ombre.
 
