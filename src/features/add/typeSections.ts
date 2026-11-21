@@ -1,36 +1,36 @@
 import { SUBTYPES, type SubtypeKey } from '../../domain/catalogue/subtypes';
-import { OUTFIT_ROW_SLOTS, OUTFIT_ROWS, type OutfitRow } from '../../domain/catalogue/outfitRows';
+import type { Slot } from '../../domain/types';
 
-/** The kind of piece a missing silhouette on Today asks for (design spec 03). */
-export type AddCategory = OutfitRow;
+// The type sheet's sections, in this order (Candice, 21 Nov.): the most
+// photographed first. A display grouping only: the slots stay as they are.
+const SHEET_SECTIONS = [
+  { key: 'tops', slots: ['top', 'midLayer'] },
+  { key: 'bottoms', slots: ['bottom'] },
+  { key: 'onePieces', slots: ['onePiece'] },
+  { key: 'outerwear', slots: ['outerLayer'] },
+  { key: 'shoes', slots: ['shoes'] },
+] as const satisfies readonly { key: string; slots: readonly Slot[] }[];
 
-/** A route parameter as a category; anything else is none. */
-export function addCategoryOf(value: unknown): AddCategory | null {
-  return OUTFIT_ROWS.find((category) => category === value) ?? null;
-}
+export type TypeSectionKey = (typeof SHEET_SECTIONS)[number]['key'];
 
 export interface TypeSections {
-  // The types of the category asked for, first; empty without one.
-  category: SubtypeKey[];
+  // The types used last; each one stays in its section too.
   recent: SubtypeKey[];
-  others: SubtypeKey[];
+  sections: { key: TypeSectionKey; subtypes: SubtypeKey[] }[];
 }
 
 /**
- * The type sheet's tiles, each type once: the category asked for, then the
- * recent types, then all the others. Nothing is chosen for the user.
+ * The type sheet's tiles: the recent types, then every type in its section.
+ * Nothing is chosen for the user.
  */
-export function typeSections(
-  category: AddCategory | null,
-  recentSubtypes: readonly SubtypeKey[],
-): TypeSections {
-  const first =
-    category === null
-      ? []
-      : SUBTYPES.filter((s) => OUTFIT_ROW_SLOTS[category].includes(s.slot)).map((s) => s.key);
-  const recent = recentSubtypes.filter((key) => !first.includes(key));
-  const others = SUBTYPES.map((s) => s.key).filter(
-    (key) => !first.includes(key) && !recent.includes(key),
-  );
-  return { category: first, recent, others };
+export function typeSections(recentSubtypes: readonly SubtypeKey[]): TypeSections {
+  return {
+    recent: [...recentSubtypes],
+    sections: SHEET_SECTIONS.map(({ key, slots }) => ({
+      key,
+      subtypes: SUBTYPES.filter((s) => (slots as readonly Slot[]).includes(s.slot)).map(
+        (s) => s.key,
+      ),
+    })),
+  };
 }

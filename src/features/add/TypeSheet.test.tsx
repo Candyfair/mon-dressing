@@ -11,34 +11,29 @@ jest.mock('../../ui/Sheet', () => ({
 
 async function renderSheet(onSave = jest.fn(), { isBusy = false } = {}) {
   await render(
-    <TypeSheet
-      category={null}
-      recentSubtypes={['tshirt', 'shirt', 'jeans']}
-      isBusy={isBusy}
-      onSave={onSave}
-    />,
+    <TypeSheet recentSubtypes={['tshirt', 'shirt', 'jeans']} isBusy={isBusy} onSave={onSave} />,
   );
   return onSave;
 }
 
+// A recent type has two tiles, the first one in « Récents ».
+const recentTile = (name: string) => screen.getAllByRole('button', { name })[0];
 const saveButton = () => screen.getByRole('button', { name: 'Enregistrer · photo suivante' });
 
 describe('TypeSheet', () => {
-  it('shows the recent types first, without repeating them in all types', async () => {
+  it('shows the recent types first, and again in their section', async () => {
     await renderSheet();
-    expect(screen.getAllByRole('button', { name: 'T-shirt' })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: 'T-shirt' })).toHaveLength(2);
     expect(screen.getByText('Récents')).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: 'Haut en coton' })).toBeOnTheScreen();
   });
 
-  it('puts the types of a missing piece first, under their category', async () => {
-    await render(
-      <TypeSheet category="bottom" recentSubtypes={['jeans']} isBusy={false} onSave={jest.fn()} />,
-    );
-    expect(screen.getByText('Bas')).toBeOnTheScreen();
-    expect(screen.getAllByRole('button', { name: 'Jean' })).toHaveLength(1);
-    // The only recent type is a bottom: no recent section is left.
-    expect(screen.queryByText('Récents')).not.toBeOnTheScreen();
+  it('titles every section', async () => {
+    await renderSheet();
+    const titles = ['Hauts', 'Bas', 'Robes et combinaisons', 'Vestes et manteaux'];
+    for (const title of titles) expect(screen.getByText(title)).toBeOnTheScreen();
+    // « Chaussures » is the last section and one of its types.
+    expect(screen.getAllByText('Chaussures')).toHaveLength(2);
   });
 
   it('cannot save before a type is chosen', async () => {
@@ -50,7 +45,7 @@ describe('TypeSheet', () => {
 
   it('cannot save while the photo is being rotated', async () => {
     const onSave = await renderSheet(jest.fn(), { isBusy: true });
-    await fireEvent.press(screen.getByRole('button', { name: 'Jean' }));
+    await fireEvent.press(recentTile('Jean'));
     expect(saveButton()).toBeDisabled();
     await fireEvent.press(saveButton());
     expect(onSave).not.toHaveBeenCalled();
@@ -58,7 +53,7 @@ describe('TypeSheet', () => {
 
   it('saves the type alone by default: no toggle, no usage', async () => {
     const onSave = await renderSheet();
-    await fireEvent.press(screen.getByRole('button', { name: 'Jean' }));
+    await fireEvent.press(recentTile('Jean'));
     expect(screen.getByRole('header', { name: 'Jean' })).toBeOnTheScreen();
     await fireEvent.press(saveButton());
     expect(onSave).toHaveBeenCalledWith({
@@ -72,7 +67,7 @@ describe('TypeSheet', () => {
 
   it('saves the chosen toggles and usages', async () => {
     const onSave = await renderSheet();
-    await fireEvent.press(screen.getByRole('button', { name: 'Chemise' }));
+    await fireEvent.press(recentTile('Chemise'));
     await fireEvent.press(screen.getByRole('switch', { name: 'Se repasse' }));
     await fireEvent.press(screen.getByRole('button', { name: /Plus de détails/ }));
     await fireEvent.press(screen.getByRole('button', { name: 'Pluie' }));
@@ -86,7 +81,7 @@ describe('TypeSheet', () => {
 
   it('lets the type be changed after it was chosen', async () => {
     const onSave = await renderSheet();
-    await fireEvent.press(screen.getByRole('button', { name: 'Jean' }));
+    await fireEvent.press(recentTile('Jean'));
     await fireEvent.press(screen.getByRole('button', { name: 'Changer de type' }));
     await fireEvent.press(screen.getByRole('button', { name: 'Jupe' }));
     await fireEvent.press(saveButton());
