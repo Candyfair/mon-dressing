@@ -78,8 +78,8 @@ interface ConfirmOutfitButtonProps {
  * de la tenue »). Disabled without any piece, it stays in place and findable
  * by screen readers, with the reason in its name. On an incomplete outfit, a
  * first tap stretches it in place into « Il manque un bas · Valider quand
- * même ? », a second one validates, and it folds back on its own. Validating squashes it, throws a ring and dots
- * around it, then stretches it to the left into a glass pill « Portée
+ * même ? », a second one validates, and it folds back on its own.
+ * Validating squashes it, throws a ring and dots around it, then stretches it to the left into a glass pill « Portée
  * aujourd’hui » with a lock; a tap on the pill undoes the validation, shrinks
  * it back and draws the check again. Opened on a validated outfit, the pill
  * is shown at once. Its parent anchors it by its right edge; the pill moves

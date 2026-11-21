@@ -6,6 +6,7 @@ import {
   chosenOutfit,
   emptyRows,
   frozenSuggestion,
+  hasAnyPiece,
   hiddenBottom,
   initialChoice,
   laundryRows,
@@ -97,6 +98,12 @@ describe('outfit choice', () => {
     expect(missingPieces({ shoes: 'boots' })).toEqual(['top', 'bottom']);
   });
 
+  it('counts any piece, a layer alone included, as enough to validate', () => {
+    expect(hasAnyPiece({})).toBe(false);
+    expect(hasAnyPiece({ top: undefined })).toBe(false);
+    expect(hasAnyPiece({ midLayer: 'jumper' })).toBe(true);
+  });
+
   it('names the outfit rows the wardrobe has never had a garment for', () => {
     const engine = suggestion();
     expect(neverAddedRows(engine, [])).toEqual(['top', 'bottom', 'shoes']);
@@ -122,10 +129,13 @@ describe('outfit choice', () => {
     // One clean bottom is enough for the row not to be at the laundry.
     const oneClean = [...garments, { slot: 'bottom' as const, available: true }];
     expect(laundryRows(['bottom'], oneClean, available)).toEqual([]);
-    // A dirty dress counts for the top and the bottom rows.
+    // A dirty dress lives in the top row: no bottom is at the laundry.
     expect(
       laundryRows(['top', 'bottom'], [{ slot: 'onePiece', available: false }], available),
-    ).toEqual(['top', 'bottom']);
+    ).toEqual(['top']);
+    // A clean dress does not hide that every bottom is at the laundry.
+    const cleanDress = [...garments, { slot: 'onePiece' as const, available: true }];
+    expect(laundryRows(['bottom'], cleanDress, available)).toEqual(['bottom']);
   });
 
   it('adds the first layer that has garments, then removes it', () => {

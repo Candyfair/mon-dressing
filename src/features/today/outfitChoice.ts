@@ -1,4 +1,10 @@
 import {
+  OUTFIT_ROW_COVERS,
+  OUTFIT_ROW_SLOTS,
+  OUTFIT_ROWS,
+  type OutfitRow,
+} from '../../domain/catalogue/outfitRows';
+import {
   type EngineGarment,
   type LayerSlot,
   type OutfitSelection,
@@ -214,6 +220,11 @@ export function missingPieces(outfit: OutfitSelection): RequiredPiece[] {
   return (['top', 'bottom'] as const).filter((piece) => outfit[piece] === undefined);
 }
 
+/** At least one piece, whatever it is: enough to validate the outfit (SPEC §7). */
+export function hasAnyPiece(outfit: OutfitSelection): boolean {
+  return Object.values(outfit).some((id) => id !== undefined);
+}
+
 /** Layers in the outfit, in the order of the left column (Couche 1, Couche 2). */
 export function shownLayers(choice: OutfitChoice): LayerSlot[] {
   return LAYERS.filter((row) => choice.shown[row]);
@@ -242,8 +253,7 @@ export function addLayer(
   };
 }
 
-const OUTFIT_ROWS = ['top', 'bottom', 'shoes'] as const;
-export type OutfitRow = (typeof OUTFIT_ROWS)[number];
+export type { OutfitRow };
 
 /** Rows of the default outfit with nothing to show: drawn as empty slots. */
 export function emptyRows(
@@ -259,15 +269,12 @@ export function emptyRows(
   );
 }
 
-// The garments that fill each outfit row: a one-piece stands for a top and a bottom.
-const ROW_CATEGORIES: Record<OutfitRow, readonly Slot[]> = {
-  top: ['top', 'onePiece'],
-  bottom: ['bottom', 'onePiece'],
-  shoes: ['shoes'],
-};
-
-function ofRow<G extends Pick<EngineGarment, 'slot'>>(garments: readonly G[], row: OutfitRow): G[] {
-  return garments.filter((garment) => ROW_CATEGORIES[row].includes(garment.slot));
+function ofRow<G extends Pick<EngineGarment, 'slot'>>(
+  garments: readonly G[],
+  row: OutfitRow,
+  categories: Record<OutfitRow, readonly Slot[]>,
+): G[] {
+  return garments.filter((garment) => categories[row].includes(garment.slot));
 }
 
 /**
@@ -279,7 +286,9 @@ export function neverAddedRows(
   garments: Iterable<Pick<EngineGarment, 'slot'>>,
 ): OutfitRow[] {
   const all = Array.from(garments);
-  return OUTFIT_ROWS.filter((row) => suggestion.proposedRows[row] && ofRow(all, row).length === 0);
+  return OUTFIT_ROWS.filter(
+    (row) => suggestion.proposedRows[row] && ofRow(all, row, OUTFIT_ROW_COVERS).length === 0,
+  );
 }
 
 /**
@@ -293,7 +302,7 @@ export function laundryRows<G extends Pick<EngineGarment, 'slot'>>(
 ): OutfitRow[] {
   const all = Array.from(garments);
   return empty.filter((row) => {
-    const own = ofRow(all, row);
+    const own = ofRow(all, row, OUTFIT_ROW_SLOTS);
     return own.length > 0 && !own.some(isAvailable);
   });
 }

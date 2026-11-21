@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { AccessibilityInfo, AppState } from 'react-native';
 
 import { db } from '../../db/client';
-import type { DevGuided, GuidedStage } from '../dev/guidedStages';
 import { loadEngineGarments, yesterdayOutfit } from '../../db/repositories/engineInputs';
 import { garmentThumbnails } from '../../db/repositories/garments';
 import {
@@ -22,6 +21,7 @@ import {
   statementConflict,
   suggestDay,
 } from '../../domain/engine';
+import { type DevGuided, type GuidedStage, moveToStage } from '../dev/guidedStageList';
 import {
   choiceFromSelection,
   chosenOutfit,
@@ -31,6 +31,7 @@ import {
   initialChoice,
   type KeptOutfit,
   laundryRows,
+  hasAnyPiece,
   missingPieces,
   neverAddedRows,
   type OutfitChoice,
@@ -103,11 +104,8 @@ export function useToday() {
     stage: 'off',
     since: new Date(),
   }));
-  const setDevStage = (stage: GuidedStage) => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports -- only loaded in development
-    const dev = require('../dev/guidedStages') as typeof import('../dev/guidedStages');
-    setDevGuided((current) => dev.moveToStage(current, stage, new Date()));
-  };
+  const setDevStage = (stage: GuidedStage) =>
+    setDevGuided((current) => moveToStage(current, stage, new Date()));
   const load = useCallback(
     () => loadWardrobe(wardrobe.id, (subtype) => t(`subtypes.${subtype}`), devGuided),
     [wardrobe.id, t, devGuided],
@@ -209,7 +207,7 @@ export function useToday() {
   const outfit = chosenOutfit(choice, shown, pieces);
   const missing = missingPieces(outfit);
   // An incomplete outfit can be worn, with at least one piece (SPEC §7).
-  const noPiece = Object.keys(outfit).length === 0;
+  const noPiece = !hasAnyPiece(outfit);
   const isFrozen = frozenSelection !== null;
 
   const deps = () => ({ now: new Date(), newId: randomUUID });
