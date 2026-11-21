@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { AccessibilityInfo, AppState } from 'react-native';
 
 import { db } from '../../db/client';
-import type { GuidedStage } from '../dev/guidedStages';
+import type { DevGuided, GuidedStage } from '../dev/guidedStages';
 import { loadEngineGarments, yesterdayOutfit } from '../../db/repositories/engineInputs';
 import { garmentThumbnails } from '../../db/repositories/garments';
 import {
@@ -55,17 +55,17 @@ interface LoadedWardrobe {
 function loadWardrobe(
   wardrobeId: string,
   typeLabel: (subtype: SubtypeKey) => string,
-  devStage: GuidedStage,
+  devGuided: DevGuided,
 ): LoadedWardrobe {
   const real = loadEngineGarments(db, wardrobeId);
   let garments: readonly EngineGarment[] = real;
   // Development only: an empty wardrobe (fresh install) shows the reference
   // one, and the guided stages a cut-down copy of it.
-  if (__DEV__ && (real.length === 0 || devStage !== 'off')) {
+  if (__DEV__ && (real.length === 0 || devGuided.stage !== 'off')) {
     const dev =
       // eslint-disable-next-line @typescript-eslint/no-require-imports -- only loaded in development
       require('../dev/guidedStages') as typeof import('../dev/guidedStages');
-    garments = dev.devWardrobe(devStage);
+    garments = dev.devWardrobe(devGuided, real);
   }
   const looks = Object.fromEntries(
     garmentThumbnails(db, wardrobeId).map((row): [string, PieceLook] => [
@@ -93,10 +93,18 @@ export function useToday() {
   const { date, wardrobe, context, settings, weather } = day;
 
   // Development only: the guided Today on the reference wardrobe.
-  const [devStage, setDevStage] = useState<GuidedStage>('off');
+  const [devGuided, setDevGuided] = useState<DevGuided>(() => ({
+    stage: 'off',
+    since: new Date(),
+  }));
+  const setDevStage = (stage: GuidedStage) => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- only loaded in development
+    const dev = require('../dev/guidedStages') as typeof import('../dev/guidedStages');
+    setDevGuided((current) => dev.moveToStage(current, stage, new Date()));
+  };
   const load = useCallback(
-    () => loadWardrobe(wardrobe.id, (subtype) => t(`subtypes.${subtype}`), devStage),
-    [wardrobe.id, t, devStage],
+    () => loadWardrobe(wardrobe.id, (subtype) => t(`subtypes.${subtype}`), devGuided),
+    [wardrobe.id, t, devGuided],
   );
   const [loaded, setLoaded] = useState(load);
   const reload = useCallback(() => {
@@ -263,7 +271,7 @@ export function useToday() {
     neverAdded: isFrozen ? [] : neverAddedRows(shown, garments),
     widenableRows: isFrozen ? [] : widenableRows(choice, shown, pieces),
     twoStatements: statementConflict(outfit, pieces),
-    devStage,
+    devStage: devGuided.stage,
     setDevStage,
   };
 }
