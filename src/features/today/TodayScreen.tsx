@@ -112,7 +112,7 @@ export function TodayScreen() {
           choice={today.choice}
           onChoiceChange={today.setChoice}
           emptyRows={today.emptyRows}
-          onAddPiece={() => router.push('/add')}
+          onAddPiece={(row) => router.push({ pathname: '/add', params: { category: row } })}
           locked={today.frozen}
           scale={scale}
           onOutlineBottom={setOutlineBottom}

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { SUBTYPES, type SubtypeKey } from '../../domain/catalogue/subtypes';
+import type { SubtypeKey } from '../../domain/catalogue/subtypes';
 import type { Usage } from '../../domain/types';
 import { Button } from '../../ui/Button';
 import { Icon } from '../../ui/Icon';
@@ -11,6 +11,7 @@ import { useTheme } from '../../ui/theme';
 import { ToggleOption } from '../../ui/ToggleOption';
 import { fontFamilies, spacing } from '../../ui/tokens';
 import { TypeTile } from '../../ui/TypeTile';
+import { type AddCategory, typeSections } from './typeSections';
 import type { GarmentChoice } from './useBurstSession';
 import { UsagePicker } from './UsagePicker';
 
@@ -25,6 +26,8 @@ function rowsOf<T>(items: readonly T[]): T[][] {
 }
 
 interface TypeSheetProps {
+  // Asked for by a missing silhouette on Today: its types come first.
+  category: AddCategory | null;
   recentSubtypes: readonly SubtypeKey[];
   /** A rotation is in progress: saving waits for it. */
   isBusy: boolean;
@@ -35,7 +38,7 @@ interface TypeSheetProps {
  * "Quel type de pièce ?" (AG2, AG4, AG5). Only the type is required; the
  * toggles and usages are optional and nothing is inferred from the type.
  */
-export function TypeSheet({ recentSubtypes, isBusy, onSave }: TypeSheetProps) {
+export function TypeSheet({ category, recentSubtypes, isBusy, onSave }: TypeSheetProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [subtype, setSubtype] = useState<SubtypeKey | null>(null);
@@ -46,7 +49,7 @@ export function TypeSheet({ recentSubtypes, isBusy, onSave }: TypeSheetProps) {
   const [usages, setUsages] = useState<ReadonlySet<Usage>>(new Set());
   const [areDetailsOpen, setAreDetailsOpen] = useState(false);
 
-  const otherSubtypes = SUBTYPES.map((s) => s.key).filter((key) => !recentSubtypes.includes(key));
+  const sections = typeSections(category, recentSubtypes);
 
   const choose = (key: SubtypeKey) => {
     setSubtype(key);
@@ -86,14 +89,20 @@ export function TypeSheet({ recentSubtypes, isBusy, onSave }: TypeSheetProps) {
             <Text accessibilityRole="header" style={[styles.title, { color: colors.ink }]}>
               {t('add.typeQuestion')}
             </Text>
-            {recentSubtypes.length > 0 ? (
+            {category !== null ? (
+              <>
+                <Text style={sectionLabel}>{t(`add.category.${category}`)}</Text>
+                {tileGrid(sections.category)}
+              </>
+            ) : null}
+            {sections.recent.length > 0 ? (
               <>
                 <Text style={sectionLabel}>{t('add.recent')}</Text>
-                {tileGrid(recentSubtypes)}
+                {tileGrid(sections.recent)}
               </>
             ) : null}
             <Text style={sectionLabel}>{t('add.allTypes')}</Text>
-            {tileGrid(otherSubtypes)}
+            {tileGrid(sections.others)}
           </>
         ) : (
           <View style={styles.chosen}>

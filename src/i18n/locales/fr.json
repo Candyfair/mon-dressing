@@ -130,6 +130,11 @@
     "cutOut": "Pièce détourée",
     "typeQuestion": "Quel type de pièce ?",
     "recent": "Récents",
+    "category": {
+      "top": "Hauts",
+      "bottom": "Bas",
+      "shoes": "Chaussures"
+    },
     "allTypes": "Tous les types",
     "changeType": "Changer de type",
     "favorite": "Favori",

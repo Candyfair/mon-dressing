@@ -1,6 +1,6 @@
 import { type CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef } from 'react';
 import { AppState, Linking, StyleSheet, View } from 'react-native';
 
@@ -11,14 +11,20 @@ import { BurstCamera } from './BurstCamera';
 import { CameraDenied } from './CameraDenied';
 import { cameraColors } from './cameraColors';
 import { DraftPhoto } from './DraftPhoto';
+import { addCategoryOf } from './typeSections';
 import { TypeSheet } from './TypeSheet';
 import { type CapturedPhoto, useBurstSession } from './useBurstSession';
 
 // Recent types shown first in the type sheet (AG2 shows three).
 const RECENT_TYPES = 3;
 
-/** Burst add flow (design/specs/07): photo → type → save → next photo. */
+/**
+ * Burst add flow (design/specs/07): photo → type → save → next photo. Opened
+ * from a missing silhouette on Today, the category's types come first for
+ * the whole session (design spec 03).
+ */
 export function BurstAddScreen() {
+  const category = addCategoryOf(useLocalSearchParams<{ category?: string }>().category);
   const cameraRef = useRef<CameraView>(null);
   const [permission, requestPermission, getPermission] = useCameraPermissions();
   const session = useBurstSession();
@@ -110,6 +116,7 @@ export function BurstAddScreen() {
           />
           <TypeSheet
             key={draft.key}
+            category={category}
             recentSubtypes={recents}
             isBusy={session.isBusy}
             onSave={session.save}

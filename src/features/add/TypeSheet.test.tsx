@@ -11,7 +11,12 @@ jest.mock('../../ui/Sheet', () => ({
 
 async function renderSheet(onSave = jest.fn(), { isBusy = false } = {}) {
   await render(
-    <TypeSheet recentSubtypes={['tshirt', 'shirt', 'jeans']} isBusy={isBusy} onSave={onSave} />,
+    <TypeSheet
+      category={null}
+      recentSubtypes={['tshirt', 'shirt', 'jeans']}
+      isBusy={isBusy}
+      onSave={onSave}
+    />,
   );
   return onSave;
 }
@@ -24,6 +29,16 @@ describe('TypeSheet', () => {
     expect(screen.getAllByRole('button', { name: 'T-shirt' })).toHaveLength(1);
     expect(screen.getByText('Récents')).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: 'Haut en coton' })).toBeOnTheScreen();
+  });
+
+  it('puts the types of a missing piece first, under their category', async () => {
+    await render(
+      <TypeSheet category="bottom" recentSubtypes={['jeans']} isBusy={false} onSave={jest.fn()} />,
+    );
+    expect(screen.getByText('Bas')).toBeOnTheScreen();
+    expect(screen.getAllByRole('button', { name: 'Jean' })).toHaveLength(1);
+    // The only recent type is a bottom: no recent section is left.
+    expect(screen.queryByText('Récents')).not.toBeOnTheScreen();
   });
 
   it('cannot save before a type is chosen', async () => {
