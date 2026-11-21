@@ -154,7 +154,7 @@ export function TodayScreen() {
           <StillNeeded
             text={t('today.stillNeeded', {
               pieces: joinList(
-                stillNeeded.map((row) => t(`today.onePiece.${row}`)),
+                stillNeeded.map((row) => t(`today.stillNeededPiece.${row}`)),
                 t('today.and'),
               ),
             })}

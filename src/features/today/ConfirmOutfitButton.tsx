@@ -18,7 +18,7 @@ import { Icon } from '../../ui/Icon';
 import { motion } from '../../ui/motion';
 import { useTheme } from '../../ui/theme';
 import { fontFamilies, size } from '../../ui/tokens';
-import { AskLabel, AskMeasure, PILL_LABEL_LEFT, useConfirmAsk } from './ConfirmAsk';
+import { AskLabel, AskMeasure, MEASURE_ROOM, PILL_LABEL_LEFT, useConfirmAsk } from './ConfirmAsk';
 import type { RequiredPiece } from './outfitChoice';
 import { ValidationBurst } from './ValidationBurst';
 
@@ -33,8 +33,6 @@ const LOCK = 22;
 // right edge). Its width follows the label (about 196 pt).
 const PILL = { left: PILL_LABEL_LEFT, gap: 10, right: (size.sizeCta - LOCK) / 2 };
 const PILL_ESTIMATE = 196;
-// Wide enough for the label at any text size: it is measured, not drawn, there.
-const LABEL_ROOM = 480;
 const RING_SCALE = 1.9;
 const RING_OPACITY = 0.55;
 
@@ -463,7 +461,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: PILL.left,
-    width: LABEL_ROOM,
+    width: MEASURE_ROOM,
     height: size.sizeCta,
     flexDirection: 'row',
     alignItems: 'center',
