@@ -39,9 +39,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -105,9 +105,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -169,9 +169,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -234,9 +234,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -304,9 +304,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -370,9 +370,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -434,9 +434,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »
@@ -499,9 +499,9 @@ Textes visibles (dans l’ordre de lecture) :
 
 - « Dressing »
 - « Hauts »
-- « Couches »
 - « Bas »
 - « Robes »
+- « Pulls et manteaux »
 - « Chaussures »
 - « Disponibles »
 - « Favoris »

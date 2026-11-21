@@ -91,7 +91,7 @@ Sequencing: R7 → R2 → R3/R4 → R9 → R1 → R5/R8. R7 comes first because 
 
 - **One-pieces live in the top carousel**, interleaved with tops in the same order (rotation, §7). When a one-piece arrives, the bottom row fades out during the swipe and disappears on release; swiping back to a top brings back the previous bottom (kept in memory). If the morning's first proposal is a one-piece, the bottom row is empty from the start. Shoes and layers stay independent.
 - Underwear and socks are out of scope. Accessories are not slots; gloves/scarf/umbrella appear only as reminders (§6.5).
-- Wardrobe categories (§9.5) group slots for browsing: Hauts (`top`), Couches (`midLayer` + `outerLayer`), Bas (`bottom`), Robes (`onePiece`), Chaussures (`shoes`).
+- Wardrobe categories (§9.5) group slots for browsing: Hauts (`top`), Bas (`bottom`), Robes (`onePiece`), Pulls et manteaux (`midLayer` + `outerLayer`), Chaussures (`shoes`), in the order one dresses. The type sheet of burst add groups types differently (spec 07).
 
 ### §4.2 Attributes
 | Attribute | Values | Role |
@@ -316,7 +316,7 @@ Screen-level rules, exact copy, accessible names and validated mockups live in `
 - Ironing carousel: not designed yet (§14.1).
 
 ### §9.5 Wardrobe — `design/specs/05`, `08`
-- Header: "Dressing", "+" (burst add), category pills (Hauts, Couches, Bas, Robes, Chaussures), filters (Disponibles, Favoris, Sport), grid toggle. Header keeps room for a future wardrobe selector.
+- Header: "Dressing", "+" (burst add), category pills (Hauts, Bas, Robes, Pulls et manteaux, Chaussures), filters (Disponibles, Favoris, Sport), grid toggle. Header keeps room for a future wardrobe selector.
 - **Shelf carousel** (default): centre piece 270 pt on a common floor line, neighbours 150 pt faded, **no 3D rotation**, loops. Under the piece: "Pièce forte" badge, wear count, active statuses, position ("12 / 38"); no name. Reduced motion: flat.
 - Optional grid view: two glass tiles per row, statuses as mini-badges.
 - Tap → **garment sheet**: auto-saved, type ("Changer de type"), wear count and availability, cutout / original photo, toggles, usages by group, "Supprimer la pièce" (centred confirmation popup, plum, never red). Laundry statuses are not changed from the sheet.
@@ -525,6 +525,7 @@ Hosted as a page on candyfairstudio.com. Required by both stores even with no da
 | 2026-11-21 | Validation needs a top + bottom or a one-piece; an incomplete outfit is never sorted | An outfit with at least one piece can be validated, after an in-place confirmation when it is incomplete; it is sorted on its pieces alone, and so is an incomplete probable outfit | A garment just bought and not yet photographed must be wearable the same morning (Candice, S7) |
 | 2026-11-21 | Commute icons, date abbreviations and commute accessible names (open, §14.1) | Every mode gets an icon at the app's 1.7 stroke: walking and bike drawn for the app, scooter, car and motorbike from Tabler Icons (MIT), public transport from Lucide `tram-front` (ISC); one icon per day (the first mode), all modes read out. Short date without abbreviation dots (« Sam 21 nov »). The program chip is one button: « Programme du jour : bureau, à vélo », hint « Changer le programme » | Chosen by Candice from a comparison sheet (S7) |
 | 2026-11-21 | A missing silhouette opens burst add with its type preselected; the type sheet lists « Récents » then « Tous les types » | Nothing is preselected. The type sheet always shows « Récents » (a recent type also stays in its section), then every type under « Hauts » (`top`, `midLayer`), « Bas », « Robes et combinaisons », « Vestes et manteaux », « Chaussures », in this order; display only, the slots do not change | Candice found « Bas » at the top of the sheet surprising while looking for « Pantalon »; the most photographed sections come first |
+| 2026-11-21 | Wardrobe pills Hauts, Couches, Bas, Robes, Chaussures (design) | Hauts, Bas, Robes, Pulls et manteaux, Chaussures: the order one dresses; the layers keep one pill | « Couches » alone reads as nappies in French |
 
 ---
 
